@@ -1,0 +1,133 @@
+/* --- Container général --- */
+.article-form {
+  max-width: 600px;
+  margin: 40px auto;
+  padding: 25px 30px;
+  background-color: #fefefe;
+  border-radius: 12px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* --- Titre du formulaire --- */
+.article-form h2 {
+  text-align: center;
+  color: #1a1a1a;
+  margin-bottom: 25px;
+  font-size: 1.8rem;
+}
+
+/* --- Formulaire --- */
+.article-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* --- Labels --- */
+.article-form label {
+  font-weight: 600;
+  margin-bottom: 6px;
+  display: block;
+  color: #333;
+}
+
+/* --- Inputs et textarea --- */
+.article-form input,
+.article-form textarea {
+  width: 100%;
+  padding: 12px 15px;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.article-form input:focus,
+.article-form textarea:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 8px rgba(0, 123, 255, 0.2);
+}
+
+/* --- Bouton Ajouter --- */
+.article-form button {
+  padding: 12px 20px;
+  border: none;
+  border-radius: 8px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.article-form button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.article-form button:hover:not(:disabled) {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+}
+
+/* --- Liste d’articles --- */
+.article-list {
+  max-width: 700px;
+  margin: 40px auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.article-list div {
+  background-color: #ffffff;
+  padding: 20px 25px;
+  border-radius: 12px;
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08);
+}
+
+.article-list h2 {
+  margin-top: 0;
+  color: #007bff;
+  font-size: 1.4rem;
+}
+
+.article-list p {
+  color: #555;
+  line-height: 1.5;
+  margin: 10px 0 15px 0;
+}
+
+/* --- Bouton Supprimer --- */
+.article-list button {
+  padding: 8px 15px;
+  border: none;
+  border-radius: 8px;
+  background-color: #dc3545;
+  color: #fff;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.article-list button:hover {
+  background-color: #a71d2a;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(220, 53, 69, 0.3);
+}
+
+/* --- Responsive --- */
+@media (max-width: 650px) {
+  .article-form, .article-list {
+    margin: 20px;
+    padding: 20px;
+  }
+
+  .article-form h2, .article-list h2 {
+    font-size: 1.5rem;
+  }
+}

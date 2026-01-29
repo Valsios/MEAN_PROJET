@@ -1,0 +1,27 @@
+<div class="article-form">
+    <h2>Ajouter un article</h2>
+    <form (ngSubmit)="addArticle()" #articleForm="ngForm">
+        <div>
+            <label for="title">Titre :</label>
+            <input type="text" id="title" name="title"
+                [(ngModel)]="newArticle.title"
+                required
+            />
+        </div>
+        <div>
+            <label for="content">Contenu :</label>
+            <textarea id="content" name="content" [(ngModel)]="newArticle.content" required></textarea>
+        </div>
+        <button type="submit" [disabled]="articleForm.invalid">Ajouter</button>
+    </form>
+</div>
+
+<div class="article-list">
+    @for (article of articles; track article._id) {
+        <div>
+            <h2>{{ article.title }}</h2>
+            <p>{{ article.content }}</p>
+            <button (click)="deleteArticle(article._id)">Supprimer</button>
+        </div>
+    }
+</div>
