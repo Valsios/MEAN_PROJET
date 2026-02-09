@@ -1,0 +1,13 @@
+<h2>Bienvenue sur le Dashboard Client</h2>
+
+<p *ngIf="user">Connecté en tant que : {{ user.email }}</p>
+
+<button (click)="logout()">Se déconnecter</button>
+
+<!-- Exemple d’affichage simple -->
+<div>
+  <h3>Vos informations :</h3>
+  <p>Nom : {{ user?.nom || 'N/A' }}</p>
+  <p>Prénom : {{ user?.prenom || 'N/A' }}</p>
+  <p>Email : {{ user?.email }}</p>
+</div>

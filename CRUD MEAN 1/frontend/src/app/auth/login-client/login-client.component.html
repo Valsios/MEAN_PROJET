@@ -1,0 +1,11 @@
+<h2>Login Client</h2>
+
+<form (ngSubmit)="onLoginClient()">
+  <input type="email" [(ngModel)]="email" name="email" placeholder="Email" required />
+  <input type="password" [(ngModel)]="password" name="password" placeholder="Mot de passe" required />
+  <button type="submit">Se connecter</button>
+</form>
+
+<p *ngIf="error" style="color:red">{{ error }}</p>
+
+<button (click)="switchToBoutique()">Se connecter en tant que Boutique</button>

@@ -1,0 +1,10 @@
+<h2>Bienvenue sur le Dashboard Boutique</h2>
+
+<p *ngIf="user">Connecté en tant que : {{ user.email }}</p>
+
+<button (click)="logout()">Se déconnecter</button>
+
+<div>
+  <h3>Gestion Boutique :</h3>
+  <p>Afficher ici les informations de la boutique, commandes, box, etc.</p>
+</div>

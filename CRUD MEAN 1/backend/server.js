@@ -4,7 +4,7 @@ const cors = require('cors');
 
 require('dotenv').config({ path: "./conf.env" });
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = 5001;
 
 // Middleware
 app.use(cors());
@@ -16,5 +16,12 @@ mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connect�
 
 // Routes
 app.use('/articles', require('./routes/articleRoutes'));
+
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
+
 app.listen(PORT, () => console.log(`Serveur démarré sur le port
 ${PORT}`));
+
+
