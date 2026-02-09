@@ -1,1 +1,9 @@
 /* You can add global styles to this file, and also import other style files */
+/* BOOTSTRAP */
+@import "assets/css/bootstrap.min.css";
+
+/* TEMPLATE */
+@import "assets/css/glightbox.min.css";
+@import "assets/css/tiny-slider.css";
+@import "assets/css/LineIcons.3.0.css";
+@import "assets/css/main.css";
