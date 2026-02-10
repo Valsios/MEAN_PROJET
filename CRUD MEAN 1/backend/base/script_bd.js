@@ -69,6 +69,26 @@ const box1 = db.boxes.insertOne({
 /***********************
  * BOUTIQUES
  ***********************/
+
+db.createCollection("categories");
+db.categories.insertMany([
+  {
+    _id: ObjectId("65abc0010000000000000001"),
+    nom: "Informatique",
+    description: "Vente de matériel et services informatiques",
+  },
+  {
+    _id: ObjectId("65abc0010000000000000002"),
+    nom: "Vêtements",
+    description: "Mode, prêt-à-porter",
+  },
+  {
+    _id: ObjectId("65abc0010000000000000003"),
+    nom: "Restauration",
+    description: "Restaurants et fast-food",
+  }
+]);
+
 db.createCollection("boutiques");
 
 db.boutiques.createIndex(
@@ -82,6 +102,15 @@ const boutique1 = db.boutiques.insertOne({
   email: "contact@techworld.mg",
   boxActuelleId: null
 });
+db.boutiques.updateOne(
+  { email: "contact@techworld.mg" },   // qui je modifie
+  {
+    $set: {
+      categorieId: ObjectId("65abc0010000000000000001")
+    }
+  }
+);
+
 
 /***********************
  * MOUVEMENTS_BOX

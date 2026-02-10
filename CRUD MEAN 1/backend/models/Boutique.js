@@ -19,6 +19,11 @@ const BoutiqueSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Box',
     default: null
+  },
+  categorieId: {
+    type: Schema.Types.ObjectId,
+    ref: 'Categorie',
+    default: null
   }
 }, { timestamps: true });
 
