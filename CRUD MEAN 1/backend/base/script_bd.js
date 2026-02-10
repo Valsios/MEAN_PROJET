@@ -66,6 +66,11 @@ const box1 = db.boxes.insertOne({
   statut: "libre"
 });
 
+db.boxes.updateOne(
+  { _id: box1.insertedId },
+  { $set: { prixActuel: 100000 } }
+);
+
 /***********************
  * BOUTIQUES
  ***********************/
@@ -162,6 +167,56 @@ db.users.insertOne({
   status: true,
   createdAt: new Date()
 });
+
+
+/***********************
+ * MOUVEMENT_PRIX_LOYER
+ * (historique changement prix)
+ ***********************/
+db.createCollection("mouvement_prix_loyer");
+
+db.mouvement_prix_loyer.createIndex(
+  { boxId: 1, dateMvt: -1 }
+);
+
+/* Exemple : changement de prix */
+db.mouvement_prix_loyer.insertOne({
+  boxId: box1.insertedId,
+  ancienPrix: 100000,
+  nouveauPrix: 120000,
+  dateMvt: new Date(),
+  motif: "Réajustement annuel"
+});
+
+/* Synchronisation prix actuel */
+db.boxes.updateOne(
+  { _id: box1.insertedId },
+  { $set: { prixActuel: 120000 } }
+);
+
+/***********************
+ * PAIEMENT_LOYER
+ * (historique paiements loyer)
+ ***********************/
+db.createCollection("paiement_loyer");
+
+/* Un paiement unique par boutique / mois / année */
+db.paiement_loyer.createIndex(
+  { boutiqueId: 1, mois: 1, annee: 1 },
+  { unique: true }
+);
+
+/* Exemple de paiement */
+db.paiement_loyer.insertOne({
+  boutiqueId: boutique1.insertedId,
+  boxId: box1.insertedId,
+  montant: 120000,
+  mois: 1,
+  annee: 2026,
+  datePaiement: new Date("2026-01-05"),
+  createdAt: new Date()
+});
+
 
 
 

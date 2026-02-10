@@ -10,6 +10,10 @@ const BoxSchema = new Schema({
     type: Number,
     required: true
   },
+  prixActuel: {
+    type: Number,
+    required: true
+  },
   statut: {
     type: String,
     enum: ['libre', 'occupee'],
