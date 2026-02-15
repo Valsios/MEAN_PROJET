@@ -1,10 +1,10 @@
 import { Routes } from '@angular/router';
-import { LoginClientComponent } from './auth/login-client/login-client.component';
-import { LoginBoutiqueComponent } from './auth/login-boutique/login-boutique.component';
-import { LoginAdminComponent } from './auth/login-admin/login-admin.component';
-import { ClientDashboardComponent } from './client/client-dashboard/client-dashboard.component';
-import { BoutiqueDashboardComponent } from './boutique/boutique-dashboard/boutique-dashboard.component';
-import { AdminDashboardComponent } from './admin/admin-dashboard/admin-dashboard.component';
+import { LoginClientComponent } from './components/auth/login-client/login-client.component';
+import { LoginBoutiqueComponent } from './components/auth/login-boutique/login-boutique.component';
+import { LoginAdminComponent } from './components/auth/login-admin/login-admin.component';
+import { ClientDashboardComponent } from './components/client/client-dashboard/client-dashboard.component';
+import { BoutiqueDashboardComponent } from './components/boutique/boutique-dashboard/boutique-dashboard.component';
+import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
 
 export const routes: Routes = [
   { path: 'login-client', component: LoginClientComponent },

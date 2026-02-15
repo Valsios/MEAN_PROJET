@@ -11,10 +11,14 @@ import { AuthService } from '../../auth/auth.service';
 })
 export class BoutiqueDashboardComponent {
   user: any;
+  profile: any;
 
   constructor(private authService: AuthService, private router: Router) {
     const storedUser = localStorage.getItem('user');
     this.user = storedUser ? JSON.parse(storedUser) : null;
+
+    const storedProfile = localStorage.getItem('profile');
+    this.profile = storedProfile ? JSON.parse(storedProfile) : null;
 
     // Vérification du rôle
     if (!this.user || this.user.role !== 'boutique') {

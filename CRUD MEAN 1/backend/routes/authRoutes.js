@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Boutique = require('../models/Boutique');
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
@@ -21,9 +22,23 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1d' }
     );
 
+    var profile;
+    if(user.role === "boutique")
+    {
+      profile = await Boutique.findById(user.profilId);
+    }
+    else if(user.role === "client")
+    {
+      profile = await Client.findById(user.profilId);
+    }
+    else
+    {
+      profile = user;
+    }
     res.json({
       token,
-      user: { id: user._id, email: user.email, role: user.role }
+      user: { id: user._id, email: user.email, role: user.role },
+      profile
     });
 
   } catch (error) {

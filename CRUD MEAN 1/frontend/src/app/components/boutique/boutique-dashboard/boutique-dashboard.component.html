@@ -1,0 +1,137 @@
+<!-- ===================== HEADER ===================== -->
+<header class="header navbar-area">
+
+  <!-- Header Middle (logo + user) -->
+  <div class="header-middle">
+    <div class="container">
+      <div class="row align-items-center">
+
+        <!-- Logo -->
+        <div class="col-lg-3 col-md-3 col-12">
+          <a class="navbar-brand" href="#">
+            <img src="assets/images/logo/logo.svg" alt="Logo">
+          </a>
+        </div>
+
+        <!-- Admin info -->
+        <div class="col-lg-9 col-md-9 col-12 text-end">
+          <div class="user">
+            <i class="lni lni-user"></i>
+             {{profile.nom}}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Simple Navbar -->
+  <div class="container">
+    <nav class="navbar navbar-expand-lg">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link active" href="#">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Vos Produits</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#">Clients</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="#">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+</header>
+<!-- ===================== END HEADER ===================== -->
+
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<section class="section" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-lg-8 text-center">
+
+        <h1 class="mt-5">Bienvenu {{profile.nom}} </h1>
+        <p class="mt-3">
+          Espace réservé au boutique
+        </p>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== END MAIN CONTENT ===================== -->
+
+
+<!-- ===================== FOOTER ===================== -->
+<footer class="footer">
+        <!-- Start Footer Top -->
+        <div class="footer-top">
+            <div class="container">
+                <div class="inner-content">
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-12">
+                            <div class="footer-logo">
+                                <a href="#">
+                                    <img src="assets/images/logo/white-logo.svg" alt="#">
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-lg-9 col-md-8 col-12">
+                          <div class="footer-newsletter">
+                            <h4 class="title">
+                              Gérer votre boutique sur cette plateforme.
+                              <span>VALHA ne cessera de chercher le meilleur pour vous.</span>
+                            </h4>
+
+                            <!-- Profil info aligné à droite -->
+                            <div class="user d-flex justify-content-end align-items-center gap-2 mt-3">
+                              <i class="lni lni-user" style="font-size: 1.5rem;"></i>
+                              <span class="fw-semibold"> {{profile.nom}}</span>
+                            </div>
+
+                          </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Footer Top -->
+
+        <!-- Start Footer Bottom -->
+        <div class="footer-bottom">
+            <div class="container">
+                <div class="inner-content">
+                    <div class="row align-items-center">
+                        <div class="col-lg-4 col-12">
+                            <div class="payment-gateway">
+                                <span>Que votre boutique vive</span>
+    
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <div class="copyright">
+                                <p>Designed and Developed by<a href="#" rel="nofollow"
+                                        target="_blank">GrayGrids</a></p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4 col-12">
+                            <ul class="socila">
+                                <li>
+                                    <span>Votre contact : {{user.email}}</span>
+                                </li>
+    
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- End Footer Bottom -->
+    </footer>
+<!-- ===================== END FOOTER ===================== -->

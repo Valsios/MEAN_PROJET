@@ -220,7 +220,105 @@ db.paiement_loyer.insertOne({
 
 
 
+
+
+
 /***********************
  * FIN INITIALISATION
  ***********************/
 print("✅ Base centre_commercial initialisée avec succès");
+
+
+/* =========================
+   1. COLLECTION PRODUITS
+========================= */
+db.createCollection("produits");
+
+/* On récupère la boutique existante (la seule) */
+const boutique = db.boutiques.findOne();
+
+/* Insertion de 2 produits */
+const produitsInsert = db.produits.insertMany([
+  {
+    nom: "T-shirt Noir",
+    description: "T-shirt coton haute qualité",
+    boutiqueId: boutique._id,
+    type: "produit", // produit | plat | service
+    gestionStock: true,
+    stockActuel: 25,
+    prixActuel: 30000,
+    createdAt: new Date()
+  },
+  {
+    nom: "Burger Classic",
+    description: "Burger avec steak et fromage",
+    boutiqueId: boutique._id,
+    type: "plat",
+    gestionStock: false,
+    stockActuel: null,
+    prixActuel: 15000,
+    createdAt: new Date()
+  }
+]);
+
+/* =========================
+   2. MOUVEMENT PRIX PRODUIT
+========================= */
+db.createCollection("mouvement_prix_produit");
+
+/* Historique des prix pour chaque produit */
+db.mouvement_prix_produit.insertMany([
+  {
+    produitId: produitsInsert.insertedIds["0"],
+    ancienPrix: null,
+    nouveauPrix: 30000,
+    dateApplication: new Date(),
+    commentaire: "Prix initial"
+  },
+  {
+    produitId: produitsInsert.insertedIds["1"],
+    ancienPrix: null,
+    nouveauPrix: 15000,
+    dateApplication: new Date(),
+    commentaire: "Prix initial"
+  }
+]);
+
+/* =========================
+   3. PROMOTIONS PRODUITS
+========================= */
+db.createCollection("promotions_produit");
+
+db.promotions_produit.insertMany([
+  {
+    produitId: produitsInsert.insertedIds["0"],
+    pourcentage: 10, // -10%
+    dateDebut: new Date(),
+    dateFin: null
+  },
+  {
+    produitId: produitsInsert.insertedIds["1"],
+    pourcentage: 20, // -20%
+    dateDebut: new Date(),
+    dateFin: null
+  }
+]);
+
+/* =========================
+   4. INDEX UTILES
+========================= */
+db.produits.createIndex({ boutiqueId: 1 });
+db.mouvement_prix_produit.createIndex({ produitId: 1 });
+db.promotions_produit.createIndex({ produitId: 1 });
+
+print("✅ Données produits, prix et promotions initialisées avec succès !");
+
+// ajout champ image à produit
+db.produits.updateMany(
+  {},
+  {
+    $set: {
+      image: null
+    }
+  }
+);
