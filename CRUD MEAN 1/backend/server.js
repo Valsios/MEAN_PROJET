@@ -17,11 +17,14 @@ mongoose.connect(process.env.MONGO_URI).then(() => console.log("MongoDB connect√
 // Routes
 app.use('/articles', require('./routes/articleRoutes'));
 
-const authRoutes = require('./routes/authRoutes');
-app.use('/api/auth', authRoutes);
+app.use('/api/auth', require('./routes/authRoutes'));
 
 app.use('/api/mouvements-prix', require('./routes/mouvementPrixLoyerRoutes'));
 app.use('/api/paiements-loyer', require('./routes/paiementLoyerRoutes'));
+
+
+app.use('/boxes', require('./routes/boxRoutes'));
+
 
 
 
