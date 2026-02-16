@@ -1,0 +1,63 @@
+<div class="container">
+
+  <h2>{{ isEditMode ? 'Modifier' : 'Ajouter' }} Catégorie</h2>
+
+  <form (ngSubmit)="submit()">
+
+    <input class="form-control mb-2"
+           [(ngModel)]="form.nom"
+           name="nom"
+           placeholder="Nom"
+           required>
+
+    <textarea class="form-control mb-2"
+              [(ngModel)]="form.description"
+              name="description"
+              placeholder="Description"
+              required></textarea>
+
+    <button class="btn btn-primary me-2">
+      {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+    </button>
+
+    <button *ngIf="isEditMode"
+            type="button"
+            class="btn btn-secondary"
+            (click)="resetForm()">
+      Annuler
+    </button>
+
+  </form>
+
+  <hr>
+
+  <h3>Liste des Catégories</h3>
+
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>Nom</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let cat of categories">
+        <td>{{ cat.nom }}</td>
+        <td>{{ cat.description }}</td>
+        <td>
+          <button class="btn btn-warning btn-sm me-2"
+                  (click)="edit(cat)">
+            Modifier
+          </button>
+          <button class="btn btn-danger btn-sm"
+                  (click)="delete(cat)">
+            Supprimer
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+</div>

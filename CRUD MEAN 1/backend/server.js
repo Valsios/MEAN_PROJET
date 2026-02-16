@@ -25,6 +25,10 @@ app.use('/api/paiements-loyer', require('./routes/paiementLoyerRoutes'));
 
 app.use('/boxes', require('./routes/boxRoutes'));
 
+app.use('/boutiques', require('./routes/boutiqueRoutes'));
+
+app.use('/categories', require('./routes/categorieRoutes'));
+
 
 
 

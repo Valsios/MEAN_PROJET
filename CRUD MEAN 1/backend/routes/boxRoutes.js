@@ -16,12 +16,17 @@ router.post('/', async (req, res) => {
 // Lire toutes les box
 router.get('/', async (req, res) => {
   try {
-    const boxes = await Box.find();
+    const filter = {};
+    if (req.query.statut) {
+      filter.statut = req.query.statut;
+    }
+    const boxes = await Box.find(filter);
     res.json(boxes);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
 
 // Mettre à jour une box
 router.put('/:id', async (req, res) => {

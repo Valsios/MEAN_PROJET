@@ -20,6 +20,7 @@ export class BoxService {
   constructor(private http: HttpClient) {}
 
   getAll(): Observable<Box[]> {
+    console.log (this.apiUrl);
     return this.http.get<Box[]>(this.apiUrl);
   }
 
@@ -34,4 +35,9 @@ export class BoxService {
   delete(id: string): Observable<any> {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
+
+  getBoxesLibres() {
+    return this.http.get<any[]>(`${this.apiUrl}?statut=libre`);
+  }
+
 }

@@ -23,7 +23,7 @@ const BoutiqueSchema = new Schema({
   categorieId: {
     type: Schema.Types.ObjectId,
     ref: 'Categorie',
-    default: null
+    required: true
   }
 }, { timestamps: true });
 

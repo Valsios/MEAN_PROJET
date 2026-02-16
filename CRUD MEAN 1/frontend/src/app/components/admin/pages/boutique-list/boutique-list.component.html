@@ -1,0 +1,100 @@
+<div class="container">
+
+    <h2>{{ isEditMode ? 'Modifier' : 'Ajouter' }} Boutique</h2>
+
+    <form (ngSubmit)="submit()">
+        <div class="row">
+            <div class="col-md-6">
+                <input class="form-control mb-2" [(ngModel)]="form.nom" name="nom" placeholder="Nom" required>
+            </div>
+            <div class="col-md-6">
+                <input class="form-control mb-2" [(ngModel)]="form.telephone" name="telephone" placeholder="Téléphone"
+                    required>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6">
+                <input class="form-control mb-2" [(ngModel)]="form.email" name="email" placeholder="Email" required>
+            </div>
+            <div class="col-md-6">
+                <select class="form-control mb-2" [(ngModel)]="form.categorieId" name="categorieId" required>
+                    <option value="">Choisir catégorie</option>
+                    <option *ngFor="let c of categories" [value]="c._id">
+                        {{ c.nom }}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-mg-12">
+                <label><strong>Box (Facultatif)</strong></label>
+                <select class="form-control mb-3" [(ngModel)]="form.boxActuelleId" name="boxActuelleId">
+                    <option [ngValue]="null">Aucun</option>
+                    <option *ngFor="let box of boxesLibres" [value]="box._id">
+                        Box {{ box.numero }} - Étage {{ box.etage }}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+
+
+
+
+
+
+
+
+
+
+        <button class="btn btn-primary me-2">
+            {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+        </button>
+
+        <button *ngIf="isEditMode" type="button" class="btn btn-secondary" (click)="resetForm()">
+            Annuler
+        </button>
+
+    </form>
+
+    <hr>
+
+    <h3>Liste des Boutiques</h3>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nom</th>
+                <th>Email</th>
+                <th>Catégorie</th>
+                <th>Box</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            <tr *ngFor="let b of boutiques">
+                <td>{{ b.nom }}</td>
+                <td>{{ b.email }}</td>
+                <td>{{ b.categorieId?.nom }}</td>
+                <td>
+                    {{ b.boxActuelleId ? 'Box ' + b.boxActuelleId.numero : 'Aucune' }}
+                </td>
+                <td>
+                    <button class="btn btn-warning btn-sm me-2" (click)="edit(b)">
+                        Modifier
+                    </button>
+
+                    <button class="btn btn-info btn-sm me-2">
+                        Statistiques
+                    </button>
+
+                    <button *ngIf="b.boxActuelleId" class="btn btn-danger btn-sm" (click)="liberer(b)">
+                        Libérer Box
+                    </button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+</div>
