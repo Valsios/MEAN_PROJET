@@ -50,6 +50,23 @@ db.users.insertOne({
   createdAt: new Date()
 });
 
+const client2 = db.clients.insertOne({
+  nom: "Rakoto",
+  prenom: "Vals",
+  telephone: "+26134000101",
+  adresse: "Mahajanga",
+  email: "vals.rakoto@gmail.com"
+});
+
+db.users.insertOne({
+  email: "contact@client2.mg",
+  password: "$2a$12$5/JDO1kiTAZlnN1O1kEXceVBxTsGOg10rBcpgxBc1.Q3J4K7nMfhu",
+  role: "client",
+  profilId: client2.insertedId,
+  status: true,
+  createdAt: new Date()
+});
+
 /***********************
  * BOXES (ENTITÉ PHYSIQUE)
  ***********************/
@@ -264,7 +281,7 @@ const produitsInsert = db.produits.insertMany([
 /* =========================
    2. MOUVEMENT PRIX PRODUIT
 ========================= */
-db.createCollection("mouvement_prix_produit");
+db.createCollection("mouvementprixproduits");
 
 /* Historique des prix pour chaque produit */
 db.mouvement_prix_produit.insertMany([
@@ -322,3 +339,38 @@ db.produits.updateMany(
     }
   }
 );
+
+
+// 1. Récupérer les IDs des clients
+const clientVals = db.clients.findOne({ email: "vals.rakoto@gmail.com" });
+const clientSoa = db.clients.findOne({ email: "jean.rakoto@gmail.com" });
+
+// 2. ID du produit
+const produitId = ObjectId("699210026a8b84657f2ae029");
+
+// 3. Insérer les 2 reviews
+db.reviewproduits.insertMany([
+  {
+    client: {
+      id: clientVals._id,
+      email: clientVals.email
+    },
+    commentaire: "Excellent produit ! Correspond parfaitement à mes attentes. Livraison rapide et emballage soigné.",
+    note: 5,
+    produitId: produitId,
+    createdAt: new Date()
+  },
+  {
+    client: {
+      id: clientSoa._id,
+      email: clientSoa.email
+    },
+    commentaire: "Produit de bonne qualité mais un peu cher. Le service client est réactif.",
+    note: 4,
+    produitId: produitId,
+    createdAt: new Date()
+  }
+]);
+
+// 4. Vérifier le résultat
+db.reviewproduits.find().pretty();

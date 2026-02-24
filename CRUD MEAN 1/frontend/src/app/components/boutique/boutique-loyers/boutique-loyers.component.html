@@ -1,0 +1,201 @@
+<app-boutique-header></app-boutique-header>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<section class="section" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-12">
+
+        <!-- En-tête avec infos box -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <div>
+            <h2 class="mb-1">
+              <i class="lni lni-wallet"></i> 
+              Paiement des loyers
+            </h2>
+            <p class="text-muted mb-0" *ngIf="boxInfo">
+              <i class="lni lni-store"></i> {{ 'Etage ' + boxInfo.etage + ' Box ' + boxInfo.numero }} | 
+              <strong>{{ boxInfo.prixActuel | number }} MGA/mois</strong>
+            </p>
+          </div>
+          
+          <!-- Sélecteur d'année -->
+          <div class="btn-group" role="group">
+            <button *ngFor="let an of anneesDisponibles()" 
+                    type="button" 
+                    class="btn" 
+                    [class.btn-primary]="anneeSelectionnee === an"
+                    [class.btn-outline-primary]="anneeSelectionnee !== an"
+                    (click)="changerAnnee(an)">
+              {{ an }}
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status"></div>
+          <p class="mt-2">Chargement des paiements...</p>
+        </div>
+
+        <div *ngIf="!isLoading">
+          <!-- Statistiques -->
+          <div class="row mb-4">
+            <div class="col-md-3">
+              <div class="card bg-primary text-white">
+                <div class="card-body">
+                  <h6 class="card-title">Total payé</h6>
+                  <h3>{{ statistiques.totalPaye | number }} MGA</h3>
+                  <small>Année {{ anneeSelectionnee }}</small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <div class="card bg-info text-white">
+                <div class="card-body">
+                  <h6 class="card-title">Loyer mensuel</h6>
+                  <h3>{{ statistiques.montantMensuel | number }} MGA</h3>
+                  <small *ngIf="!statistiques.montantMensuel">Non défini</small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <div class="card" [ngClass]="statistiques.anneeComplete ? 'bg-success text-white' : 'bg-warning text-dark'">
+                <div class="card-body">
+                  <h6 class="card-title">Mois payés</h6>
+                  <h3>{{ statistiques.moisPayes }}/12</h3>
+                  <small>{{ statistiques.moisRestants }} mois restants</small>
+                </div>
+              </div>
+            </div>
+            
+            <div class="col-md-3">
+              <div class="card bg-secondary text-white">
+                <div class="card-body">
+                  <h6 class="card-title">Prochain paiement</h6>
+                  <h5>{{ getProchainMoisAPayer() }}</h5>
+                  <small>{{ statistiques.montantMensuel | number }} MGA</small>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Calendrier des paiements -->
+          <div class="card mb-4">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Calendrier des paiements {{ anneeSelectionnee }}</h5>
+            </div>
+            
+            <div class="card-body">
+              <div class="row">
+                <div *ngFor="let mois of moisListe" class="col-md-3 mb-3">
+                  <div class="card h-100">
+                    <div class="card-header text-center py-2" 
+                         [ngClass]="getStatutPaiement(mois.index).class + ' text-white'">
+                      <strong>{{ mois.nom }}</strong>
+                    </div>
+                    
+                    <div class="card-body p-3">
+                      <ng-container *ngIf="getPaiementParMois(mois.index) as paiement; else nonPaye">
+                        <div class="text-center">
+                          <p class="mb-2">
+                            <i class="lni lni-checkmark-circle text-success" style="font-size: 2rem;"></i>
+                          </p>
+                          <p class="mb-1"><strong>{{ paiement.montant | number }} MGA</strong></p>
+                          <p class="mb-1 small">
+                            <i class="lni lni-calendar"></i>
+                            {{ formatDate(paiement.datePaiement) }}
+                          </p>
+                          <span class="badge bg-success">Payé</span>
+                        </div>
+                      </ng-container>
+                      
+                      <ng-template #nonPaye>
+                        <div class="text-center">
+                          <p class="mb-2">
+                            <i [class]="getStatutPaiement(mois.index).icon" style="font-size: 2rem;"
+                               [ngClass]="{'text-warning': getStatutPaiement(mois.index).texte === 'À payer',
+                                          'text-danger': getStatutPaiement(mois.index).texte === 'En retard',
+                                          'text-secondary': getStatutPaiement(mois.index).texte === 'À venir'}"></i>
+                          </p>
+                          <p class="mb-1"><strong>{{ statistiques.montantMensuel | number }} MGA</strong></p>
+                          <span class="badge" 
+                                [ngClass]="{'bg-warning': getStatutPaiement(mois.index).texte === 'À payer',
+                                           'bg-danger': getStatutPaiement(mois.index).texte === 'En retard',
+                                           'bg-secondary': getStatutPaiement(mois.index).texte === 'À venir'}">
+                            {{ getStatutPaiement(mois.index).texte }}
+                          </span>
+                        </div>
+                      </ng-template>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Historique détaillé -->
+          <div class="card">
+            <div class="card-header bg-light">
+              <h5 class="mb-0">Historique des paiements {{ anneeSelectionnee }}</h5>
+            </div>
+            
+            <div class="card-body p-0">
+              <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Mois</th>
+                      <th>Date de paiement</th>
+                      <th class="text-end">Montant</th>
+                      <th class="text-center">Statut</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let mois of moisListe">
+                      <td><strong>{{ mois.nom }}</strong></td>
+                      
+                      <ng-container *ngIf="getPaiementParMois(mois.index) as paiement; else historiqueNonPaye">
+                        <td>{{ formatDate(paiement.datePaiement) }}</td>
+                        <td class="text-end">{{ paiement.montant | number }} MGA</td>
+                        <td class="text-center">
+                          <span class="badge bg-success">Payé</span>
+                        </td>
+                      </ng-container>
+                      
+                      <ng-template #historiqueNonPaye>
+                        <td class="text-muted">-</td>
+                        <td class="text-end text-muted">-</td>
+                        <td class="text-center">
+                          <span class="badge" 
+                                [ngClass]="{'bg-warning': getStatutPaiement(mois.index).texte === 'À payer',
+                                           'bg-danger': getStatutPaiement(mois.index).texte === 'En retard',
+                                           'bg-secondary': getStatutPaiement(mois.index).texte === 'À venir'}">
+                            {{ getStatutPaiement(mois.index).texte }}
+                          </span>
+                        </td>
+                      </ng-template>
+                    </tr>
+                  </tbody>
+                  <tfoot class="table-light" *ngIf="paiements.length > 0">
+                    <tr>
+                      <td colspan="2" class="text-end fw-bold">Total {{ anneeSelectionnee }}:</td>
+                      <td class="text-end fw-bold text-primary">{{ statistiques.totalPaye | number }} MGA</td>
+                      <td></td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== END MAIN CONTENT ===================== -->
+
+<app-boutique-footer></app-boutique-footer>

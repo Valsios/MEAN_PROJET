@@ -26,6 +26,6 @@ const mouvementPrixSchema = new mongoose.Schema({
   commentaire: {
     type: String
   }
-});
+}, { versionKey : false});
 
 module.exports = mongoose.model("MouvementPrixProduit", mouvementPrixSchema);

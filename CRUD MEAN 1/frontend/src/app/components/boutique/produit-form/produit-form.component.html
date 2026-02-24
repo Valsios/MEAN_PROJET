@@ -1,0 +1,74 @@
+
+<app-boutique-header></app-boutique-header>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<section class="section" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 col-12">
+
+        <h2 class="mb-4">Ajouter un nouveau produit</h2>
+
+        <form [formGroup]="produitForm" (ngSubmit)="onSubmit()" class="p-4 border rounded">
+
+          <!-- Nom -->
+          <div class="mb-3">
+            <label for="nom" class="form-label">Nom du produit</label>
+            <input type="text" id="nom" formControlName="nom" class="form-control" placeholder="T-shirt Noir">
+          </div>
+
+          <!-- Description -->
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea id="description" formControlName="description" class="form-control" rows="3"
+              placeholder="Description du produit"></textarea>
+          </div>
+
+          <!-- Type -->
+          <div class="mb-3">
+            
+            <label for="type" class="form-label">Type</label>
+            <input type="text" id="type" formControlName="type" class="form-control" placeholder="T-shirt Noir">
+          </div>
+
+          <!-- Gestion Stock -->
+          <div class="mb-3 form-check">
+            <input type="checkbox" id="gestionStock" formControlName="gestionStock" class="form-check-input">
+            <label class="form-check-label" for="gestionStock">Gestion du stock activée</label>
+          </div>
+
+          <!-- Stock actuel -->
+          <div class="mb-3" *ngIf="produitForm.get('gestionStock')?.value">
+            <label for="stockActuel" class="form-label">Stock actuel</label>
+            <input type="number" id="stockActuel" formControlName="stockActuel" class="form-control" placeholder="25">
+          </div>
+
+          <!-- Prix -->
+          <div class="mb-3">
+            <label for="prixActuel" class="form-label">Prix actuel (MGA)</label>
+            <input type="number" id="prixActuel" formControlName="prixActuel" class="form-control" placeholder="30000">
+          </div>
+
+          <!-- Image -->
+          <div class="mb-3">
+            <label for="image" class="form-label">Image</label>
+            <input type="file" id="image" (change)="onFileSelected($event)" accept="image/*" class="form-control">
+          </div>
+
+          <!-- Bouton Submit -->
+          <div class="d-grid">
+            <button type="submit" class="btn btn-primary" [disabled]="produitForm.invalid">
+              Ajouter le produit
+            </button>
+          </div>
+
+        </form>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== END MAIN CONTENT ===================== -->
+
+<app-boutique-footer></app-boutique-footer>
+

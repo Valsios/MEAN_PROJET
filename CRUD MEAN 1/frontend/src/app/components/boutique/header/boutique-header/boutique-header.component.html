@@ -1,0 +1,58 @@
+<!-- ===================== HEADER ===================== -->
+<header class="header navbar-area">
+
+  <!-- Header Middle (logo + user) -->
+  <div class="header-middle">
+    <div class="container">
+      <div class="row align-items-center">
+
+        <!-- Logo -->
+        <div class="col-lg-3 col-md-3 col-12">
+          <a class="navbar-brand" href="#">
+            <img src="assets/images/logo/logo.svg" alt="Logo">
+          </a>
+        </div>
+
+        <!-- Admin info -->
+        <div class="col-lg-9 col-md-9 col-12 text-end">
+          <div class="user">
+            <i class="lni lni-user"></i>
+             {{profile.nom}}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Simple Navbar -->
+  <div class="container">
+    <nav class="navbar navbar-expand-lg">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/boutique-dashboard']">Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/boutique-produit']">Vos Produits</a>
+        </li>
+         <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/panier-boutique']">Sur Place</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/commande-client-liste']">Commandes Clients</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/boutique-loyers']">Payement loyer</a>
+        </li>
+        
+        
+        <li class="nav-item">
+          <a class="nav-link text-danger" href="#">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+</header>
+<!-- ===================== END HEADER ===================== -->
+

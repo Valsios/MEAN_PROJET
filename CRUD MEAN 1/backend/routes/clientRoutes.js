@@ -1,6 +1,19 @@
 const express = require('express');
 const router = express.Router();
 const Client = require('../models/Client');
+const mongoose = require('mongoose'); 
+
+
+//get by id client
+router.get('/:id', async (req, res) => {
+  try {
+    const client = await Client.findById(new mongoose.Types.ObjectId(req.params.id));
+    res.json(client);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
 
 // Créer un client
 router.post('/', async (req, res) => {

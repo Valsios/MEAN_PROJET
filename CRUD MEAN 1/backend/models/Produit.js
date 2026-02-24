@@ -36,7 +36,7 @@ const produitSchema = new mongoose.Schema({
     required: true
   },
 
-  dateCreation: {
+  createdAt: {
     type: Date,
     default: Date.now
   },
@@ -44,6 +44,12 @@ const produitSchema = new mongoose.Schema({
   image: {
     type : String
   }
-});
+  ,
+  state : {
+    type : Boolean,
+    required : true , 
+    default : true
+  }
+},{versionKey : false});
 
 module.exports = mongoose.model("Produit", produitSchema);

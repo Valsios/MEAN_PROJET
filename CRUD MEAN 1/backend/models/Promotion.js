@@ -15,13 +15,15 @@ const promotionSchema = new mongoose.Schema({
 
   dateDebut: {
     type: Date,
+    default : Date.now,
     required: true
   },
 
   dateFin: {
     type: Date,
-    required: true
+    required: false,
+    default : null
   }
-});
+}, {versionKey : false});
 
 module.exports = mongoose.model("Promotion", promotionSchema);

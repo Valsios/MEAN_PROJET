@@ -24,6 +24,10 @@ const BoutiqueSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Categorie',
     default: null
+  },
+  dateEntryBox: {
+    type: Date,
+    default: Date.now
   }
 }, { timestamps: true });
 

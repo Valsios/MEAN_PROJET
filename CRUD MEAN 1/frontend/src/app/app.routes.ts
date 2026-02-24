@@ -5,13 +5,24 @@ import { LoginAdminComponent } from './components/auth/login-admin/login-admin.c
 import { ClientDashboardComponent } from './components/client/client-dashboard/client-dashboard.component';
 import { BoutiqueDashboardComponent } from './components/boutique/boutique-dashboard/boutique-dashboard.component';
 import { AdminDashboardComponent } from './components/admin/admin-dashboard/admin-dashboard.component';
-
+import { BoutiqueProduitsComponent } from './components/boutique/boutique-produits/boutique-produits.component';
+import { ProduitFormComponent } from './components/boutique/produit-form/produit-form.component';
+import { ProduitDetailsComponent } from './components/boutique/produit-details/produit-details.component';
+import { BoutiquePanierComponent } from './components/boutique/boutique-panier/boutique-panier.component';
+import { CommandeClientListeComponent } from './components/boutique/commande-client-liste/commande-client-liste.component';
+import { BoutiqueLoyersComponent } from './components/boutique/boutique-loyers/boutique-loyers.component';
 export const routes: Routes = [
+  { path: 'commande-client-liste', component: CommandeClientListeComponent },
   { path: 'login-client', component: LoginClientComponent },
+  { path: 'boutique-loyers', component: BoutiqueLoyersComponent },
   { path: 'login-boutique', component: LoginBoutiqueComponent },
   { path: 'login-admin', component: LoginAdminComponent },
   { path: 'client-dashboard', component: ClientDashboardComponent },
   { path: 'boutique-dashboard', component: BoutiqueDashboardComponent },
   { path: 'admin-dashboard', component: AdminDashboardComponent },
+  { path: 'boutique-produit', component: BoutiqueProduitsComponent },
+  { path: 'produit-form', component: ProduitFormComponent },
+  { path: 'panier-boutique', component: BoutiquePanierComponent },
+  { path: 'produit-details/:id', component: ProduitDetailsComponent },
   { path: '', redirectTo: 'login-client', pathMatch: 'full' }
 ];
