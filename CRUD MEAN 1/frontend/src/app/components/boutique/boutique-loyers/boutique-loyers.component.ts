@@ -107,30 +107,6 @@ export class BoutiqueLoyersComponent implements OnInit {
 
   getPaiementParMois(mois: number) {
 
-  if (this.profile?.dateEntryBox) {
-
-    // 🔥 conversion obligatoire
-    const entryDate = new Date(this.profile.dateEntryBox);
-
-    const entryYear = entryDate.getFullYear();
-    const entryMonth = entryDate.getMonth() + 1;
-
-    if (
-      this.anneeSelectionnee <= entryYear &&
-      mois < entryMonth
-    ) {
-      return {
-        boutiqueId: this.profile.boutiqueId,
-        boxId: this.profile.boxId,
-        montant: 0,
-        mois: mois,
-        annee: this.anneeSelectionnee,
-        datePaiement: null,
-        createdAt: new Date()
-      };
-    }
-  }
-
   return this.paiements?.find(
     p => p.mois === mois && p.annee === this.anneeSelectionnee
   ) || null;

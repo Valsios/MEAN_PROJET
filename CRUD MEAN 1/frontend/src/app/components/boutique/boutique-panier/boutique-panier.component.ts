@@ -241,7 +241,7 @@ validerCommande() {
   
   const commande = {
     boutiqueId: this.profile._id,
-    clientId: this.clientSelectionne,
+    client: null,
     typeCommande: this.typeCommande,
     statut: this.typeCommande === 'en_ligne' ? 'en_attente' : 'validee',
     articles: this.articlesPanier.map(a => ({

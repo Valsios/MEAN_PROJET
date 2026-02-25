@@ -6,7 +6,36 @@ const Box = require('../models/Box');
 const Commande = require('../models/Commande');
 const PaiementLoyers = require('../models/PaiementLoyer');
 const Produit = require('../models/Produit');
+const ReviewProduit = require('../models/ReviewProduit');
+const ReviewBoutique = require('../models/ReviewBoutique');
 
+
+//get all reviews
+router.get('/:id/reviews', async (req, res) => {
+  try {
+    const reviews = await ReviewBoutique.find({ 
+             boutiqueId: req.params.id
+           });
+    res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+//get all payement loyer
+router.get('/:id/payementLoyers', async (req, res) => {
+  try {
+    const paiementLoyers = await PaiementLoyers.find(
+      {
+        boutiqueId : req.params.id
+      }
+      
+    );
+    res.json(paiementLoyers);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 //get box boutique
 router.get('/:id/box', async (req, res) => {
   try {
@@ -18,23 +47,84 @@ router.get('/:id/box', async (req, res) => {
   }
 });
 
-//get payement loyers
+// get payement loyers
 router.post('/payementLoyers', async (req, res) => {
   try {
-    const { boutiqueId , annee } =req.body;
-    const paiementLoyers = await PaiementLoyers.find({ 
+    const { boutiqueId, annee } = req.body;
+    
+    // Récupérer la boutique pour avoir la date d'entrée
+    const boutique = await Boutique.findById(boutiqueId);
+    if (!boutique) {
+      return res.status(404).json({ message: 'Boutique non trouvée' });
+    }
+    
+    // Récupérer la date d'entrée du box
+    const dateEntree = new Date(boutique.dateEntryBox);
+    const entryYear = dateEntree.getFullYear();
+    const entryMonth = dateEntree.getMonth() + 1;
+    
+    // Récupérer les paiements existants pour l'année
+    const paiementsExistants = await PaiementLoyers.find({ 
       boutiqueId: boutiqueId,
-      annee : annee
+      annee: annee
+    }).sort({ mois: 1 });
+    
+  
+    const paiementsParMois = {};
+    paiementsExistants.forEach(p => {
+      paiementsParMois[p.mois] = p;
     });
     
-    res.json(paiementLoyers);
+    
+    const listeComplete = [];
+    
+    for (let mois = 1; mois <= 12; mois++) {
+      
+      if (paiementsParMois[mois]) {
+        listeComplete.push(paiementsParMois[mois]);
+      } 
+     
+      else if (annee < entryYear || (annee === entryYear && mois < entryMonth)) {
+        
+        listeComplete.push({
+          boutiqueId: boutiqueId,
+          boxId: boutique.boxId,
+          montant: 0,
+          mois: mois,
+          annee: annee,
+          datePaiement: null,
+          createdAt: new Date(),
+          _id: null,
+          isVirtual: true
+        });
+      }
+      
+    }
+    
+   
+    listeComplete.sort((a, b) => a.mois - b.mois);
+    
+    res.json(listeComplete);
+    
+  } catch (error) {
+    console.error('Erreur:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+// Version encore plus simple  liste des commandes validee:
+router.get('/:id/commandes-validee', async (req, res) => {
+  try {
+    const commandes = await Commande.find({ 
+      boutiqueId: req.params.id,
+      statut : 'validee'
+    });
+    
+    res.json(commandes);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
-// Créer une boutique
-
-// Version encore plus simple :
+// Version encore plus simple  liste des commandes en_attente:
 router.get('/:id/commandes', async (req, res) => {
   try {
     const commandes = await Commande.find({ 
@@ -92,7 +182,7 @@ router.delete('/:id', async (req, res) => {
   }
 });
 
-// Version encore plus simple :
+// Version encore plus simple get all produit de la boutique
 router.get('/:id/produits', async (req, res) => {
   try {
     const produits = await Produit.find({ 
@@ -100,11 +190,37 @@ router.get('/:id/produits', async (req, res) => {
       state: true 
     });
     
-    res.json(produits);
+    const produitsAvecNote = await Promise.all(produits.map(async (produit) => {
+      const produitObj = produit.toObject();
+      const note = await getNoteProduit(produit._id);
+      const reviews = await ReviewProduit.find({ produitId: produit._id });
+      
+      produitObj.noteMoyenne = note;
+      produitObj.nombreReviews = reviews.length;
+      
+      return produitObj;
+    }));
+    
+    res.json(produitsAvecNote);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
+async function getNoteProduit(produitId)
+{
+
+    const reviews = await ReviewProduit.find({ 
+           produitId: produitId
+         });
+    let note = 0;
+    for(let i = 0; i < reviews.length ; i++)
+    {
+        note += reviews[i].note;
+    }
+    return note/reviews.length; 
+}
+
 
 // Delete/Désactiver un produit
 router.delete('/deleteProduit/:produitId', async (req, res) => {
@@ -135,8 +251,5 @@ router.post('/createProduit', async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
-
-
-
 
 module.exports = router;

@@ -13,10 +13,18 @@ export class BoutiqueService {
   constructor(private http : HttpClient) {
     
   }
+
+  //get review
+  getAvisClient(boutiqueId : string) : Observable<any>
+  {
+    
+    return this.http.get(`${this.apiUrl}/${boutiqueId}/reviews`);
+  }
 //get Info client
 
 getClient(clientId : string) : Observable<any>
   {
+    
     return this.http.get(`${this.apiUrlClient}/${clientId}`);
   }
 //get Info box
@@ -30,6 +38,11 @@ getClient(clientId : string) : Observable<any>
     return this.http.post(`${this.apiUrl}/payementLoyers`,data);
   }
 
+  getAllPayementLoyers(boutiqueId : any) : Observable<any>
+  {
+    return this.http.get(`${this.apiUrl}/${boutiqueId}/payementLoyers`);
+  }
+
 
   validerCommande(commandeId : any) : Observable<any>
   {
@@ -39,6 +52,12 @@ getClient(clientId : string) : Observable<any>
   annulerCommande(commandeId : any) : Observable<any>
   {
       return this.http.get(`${this.apiUrlCommande}/annulerCommande/${commandeId}`);
+  }
+
+  //get commande non validé
+  getCommandesValidee(boutiqueId : any) : Observable<any>
+  {
+      return this.http.get(`${this.apiUrl}/${boutiqueId}/commandes-validee`);
   }
   //get commande non validé
   getCommandes(boutiqueId : any) : Observable<any>

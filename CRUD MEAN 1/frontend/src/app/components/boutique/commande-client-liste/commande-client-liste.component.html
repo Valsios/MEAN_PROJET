@@ -57,7 +57,7 @@
                       <div>
                         <small>
                           <i class="lni lni-user"></i> 
-                          {{ getClientInfo(cmd) }}
+                         {{ cmd.client.email}}
                         </small>
                         <small class="ms-3">
                           <i class="lni lni-cart"></i> 
@@ -131,7 +131,11 @@
                   <div class="col-md-6">
                     <p class="mb-1">
                       <strong>Client:</strong> 
-                      {{ getClientInfo(commandeSelectionnee) }}
+                      {{ commandeSelectionnee.client.email }}
+                    </p>
+                    <p class="mb-1">
+                      <strong>Telephone:</strong> 
+                      {{ commandeSelectionnee.client.telephone }}
                     </p>
                 
                   </div>
