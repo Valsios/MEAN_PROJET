@@ -80,7 +80,7 @@ export class ProduitDetailsComponent {
     if (this.produitId) {
       this.chargerDonneesCompletes();
     } else {
-      this.router.navigate(['/produits']);
+      this.router.navigate(['/boutique-produits']);
     }
   }
 

@@ -8,7 +8,18 @@ const PaiementLoyers = require('../models/PaiementLoyer');
 const Produit = require('../models/Produit');
 const ReviewProduit = require('../models/ReviewProduit');
 const ReviewBoutique = require('../models/ReviewBoutique');
+const Categorie = require('../models/Categorie');
+const Promotion = require('../models/Promotion');
 
+//get all categorie
+router.get('/allCategories', async (req, res) => {
+  try {
+    const categories = await Categorie.find();
+    res.json(categories);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
 
 //get all reviews
 router.get('/:id/reviews', async (req, res) => {
@@ -148,15 +159,47 @@ router.post('/', async (req, res) => {
   }
 });
 
-// Lire toutes les boutiques
+// Lire toutes les boutiques actif
 router.get('/', async (req, res) => {
   try {
-    const boutiques = await Boutique.find().populate('boxActuelleId');
+    const boutiques = await Boutique.find(
+      {
+        dateEntryBox : {$ne : null}
+      }
+    ).populate('boxActuelleId');
+
+      const boutiqueAvecNombreProduit = await Promise.all(boutiques.map(async (boutique) => {
+      const boutiqueObj = boutique.toObject();
+      const produits = await Produit.find({ 
+        boutiqueId: boutique._id,
+        state: true 
+      });
+    
+      
+      boutiqueObj.nombreProduit = produits.length;
+      return boutiqueObj;
+    }));
+    res.json(boutiqueAvecNombreProduit);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Lire toutes les boutiques par categorie
+router.get('/categorie/:id', async (req, res) => {
+  try {
+    const boutiques = await Boutique.find(
+      {
+        categorieId : req.params.id
+      }
+    ).populate('boxActuelleId');
     res.json(boutiques);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
+
 
 // Mettre à jour une boutique
 router.put('/:id', async (req, res) => {
@@ -169,6 +212,18 @@ router.put('/:id', async (req, res) => {
     res.json(boutique);
   } catch (error) {
     res.status(400).json({ message: error.message });
+  }
+});
+
+// Supprimer une boutique
+router.get('/:id', async (req, res) => {
+  try {
+    const boutique = await Boutique.find({
+      _id : req.params.id
+    }).populate('boxActuelleId');
+    res.json(boutique);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -194,9 +249,20 @@ router.get('/:id/produits', async (req, res) => {
       const produitObj = produit.toObject();
       const note = await getNoteProduit(produit._id);
       const reviews = await ReviewProduit.find({ produitId: produit._id });
-      
+      const promotionActive = await Promotion.find({
+            produitId: new mongoose.Types.ObjectId(produit._id),
+            $or: [
+              { dateFin: null },                 // Promotions sans date de fin
+              { dateFin: { $gt: new Date() } }   // Promotions avec date de fin dans le futur
+            ]
+          });
       produitObj.noteMoyenne = note;
       produitObj.nombreReviews = reviews.length;
+      if(promotionActive[0])
+      {
+          produitObj.promotionActive = promotionActive[0].pourcentage;
+          produitObj.prixPromo = produit.prixActuel - (produit.prixActuel*(produitObj.promotionActive/100));
+      }
       
       return produitObj;
     }));

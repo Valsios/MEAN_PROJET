@@ -1,8 +1,46 @@
 const express = require('express');
 const router = express.Router();
 const Client = require('../models/Client');
+const ReviewBoutique = require('../models/ReviewBoutique');
+const ReviewProduit = require('../models/ReviewProduit');
+const Commande = require('../models/Commande');
 const mongoose = require('mongoose'); 
 
+
+// Récupérer les commandes d'un client
+router.get('/:id/commandes', async (req, res) => {
+  try {
+    const commandes = await Commande.find({
+      'client.id': req.params.id  // Notez les quotes autour de client.id
+    }).sort({ createdAt: -1 }); // Trier du plus récent au plus ancien
+    
+    res.json(commandes);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+//noter boutique
+router.post('/noter-boutique', async (req, res) => {
+  try {
+    const review = new ReviewBoutique(req.body);
+    await review.save();
+    res.status(201).json(client);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+//noter produit
+router.post('/noter-produit', async (req, res) => {
+  try {
+    const review = new ReviewProduit(req.body);
+    await review.save();
+    res.status(201).json(client);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
 
 //get by id client
 router.get('/:id', async (req, res) => {

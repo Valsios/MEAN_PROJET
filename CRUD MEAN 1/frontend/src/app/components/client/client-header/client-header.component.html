@@ -17,7 +17,7 @@
         <div class="col-lg-9 col-md-9 col-12 text-end">
           <div class="user">
             <i class="lni lni-user"></i>
-             {{profile.nom}}
+             {{profile.nom +' '+ profile.prenom}}
           </div>
         </div>
 
@@ -30,24 +30,13 @@
     <nav class="navbar navbar-expand-lg">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/boutique-dashboard']">Dashboard</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/boutique-produit']">Vos Produits</a>
-        </li>
-         <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/panier-boutique']">Sur Place</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/commande-client-liste']">Commandes Clients</a>
-        </li>
-        <li class="nav-item">
-          <a class="nav-link" [routerLink]="['/boutique-loyers']">Payement loyer</a>
+          <a class="nav-link" [routerLink]="['/client-dashboard']">Les Boutiques</a>
         </li>
         
         
+        
         <li class="nav-item">
-          <a class="nav-link text-danger" (click)="logout(); $event.preventDefault()">Logout</a>
+          <a class="nav-link text-danger"(click)="logout(); $event.preventDefault()">Logout</a>
         </li>
       </ul>
     </nav>

@@ -1,15 +1,15 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../auth/auth.service';
 
 @Component({
-  selector: 'app-boutique-header',
+  selector: 'app-client-header',
   standalone: true,
   imports: [CommonModule, RouterModule],
-  templateUrl: './boutique-header.component.html',
+  templateUrl: './client-header.component.html',
 })
-export class BoutiqueHeaderComponent implements OnInit, OnDestroy {
+export class ClientHeaderComponent implements OnInit, OnDestroy {
   user: any = null;
   profile: any = null;
   private checkInterval: any;
@@ -45,7 +45,7 @@ export class BoutiqueHeaderComponent implements OnInit, OnDestroy {
   checkTokenValidity() {
     const token = localStorage.getItem('token');
     
-    if (!token || this.user.role !== 'boutique') {
+    if (!token || this.user.role !== 'client') {
       this.handleNoToken();
       return;
     }
@@ -71,11 +71,11 @@ export class BoutiqueHeaderComponent implements OnInit, OnDestroy {
   }
 
   handleNoToken() {
-
-      this.authService.logout();
-      this.user = null;
-      this.profile = null;
-      this.router.navigate(['/login-boutique']);
+    
+    this.authService.logout();
+    this.user = null;
+    this.profile = null;
+    this.router.navigate(['/login-client']);
     
   }
 
@@ -83,14 +83,14 @@ export class BoutiqueHeaderComponent implements OnInit, OnDestroy {
     this.authService.logout();
     this.user = null;
     this.profile = null;
-    this.router.navigate(['/login-boutique']);
+    this.router.navigate(['/login-client']);
   }
 
   logout() {
     this.authService.logout();
     this.user = null;
     this.profile = null;
-    this.router.navigate(['/login-boutique']);
+    this.router.navigate(['/login-client']);
   }
 
   // Méthode appelée quand l'utilisateur clique sur un lien

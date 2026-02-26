@@ -13,6 +13,20 @@ export class BoutiqueService {
   constructor(private http : HttpClient) {
     
   }
+  getBoutiqueById(boutiqueId : any) : Observable<any>
+  {
+    return this.http.get(`${this.apiUrl}/${boutiqueId}`);
+  }
+  getAllBoutique() : Observable<any>
+  {
+    
+    return this.http.get(`${this.apiUrl}/`);
+  }
+  getAllCategorie() : Observable<any>
+  {
+    
+    return this.http.get(`${this.apiUrl}/allCategories`);
+  }
 
   //get review
   getAvisClient(boutiqueId : string) : Observable<any>

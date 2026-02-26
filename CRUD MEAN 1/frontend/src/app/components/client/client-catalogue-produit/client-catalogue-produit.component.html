@@ -1,0 +1,148 @@
+
+<app-client-header></app-client-header>
+
+<!-- ===================== EN-TÊTE BOUTIQUE ===================== -->
+<section class="boutique-header py-4 bg-light" *ngIf="boutique">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Image de la boutique -->
+      <div class="col-md-3 text-center mb-3 mb-md-0">
+        <div class="boutique-logo">
+          <img *ngIf="boutique.image" [src]="'data:image/png;base64,' + boutique.image" 
+               alt="{{boutique.nom}}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+          <img *ngIf="!boutique.image" src="assets/images/products/No_Image_Available.jpg" 
+               alt="Logo par défaut" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
+        </div>
+      </div>
+      
+      <!-- Informations boutique -->
+      <div class="col-md-6">
+        <h1 class="mb-2">{{ boutique.nom }}</h1>
+        <p class="mb-2">
+          <i class="lni lni-phone me-2"></i> {{ boutique.telephone }}
+        </p>
+        <p class="mb-2">
+          <i class="lni lni-envelope me-2"></i> {{ boutique.email }}
+        </p>
+        <p class="mb-0">
+          <i class="lni lni-calendar me-2"></i> Depuis {{ boutique.dateEntryBox | date:'MMMM yyyy' }}
+        </p>
+      </div>
+      
+      <!-- Statistiques rapides -->
+      <div class="col-md-3">
+        <div class="row g-2">
+          <div class="col-6">
+            <div class="bg-white p-3 text-center rounded shadow-sm">
+              <small class="text-muted">{{ 'Étage : ' + boutique.boxActuelleId.etage + ' numéro : '+boutique.boxActuelleId.numero }}</small>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== FILTRE ET BOUTON SUR LA MEME LIGNE ===================== -->
+<section class="search-section py-3">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Barre de recherche (à gauche) -->
+      <div class="col-md-8">
+        <div class="input-group">
+          <span class="input-group-text bg-white">
+            <i class="lni lni-search"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control" 
+            placeholder="Rechercher un produit par nom..."
+            [(ngModel)]="searchTerm"
+            (ngModelChange)="filtrerProduits()">
+          <span class="input-group-text bg-white" *ngIf="searchTerm" style="cursor: pointer;" (click)="resetFiltre()">
+            <i class="lni lni-close text-danger"></i>
+          </span>
+        </div>
+      </div>
+      
+    </div>
+    
+    <!-- Indicateur de résultats (optionnel) -->
+    <div class="row" *ngIf="searchTerm">
+      <div class="col-12">
+        <small class="text-muted">
+          {{produits.length}} produit(s) trouvé(s)
+        </small>
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== MAIN CONTENT ===================== -->
+<section class="section" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row">
+
+      <!-- Boucle sur les produits -->
+      <div class="col-lg-4 col-md-6 col-12" *ngFor="let produit of produits">
+        <!-- Start Single Product -->
+        <div class="single-product">
+          <div class="product-image">
+            <!-- si produit.image contient le binaire en base64 -->
+            <img *ngIf="produit.image" [src]="'data:image/png;base64,' + produit.image" alt="{{produit.nom}}">
+            <!-- sinon image par défaut -->
+            <img *ngIf="!produit.image" src="assets/images/products/No_Image_Available.jpg" alt="{{produit.nom}}">
+            
+            <div class="button">
+              <a (click)="ajouterPanier(produit._id)" class="btn"><i class="lni lni-cart"></i> Ajouter Panier</a>
+            </div>
+          </div>
+
+          <div class="product-info">
+            <span class="category">{{produit.type}}</span>
+            <h4 class="title">
+                <p>{{produit.nom}}</p>
+            </h4>
+            <ul class="review">
+                <li *ngFor="let star of [1,2,3,4,5]">
+                <i class="lni lni-star-filled" 
+                    [style.color]="star <= produit.noteMoyenne ? '#ffc107' : '#e4e5e9'"></i>
+                </li>
+                <li>
+                <span>{{ produit.noteMoyenne?.toFixed(1) }} ({{ produit.nombreReviews }} Review(s))</span>
+                </li>
+            </ul>
+            
+            <!-- Gestion du prix avec ou sans promo -->
+            <div class="d-flex align-items-center flex-wrap">
+                <!-- Si produit en promotion -->
+                <ng-container *ngIf="produit.promotionActive; else prixNormal">
+                <!-- Prix original barré -->
+                <span class="original-price me-2" style="text-decoration: line-through;">
+                    {{ produit.prixActuel | currency:'MGA':'symbol':'1.0-0' }}
+                </span>
+                <!-- Nouveau prix en promotion -->
+                <span class="promo-price me-2">
+                    {{ produit.prixPromo | currency:'MGA':'symbol':'1.0-0' }}
+                </span>
+                <!-- Badge promotion -->
+                <span class="badge bg-danger">
+                    -{{ produit.promotionActive }}%
+                </span>
+                </ng-container>
+                
+                <!-- Template pour prix normal (sans promo) -->
+                <ng-template #prixNormal>
+                <span class="normal-price">
+                    {{ produit.prixActuel | currency:'MGA':'symbol':'1.0-0' }}
+                </span>
+                </ng-template>
+            </div>
+            </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== END MAIN CONTENT ===================== -->
+<app-client-footer></app-client-footer>
