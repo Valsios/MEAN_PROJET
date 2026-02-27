@@ -1,126 +1,239 @@
 <div class="container">
-  <h2 class="mb-4">
-    {{ isEditMode ? 'Modifier une Box' : 'Créer une nouvelle Box' }}
-  </h2>
+  <!-- EN-TÊTE -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title">
+      <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-box'"></i>
+      {{ isEditMode ? 'Modifier une box' : 'Créer une nouvelle box' }}
+    </h2>
+  </div>
 
   <!-- FORMULAIRE -->
-  <form (ngSubmit)="submitForm()" class="mb-5 card p-4 shadow-sm">
-    <div class="row">
+  <form (ngSubmit)="submitForm()" class="mb-5 card p-4 shadow-sm border-0">
+    <div class="row g-4">
       <div class="col-md-4">
-        <label class="form-label">Numéro</label>
-        <input type="number" class="form-control" placeholder="Ex: 101" [(ngModel)]="boxForm.numero" name="numero"
-          required>
+        <label class="form-label fw-semibold">
+          <i class="bi bi-123 me-1"></i>Numéro
+        </label>
+        <input type="number" 
+               class="form-control form-control-lg" 
+               placeholder="Ex: 101" 
+               [(ngModel)]="boxForm.numero" 
+               name="numero"
+               required
+               [class.is-invalid]="submitted && !boxForm.numero">
+        <div class="invalid-feedback" *ngIf="submitted && !boxForm.numero">
+          Le numéro est requis
+        </div>
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Étage</label>
-        <input type="number" class="form-control" placeholder="Ex: 1" [(ngModel)]="boxForm.etage" name="etage" required>
+        <label class="form-label fw-semibold">
+          <i class="bi bi-stairs me-1"></i>Étage
+        </label>
+        <input type="number" 
+               class="form-control form-control-lg" 
+               placeholder="Ex: 1" 
+               [(ngModel)]="boxForm.etage" 
+               name="etage" 
+               required
+               [class.is-invalid]="submitted && !boxForm.etage">
+        <div class="invalid-feedback" *ngIf="submitted && !boxForm.etage">
+          L'étage est requis
+        </div>
       </div>
 
       <div class="col-md-4">
-        <label class="form-label">Prix actuel (Ar)</label>
-        <input type="number" class="form-control" placeholder="Ex: 50000" [(ngModel)]="boxForm.prixActuel"
-          name="prixActuel" (ngModelChange)="onPrixChange()" required>
+        <label class="form-label fw-semibold">
+          <i class="bi bi-cash me-1"></i>Prix actuel (Ar)
+        </label>
+        <input type="number" 
+               class="form-control form-control-lg" 
+               placeholder="Ex: 50000" 
+               [(ngModel)]="boxForm.prixActuel"
+               name="prixActuel" 
+               (ngModelChange)="onPrixChange()" 
+               required
+               [class.is-invalid]="submitted && !boxForm.prixActuel">
+        <div class="invalid-feedback" *ngIf="submitted && !boxForm.prixActuel">
+          Le prix est requis
+        </div>
       </div>
 
-      <div class="col-md-12 mt-3" *ngIf="isEditMode && prixModifie">
-        <label class="form-label">Motif du changement de prix</label>
-        <input type="text" class="form-control" placeholder="Ex: Augmentation annuelle" [(ngModel)]="motif"
-          name="motif" required>
+      <div class="col-12" *ngIf="isEditMode && prixModifie">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-chat-text me-1"></i>Motif du changement de prix
+        </label>
+        <input type="text" 
+               class="form-control form-control-lg" 
+               placeholder="Ex: Augmentation annuelle" 
+               [(ngModel)]="motif"
+               name="motif" 
+               required
+               [class.is-invalid]="submitted && prixModifie && !motif">
+        <div class="invalid-feedback" *ngIf="submitted && prixModifie && !motif">
+          Le motif est requis
+        </div>
       </div>
     </div>
 
-    <div class="mt-4">
-      <button type="submit" class="btn btn-primary me-2">
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary btn-lg px-4">
         <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
-        {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+        {{ isEditMode ? 'Mettre à jour la box' : 'Créer la box' }}
       </button>
 
-      <button *ngIf="isEditMode" type="button" class="btn btn-secondary" (click)="resetForm()">
+      <button *ngIf="isEditMode" 
+              type="button" 
+              class="btn btn-outline-secondary btn-lg px-4" 
+              (click)="resetForm()">
         <i class="bi bi-x-circle"></i> Annuler
       </button>
     </div>
   </form>
 
-  <!-- FILTRES ET LISTE -->
+  <!-- SECTION LISTE -->
   <div class="d-flex justify-content-between align-items-center mb-3">
-    <h3 class="mb-0">Liste des Box</h3>
-    <span class="badge bg-primary">{{ filteredBoxes.length }} box(es) trouvée(s)</span>
+    <h3 class="mb-0">
+      <i class="bi bi-grid-3x3 me-2"></i>Liste des box
+    </h3>
+    <span class="badge bg-primary bg-gradient px-3 py-2">
+      <i class="bi bi-box me-1"></i>
+      {{ filteredBoxes.length }} box(es)
+    </span>
   </div>
 
-  <!-- FILTRES -->
-  <div class="row mb-4">
-    <div class="col-md-4">
-      <label class="form-label">Filtrer par étage</label>
-      <select class="form-select" [(ngModel)]="filters.etage" (ngModelChange)="applyFilters()">
-        <option value="">Tous les étages</option>
-        <option *ngFor="let etage of availableEtages" [value]="etage">
-          Étage {{ etage }}
-        </option>
-      </select>
-    </div>
-
-    <div class="col-md-4">
-      <label class="form-label">Filtrer par statut</label>
-      <select class="form-select" [(ngModel)]="filters.statut" (ngModelChange)="applyFilters()">
-        <option value="">Tous les statuts</option>
-        <option value="libre">Libre</option>
-        <option value="occupee">Occupée</option>
-      </select>
-    </div>
-
-    <div class="col-md-4 d-flex align-items-end">
-      <div class="form-check">
-        <input class="form-check-input" type="checkbox" id="showInactives" 
-               [(ngModel)]="filters.showInactives" (ngModelChange)="loadBoxes()">
-        <label class="form-check-label" for="showInactives">
-          Afficher les box inactives
+  <!-- FILTRES AVANCÉS -->
+  <div class="filters-card card p-4 shadow-sm border-0 mb-4">
+    <div class="row g-3">
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-stairs me-1"></i>Filtrer par étage
         </label>
+        <select class="form-select form-select-lg" [(ngModel)]="filters.etage" (ngModelChange)="applyFilters()">
+          <option value="">Tous les étages</option>
+          <option *ngFor="let etage of availableEtages" [value]="etage">
+            Étage {{ etage }}
+          </option>
+        </select>
       </div>
+
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-tag me-1"></i>Filtrer par statut
+        </label>
+        <select class="form-select form-select-lg" [(ngModel)]="filters.statut" (ngModelChange)="applyFilters()">
+          <option value="">Tous les statuts</option>
+          <option value="libre">Libre</option>
+          <option value="occupee">Occupée</option>
+        </select>
+      </div>
+
+      <div class="col-md-4 d-flex align-items-end">
+        <div class="form-check">
+          <input class="form-check-input" 
+                 type="checkbox" 
+                 id="showInactives" 
+                 [(ngModel)]="filters.showInactives" 
+                 (ngModelChange)="loadBoxes()">
+          <label class="form-check-label" for="showInactives">
+            <i class="bi bi-eye me-1"></i>
+            Afficher les box inactives
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badges des filtres actifs -->
+    <div class="mt-3 d-flex gap-2 flex-wrap" *ngIf="hasActiveFilters()">
+      <span class="badge bg-light text-dark p-2">
+        <i class="bi bi-funnel me-1"></i>Filtres actifs:
+      </span>
+      
+      <span class="badge bg-info text-white p-2" *ngIf="filters.etage">
+        <i class="bi bi-stairs me-1"></i> Étage {{ filters.etage }}
+        <i class="bi bi-x-circle ms-1" style="cursor: pointer;" (click)="filters.etage=''; applyFilters()"></i>
+      </span>
+      
+      <span class="badge bg-info text-white p-2" *ngIf="filters.statut">
+        <i class="bi bi-tag me-1"></i> {{ filters.statut === 'libre' ? 'Libre' : 'Occupée' }}
+        <i class="bi bi-x-circle ms-1" style="cursor: pointer;" (click)="filters.statut=''; applyFilters()"></i>
+      </span>
+      
+      <span class="badge bg-info text-white p-2" *ngIf="filters.showInactives">
+        <i class="bi bi-eye me-1"></i> Inclus les inactives
+        <i class="bi bi-x-circle ms-1" style="cursor: pointer;" (click)="filters.showInactives=false; loadBoxes()"></i>
+      </span>
+      
+      <button class="btn btn-sm btn-outline-secondary" (click)="resetFilters()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i>Réinitialiser
+      </button>
     </div>
   </div>
 
   <!-- TABLEAU -->
   <div class="table-responsive">
-    <table class="table table-hover table-bordered shadow-sm">
+    <table class="table table-hover align-middle">
       <thead class="table-light">
         <tr>
-          <th>Numéro</th>
-          <th>Étage</th>
-          <th>Prix (Ar)</th>
-          <th>Statut</th>
-          <th>Actions</th>
+          <th class="py-3">Numéro</th>
+          <th class="py-3">Étage</th>
+          <th class="py-3">Prix (Ar)</th>
+          <th class="py-3">Statut</th>
+          <th class="py-3 text-center">Actions</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let box of paginatedBoxes">
-          <td>{{ box.numero }}</td>
-          <td>{{ box.etage }}</td>
-          <td>{{ box.prixActuel | number }} Ar</td>
-          <td>
-            <span class="badge" [ngClass]="{
+        <tr *ngFor="let box of paginatedBoxes" class="box-row">
+          <td class="py-3">
+            <div class="d-flex align-items-center">
+              <div class="box-icon me-3">
+                <i class="bi bi-box fs-4 text-primary"></i>
+              </div>
+              <div>
+                <strong class="fs-5">#{{ box.numero }}</strong>
+              </div>
+            </div>
+          </td>
+          
+          <td class="py-3">
+            <span class="badge bg-secondary bg-opacity-10 text-dark px-3 py-2">
+              <i class="bi bi-stairs me-1"></i>
+              Étage {{ box.etage }}
+            </span>
+          </td>
+          
+          <td class="py-3">
+            <span class="fw-bold text-success">
+              <i class="bi bi-cash me-1"></i>
+              {{ box.prixActuel | number }} Ar
+            </span>
+          </td>
+          
+          <td class="py-3">
+            <span class="badge status-badge" [ngClass]="{
               'bg-success': box.statut === 'libre' && box.etat !== 'inactif',
               'bg-danger': box.statut === 'occupee' && box.etat !== 'inactif',
               'bg-secondary': box.etat === 'inactif'
             }">
-              <i class="bi" [ngClass]="{
+              <i class="bi me-1" [ngClass]="{
                 'bi-check-circle': box.statut === 'libre' && box.etat !== 'inactif',
                 'bi-x-circle': box.statut === 'occupee' && box.etat !== 'inactif',
                 'bi-dash-circle': box.etat === 'inactif'
               }"></i>
-              {{ box.etat === 'inactif' ? 'Inactif' : box.statut }}
+              {{ box.etat === 'inactif' ? 'Inactif' : (box.statut === 'libre' ? 'Libre' : 'Occupée') }}
             </span>
           </td>
-          <td>
-            <div class="btn-group btn-group-sm" role="group">
-              <button class="btn btn-outline-warning" (click)="editBox(box)" 
+          
+          <td class="py-3 text-center">
+            <div class="btn-group" role="group">
+              <button class="btn btn-outline-warning" 
+                      (click)="editBox(box)" 
                       [disabled]="box.etat === 'inactif'"
                       title="Modifier">
                 <i class="bi bi-pencil"></i>
               </button>
               
-              <!-- Bouton conditionnel : Supprimer (actif) ou Réactiver (inactif) -->
               <button *ngIf="box.etat !== 'inactif'" 
                       class="btn btn-outline-danger" 
                       (click)="deleteBox(box._id!)"
@@ -133,10 +246,11 @@
                       class="btn btn-outline-success" 
                       (click)="reactivateBox(box._id!)"
                       title="Réactiver">
-                <i class="bi bi-arrow-repeat"></i> Réactiver
+                <i class="bi bi-arrow-repeat"></i>
               </button>
               
-              <button class="btn btn-outline-info" [routerLink]="['/admin/boxes', box._id, 'historique-prix']"
+              <button class="btn btn-outline-info" 
+                      [routerLink]="['/admin/boxes', box._id, 'historique-prix']"
                       title="Historique des prix">
                 <i class="bi bi-graph-up"></i>
               </button>
@@ -146,9 +260,13 @@
 
         <!-- Message si aucun résultat -->
         <tr *ngIf="filteredBoxes.length === 0">
-          <td colspan="5" class="text-center text-muted py-4">
-            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-            Aucune box trouvée
+          <td colspan="5" class="text-center py-5">
+            <i class="bi bi-inbox fs-1 d-block mb-3 text-muted"></i>
+            <h5 class="text-muted">Aucune box trouvée</h5>
+            <p class="text-muted mb-3">Essayez de modifier vos filtres de recherche</p>
+            <button class="btn btn-outline-primary" (click)="resetFilters()">
+              <i class="bi bi-arrow-counterclockwise me-2"></i>Réinitialiser les filtres
+            </button>
           </td>
         </tr>
       </tbody>
@@ -156,37 +274,46 @@
   </div>
 
   <!-- PAGINATION -->
-  <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="filteredBoxes.length > 0">
-    <div>
-      <span class="text-muted">
-        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à 
-        {{ Math.min(currentPage * pageSize, filteredBoxes.length) }} sur 
-        {{ filteredBoxes.length }} box
-      </span>
+  <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="filteredBoxes.length > 0">
+    <div class="text-muted">
+      <i class="bi bi-info-circle me-1"></i>
+      Affichage de <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> à 
+      <strong>{{ Math.min(currentPage * pageSize, filteredBoxes.length) }}</strong> 
+      sur <strong>{{ filteredBoxes.length }}</strong> box
     </div>
     
-    <div class="btn-group" role="group">
-      <button class="btn btn-outline-primary" (click)="changePage(currentPage - 1)" 
+    <div class="pagination-controls d-flex gap-2">
+      <button class="btn btn-outline-primary" 
+              (click)="changePage(currentPage - 1)" 
               [disabled]="currentPage === 1">
         <i class="bi bi-chevron-left"></i>
       </button>
       
-      <button class="btn btn-outline-primary" *ngFor="let page of pages" 
-              (click)="changePage(page)" [class.active]="currentPage === page">
+      <button class="btn" 
+              *ngFor="let page of pages" 
+              (click)="changePage(page)" 
+              [class.btn-primary]="currentPage === page"
+              [class.btn-outline-primary]="currentPage !== page">
         {{ page }}
       </button>
       
-      <button class="btn btn-outline-primary" (click)="changePage(currentPage + 1)" 
+      <button class="btn btn-outline-primary" 
+              (click)="changePage(currentPage + 1)" 
               [disabled]="currentPage === totalPages">
         <i class="bi bi-chevron-right"></i>
       </button>
     </div>
 
-    <select class="form-select w-auto" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
-      <option [value]="5">5 par page</option>
-      <option [value]="10">10 par page</option>
-      <option [value]="20">20 par page</option>
-      <option [value]="50">50 par page</option>
-    </select>
+    <div class="d-flex align-items-center gap-2">
+      <label class="text-muted">
+        <i class="bi bi-list me-1"></i>Lignes par page:
+      </label>
+      <select class="form-select w-auto" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
   </div>
 </div>

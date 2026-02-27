@@ -38,6 +38,7 @@ export class BoxListComponent implements OnInit {
   ancienPrix: number = 0;
   motif: string = '';
   prixModifie = false;
+  submitted: boolean = false;
 
   boxForm: Box = {
     numero: 0,
@@ -63,11 +64,9 @@ export class BoxListComponent implements OnInit {
     if (!this.filters.showInactives) {
       params.etat = 'actif';
     } else {
-      params.includeInactives=true
+      params.includeInactives = true;
     }
 
-    
-    
     this.boxService.getAll(params).subscribe({
       next: (data) => {
         this.boxes = data;
@@ -137,7 +136,10 @@ export class BoxListComponent implements OnInit {
   changePage(page: number) {
     if (page >= 1 && page <= this.totalPages) {
       this.currentPage = page;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.querySelector('.table-responsive')?.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start' 
+      });
     }
   }
 
@@ -146,8 +148,35 @@ export class BoxListComponent implements OnInit {
     this.currentPage = 1;
   }
 
+  // Gestion des filtres
+  hasActiveFilters(): boolean {
+    return !!(this.filters.etage || this.filters.statut || this.filters.showInactives);
+  }
+
+  resetFilters() {
+    this.filters = {
+      etage: '',
+      statut: '',
+      showInactives: false
+    };
+    this.loadBoxes();
+  }
+
   // CRUD Operations
   submitForm() {
+    this.submitted = true;
+
+    // Validation
+    if (!this.boxForm.numero || !this.boxForm.etage || !this.boxForm.prixActuel) {
+      this.showError('Veuillez remplir tous les champs requis');
+      return;
+    }
+
+    if (this.isEditMode && this.prixModifie && !this.motif) {
+      this.showError('Veuillez saisir le motif du changement de prix');
+      return;
+    }
+
     if (this.isEditMode && this.selectedBoxId) {
       if (this.boxForm.prixActuel !== this.ancienPrix) {
         this.mouvementPrixService.changerPrix({
@@ -157,8 +186,7 @@ export class BoxListComponent implements OnInit {
         }).subscribe({
           next: () => {
             this.showSuccess('Prix modifié avec succès');
-            this.resetForm();
-            this.loadBoxes();
+            this.afterSave();
           },
           error: (error) => {
             this.showError(this.getErrorMessage(error));
@@ -168,8 +196,7 @@ export class BoxListComponent implements OnInit {
         this.boxService.update(this.selectedBoxId, this.boxForm).subscribe({
           next: () => {
             this.showSuccess('Box modifiée avec succès');
-            this.resetForm();
-            this.loadBoxes();
+            this.afterSave();
           },
           error: (error) => {
             this.showError(this.getErrorMessage(error));
@@ -180,14 +207,19 @@ export class BoxListComponent implements OnInit {
       this.boxService.create(this.boxForm).subscribe({
         next: () => {
           this.showSuccess('Box créée avec succès');
-          this.resetForm();
-          this.loadBoxes();
+          this.afterSave();
         },
         error: (error) => {
           this.showError(this.getErrorMessage(error));
         }
       });
     }
+  }
+
+  afterSave() {
+    this.resetForm();
+    this.loadBoxes();
+    this.submitted = false;
   }
 
   editBox(box: Box) {
@@ -197,9 +229,10 @@ export class BoxListComponent implements OnInit {
     this.ancienPrix = box.prixActuel;
     this.prixModifie = false;
     this.motif = '';
+    this.submitted = false;
     
     // Scroll vers le formulaire
-    document.querySelector('form')?.scrollIntoView({ behavior: 'smooth' });
+    document.querySelector('form')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 
   onPrixChange() {
@@ -241,8 +274,6 @@ export class BoxListComponent implements OnInit {
     }
   }
 
-
-
   resetForm() {
     this.isEditMode = false;
     this.selectedBoxId = null;
@@ -254,11 +285,11 @@ export class BoxListComponent implements OnInit {
     };
     this.prixModifie = false;
     this.motif = '';
+    this.submitted = false;
   }
 
   // Gestion des messages
   private showSuccess(message: string) {
-    // Idéalement, utilisez un service de toast
     alert('✓ ' + message);
   }
 
