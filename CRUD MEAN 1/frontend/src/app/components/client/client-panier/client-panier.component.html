@@ -1,0 +1,320 @@
+<app-client-header></app-client-header>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<section class="section" style="min-height: 60vh; padding: 40px 0;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12">
+
+        <!-- En-tête du panier -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>
+            <i class="lni lni-cart"></i> 
+            Mon Panier
+          </h2>
+          <div>
+            <span class="badge bg-primary fs-6 me-2" *ngIf="!isLoading">
+              <i class="lni lni-tag"></i>
+              {{ totalToutesBoutiques | number }} MGA
+            </span>
+            <span class="badge bg-warning text-dark fs-6">
+              <i class="lni lni-spinner" *ngIf="isLoading"></i>
+              {{ paniers.length }} boutique(s)
+            </span>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          <p class="mt-2">Chargement de votre panier...</p>
+        </div>
+
+        <!-- Panier vide -->
+        <div *ngIf="!isLoading && paniers.length === 0" class="text-center py-5">
+          <div class="mb-4">
+            <i class="lni lni-cart" style="font-size: 5rem; color: #dee2e6;"></i>
+          </div>
+          <h4>Votre panier est vide</h4>
+          <p class="text-muted mb-4">Découvrez nos boutiques et commencez vos achats</p>
+          <button class="btn btn-primary btn-lg" [routerLink]="['/client-dashboard']">
+            <i class="lni lni-store me-2"></i>
+            Découvrir les boutiques
+          </button>
+        </div>
+
+        <!-- Liste des paniers par boutique -->
+        <div *ngIf="!isLoading && paniers.length > 0" class="row">
+          
+          <!-- Actions globales -->
+          <div class="col-12 mb-3">
+            <div class="d-flex justify-content-end gap-2">
+              <button class="btn btn-outline-danger btn-sm" (click)="viderPanier()" [disabled]="isLoadingAction">
+                <i class="lni lni-trash-can"></i>
+                Vider le panier
+              </button>
+              <button class="btn btn-success btn-sm" (click)="validerTousPaniers()" [disabled]="isLoadingAction">
+                <i class="lni lni-checkmark-circle"></i>
+                Tout valider
+              </button>
+            </div>
+          </div>
+
+          <!-- Pour chaque boutique -->
+          <div class="col-lg-6 mb-4" *ngFor="let panier of paniers">
+            <div class="card h-100 shadow-sm border-0">
+              
+              <!-- En-tête boutique -->
+              <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <div>
+                  <h5 class="mb-0">
+                    <i class="lni lni-store me-2"></i>
+                    {{ getNomBoutique(panier) }}
+                  </h5>
+                  <small class="text-muted">
+                    <i class="lni lni-calendar"></i>
+                    {{ getDateCommande(panier.createdAt) }}
+                  </small>
+                </div>
+                <span class="badge bg-warning">En attente</span>
+              </div>
+
+              <!-- Corps du panier -->
+              <div class="card-body p-0">
+                
+                <!-- Liste des articles -->
+                <div class="list-group list-group-flush">
+                  <div class="list-group-item p-3" *ngFor="let article of panier.articles">
+                    
+                    <!-- Ligne produit -->
+                    <div class="row align-items-center">
+                      
+                      <!-- Infos produit -->
+                      <div class="col-5">
+                        <h6 class="mb-1">{{ article.nomProduit }}</h6>
+                        <small class="text-muted">
+                          {{ article.prixUnitaire | number }} MGA
+                          <span *ngIf="article.remise > 0" class="text-danger ms-2">
+                            -{{ article.remise }}%
+                          </span>
+                        </small>
+                      </div>
+
+                      <!-- Quantité avec +/- -->
+                      <div class="col-4">
+                        <div class="input-group input-group-sm">
+                          <button class="btn btn-outline-secondary" 
+                                  type="button"
+                                  (click)="diminuerQuantite(panier, article)"
+                                  [disabled]="isLoadingAction">
+                            <i class="lni lni-minus"></i>
+                          </button>
+                          <input type="number" 
+                                 class="form-control text-center" 
+                                 [value]="article.quantite" 
+                                 readonly
+                                 style="max-width: 60px;">
+                          <button class="btn btn-outline-secondary" 
+                                  type="button"
+                                  (click)="augmenterQuantite(panier, article)"
+                                  [disabled]="isLoadingAction">
+                            <i class="lni lni-plus"></i>
+                          </button>
+                        </div>
+                      </div>
+
+                      <!-- Prix total -->
+                      <div class="col-2 text-end">
+                        <strong>{{ article.total || (article.prixUnitaire * article.quantite) | number }}</strong>
+                        <small class="d-block text-muted">MGA</small>
+                      </div>
+
+                      <!-- Bouton supprimer -->
+                      <div class="col-1 text-end">
+                        <button class="btn btn-link text-danger p-0" 
+                                (click)="supprimerArticle(panier, article)"
+                                [disabled]="isLoadingAction">
+                          <i class="lni lni-close"></i>
+                        </button>
+                      </div>
+                    </div>
+
+    
+                  </div>
+                </div>
+
+                <!-- Résumé du panier boutique -->
+                <div class="card-footer bg-white">
+                  <div class="d-flex justify-content-between mb-2">
+                    <span>Sous-total:</span>
+                    <strong>{{ panier.sousTotal | number }} MGA</strong>
+                  </div>
+                  <div class="d-flex justify-content-between mb-2 text-danger" *ngIf="panier.remiseTotale > 0">
+                    <span>Remise totale:</span>
+                    <strong>-{{ panier.remiseTotale | number }} MGA</strong>
+                  </div>
+                  <div class="d-flex justify-content-between fs-5 fw-bold text-primary">
+                    <span>Total boutique:</span>
+                    <span>{{ panier.totalApresRemise | number }} MGA</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Actions boutique -->
+              <div class="card-footer bg-light d-flex justify-content-between">
+                <button class="btn btn-outline-primary btn-sm" 
+                        (click)="voirDetailsPanier(panier)"
+                        [disabled]="isLoadingAction">
+                  <i class="lni lni-eye"></i>
+                  {{ panierSelectionne?._id === panier._id ? 'Masquer' : 'Détails' }}
+                </button>
+                <button class="btn btn-success btn-sm" 
+                        (click)="validerPanier(panier)"
+                        [disabled]="isLoadingAction">
+                  <i class="lni lni-checkmark-circle"></i>
+                  Valider cette boutique
+                </button>
+              </div>
+
+              <!-- Détails étendus (affiché si sélectionné) -->
+              <div class="card-footer bg-white p-3" 
+                   *ngIf="panierSelectionne?._id === panier._id">
+                
+                <h6 class="mb-3">Détails de la commande</h6>
+                
+                <!-- Informations boutique -->
+                <div class="row mb-3">
+                  <div class="col-md-6">
+                    <p class="mb-1 small">
+                      <strong>Boutique:</strong> {{ getNomBoutique(panier) }}
+                    </p>
+                    <p class="mb-1 small">
+                      <strong>Contact:</strong> 
+                      {{ panier.boutiqueId.telephone || 'Non renseigné' }}
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-1 small">
+                      <strong>N° commande:</strong> #{{ panier._id?.slice(-6) }}
+                    </p>
+                    <p class="mb-1 small">
+                      <strong>Date:</strong> {{ getDateCommande(panier.createdAt) }}
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Récapitulatif détaillé -->
+                <h6 class="mb-2">Récapitulatif</h6>
+                <table class="table table-sm table-bordered">
+                  <thead class="table-light">
+                    <tr>
+                      <th>Article</th>
+                      <th class="text-center">Qté</th>
+                      <th class="text-end">Prix unitaire</th>
+                      <th class="text-end">Remise</th>
+                      <th class="text-end">Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr *ngFor="let art of panier.articles">
+                      <td>{{ art.nomProduit }}</td>
+                      <td class="text-center">{{ art.quantite }}</td>
+                      <td class="text-end">{{ art.prixUnitaire | number }} MGA</td>
+                      <td class="text-end">
+                        <span *ngIf="art.remise > 0" class="text-danger">{{ art.remise }}%</span>
+                        <span *ngIf="!art.remise">-</span>
+                      </td>
+                      <td class="text-end">
+                        <strong>{{ art.total || (art.prixUnitaire * art.quantite) | number }} MGA</strong>
+                      </td>
+                    </tr>
+                  </tbody>
+                  <tfoot class="table-light">
+                    <tr>
+                      <td colspan="4" class="text-end fw-bold">Sous-total:</td>
+                      <td class="text-end">{{ panier.sousTotal | number }} MGA</td>
+                    </tr>
+                    <tr *ngIf="panier.remiseTotale > 0">
+                      <td colspan="4" class="text-end fw-bold">Remise totale:</td>
+                      <td class="text-end text-danger">
+                        -{{ panier.remiseTotale | number }} MGA
+                      </td>
+                    </tr>
+                    <tr>
+                      <td colspan="4" class="text-end fw-bold">Total à payer:</td>
+                      <td class="text-end fw-bold text-primary fs-6">
+                        {{ panier.totalApresRemise | number }} MGA
+                      </td>
+                    </tr>
+                  </tfoot>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Récapitulatif global -->
+        <div *ngIf="!isLoading && paniers.length > 0" class="row mt-4">
+          <div class="col-12">
+            <div class="card bg-light border-0">
+              <div class="card-body">
+                <div class="row align-items-center">
+                  <div class="col-md-6">
+                    <h5 class="mb-0">
+                      <i class="lni lni-tag"></i>
+                      Récapitulatif global
+                    </h5>
+                  </div>
+                  <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end align-items-center gap-3">
+                      <div>
+                        <span class="text-muted me-2">Total TTC:</span>
+                        <strong class="fs-4 text-primary">{{ totalToutesBoutiques | number }} MGA</strong>
+                      </div>
+                      <button class="btn btn-success btn-lg" 
+                              (click)="validerTousPaniers()"
+                              [disabled]="isLoadingAction">
+                        <i class="lni lni-checkmark-circle"></i>
+                        Tout valider
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== END MAIN CONTENT ===================== -->
+
+<!-- Modal de confirmation (optionnel) -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Confirmation</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Êtes-vous sûr de vouloir valider cette commande ?</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+        <button type="button" class="btn btn-success" data-bs-dismiss="modal" id="confirmValider">
+          <i class="lni lni-checkmark-circle"></i>
+          Confirmer
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<app-client-footer></app-client-footer>

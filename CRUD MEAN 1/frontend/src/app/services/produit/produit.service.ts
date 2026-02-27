@@ -12,6 +12,10 @@ export class ProduitService {
   
   constructor(private http: HttpClient) { }
   
+
+  ajouterReview(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/add-review`,data);
+  }
   // Récupérer un produit par son ID
   getProduitById(produitId: String): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${produitId}`);

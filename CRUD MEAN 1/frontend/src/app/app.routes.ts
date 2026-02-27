@@ -12,6 +12,9 @@ import { BoutiquePanierComponent } from './components/boutique/boutique-panier/b
 import { CommandeClientListeComponent } from './components/boutique/commande-client-liste/commande-client-liste.component';
 import { BoutiqueLoyersComponent } from './components/boutique/boutique-loyers/boutique-loyers.component';
 import { ClientCatalogueProduitComponent } from './components/client/client-catalogue-produit/client-catalogue-produit.component';
+import { ClientPanierComponent } from './components/client/client-panier/client-panier.component';
+import { ClientCommandeComponent } from './components/client/client-commande/client-commande.component';
+import { ClientProduitDetailsComponent } from './components/client/client-produit-details/client-produit-details.component';
 export const routes: Routes = [
   { path: 'commande-client-liste', component: CommandeClientListeComponent },
   { path: 'login-client', component: LoginClientComponent },
@@ -24,7 +27,10 @@ export const routes: Routes = [
   { path: 'boutique-produit', component: BoutiqueProduitsComponent },
   { path: 'produit-form', component: ProduitFormComponent },
   { path: 'panier-boutique', component: BoutiquePanierComponent },
+  { path: 'client-panier', component: ClientPanierComponent },
+  { path: 'client-commande', component: ClientCommandeComponent },
   { path: 'client-catalogue-produit/:id', component: ClientCatalogueProduitComponent },
   { path: 'produit-details/:id', component: ProduitDetailsComponent },
+  { path: 'client-produit-details/:id', component: ClientProduitDetailsComponent },
   { path: '', redirectTo: 'login-client', pathMatch: 'full' }
 ];

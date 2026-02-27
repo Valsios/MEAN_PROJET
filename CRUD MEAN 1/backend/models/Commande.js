@@ -22,7 +22,7 @@ const CommandeSchema = new mongoose.Schema({
 
   statut: {
     type: String,
-    enum: ['en_attente', 'validee', 'annule'],
+    enum: ['en_attente', 'validee', 'annule','panier'],
     default: 'en_attente'
   },
   createdAt: {

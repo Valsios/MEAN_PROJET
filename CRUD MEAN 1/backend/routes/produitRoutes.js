@@ -2,10 +2,60 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose'); 
 const Produit = require('../models/Produit');
+const Commande = require('../models/Commande');
 const Promotion = require('../models/Promotion');
 const MouvementPrixProduit = require('../models/MouvementPrixProduit');
 const MouvementStock = require('../models/MouvementStock');
 const ReviewProduit = require('../models/ReviewProduit');
+
+/// add review - Crée ou met à jour
+router.post('/add-review', async (req, res) => {
+  try {
+    const { produitId, clientId, clientEmail, note, commentaire } = req.body;
+
+    // Vérifier si le client a déjà reviewé ce produit
+    let review = await ReviewProduit.findOne({
+      'client.id': clientId,
+      produitId: produitId
+    });
+
+   
+    
+    if (review) {
+      
+      review.note = note;
+      review.commentaire = commentaire || review.commentaire;
+      review.createdAt = new Date();
+      
+      await review.save();
+     
+    } else {
+      // CRÉATION d'une nouvelle review
+      review = new ReviewProduit({
+        client: {
+          id: clientId,
+          email: clientEmail || null
+        },
+        commentaire: commentaire || null,
+        note: note,
+        produitId: produitId,
+        createdAt: new Date()
+      });
+
+      await review.save();
+     
+    }
+    
+    res.status(201).json({  
+      review: review,
+    });
+
+  } catch (error) {
+    console.error('Erreur ajout review:', error);
+    res.status(500).json({ message: error.message });
+  }
+});
+
 //get reviews 
 router.get('/:id/reviews', async (req, res) => {
   try {
@@ -31,10 +81,16 @@ router.post('/promotion/:id/remplacer-promotion', async (req, res) => {
     );
     const newPromo = await Promotion.insertOne(
       req.body
-    );  
+    );
+    
+    // Mettre à jour tous les paniers avec la nouvelle remise
+    const nouvelleRemise = req.body.pourcentage || 0;
+    const resultat = await mettreAJourPaniersApresPromotion(req.body.produitId, nouvelleRemise);
+
     res.status(201).json({
       message : " Promotion remplacé ",
-      promotion : newPromo
+      promotion : newPromo,
+      misAJourPromotion : resultat
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -45,9 +101,14 @@ router.post('/promotion/:id/remplacer-promotion', async (req, res) => {
 router.post('/ajouter-promotion', async (req, res) => {
   try {
     const promotion = await Promotion.insertOne(req.body);
+      // Mettre à jour tous les paniers avec la nouvelle remise
+    const nouvelleRemise = req.body.pourcentage || 0;
+    const resultat = await mettreAJourPaniersApresPromotion(req.body.produitId, nouvelleRemise);
+
     res.status(201).json({
       message : " Promotion ajoutée ",
-      promotion : promotion
+      promotion : promotion,
+      misAJourPromotion : resultat
     });
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -63,13 +124,20 @@ router.delete('/promotion/:id', async (req, res) => {
       { new: true }  // Retourne le document mis à jour
     );
 
+    // Mettre à jour tous les paniers avec la nouvelle remise
+    const nouvelleRemise = 0;
+
+    console.log('Désactivation en cours');
+    const resultat = await mettreAJourPaniersApresPromotion(promotion.produitId, nouvelleRemise);
 
     res.json({ 
       message: "Promotion désactivé.",
-      promotion: promotion
+      promotion: promotion,
+      misAjourPromotion : resultat
     });
 
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: error.message });
   }
 });
@@ -214,5 +282,79 @@ router.get('/:id/promotion-active', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+
+async function mettreAJourPaniersApresPromotion(produitId, nouvelleRemise = 0) {
+  try {
+    
+    const produitObjectId = new mongoose.Types.ObjectId(produitId);
+    const commandes = await Commande.find({
+      statut: 'panier',
+      'articles.produitId': produitObjectId
+    });
+    
+   
+    
+    let paniersModifies = 0;
+    let articlesModifies = 0;
+    
+    // 2. Pour chaque commande, mettre à jour l'article concerné
+    for (const commande of commandes) {
+      let commandeModifiee = false;
+      
+      // Parcourir les articles
+      for (const article of commande.articles) {
+
+        
+        if (article.produitId.toString() === produitId.toString()) {
+          // Mettre à jour la remise de l'article
+          const ancienneRemise = article.remise || 0;
+          article.remise = nouvelleRemise;
+          
+          // Recalculer le total de l'article
+          let nouveauTotal = article.prixUnitaire * article.quantite;
+          if (nouvelleRemise > 0) {
+            nouveauTotal = nouveauTotal * (1 - nouvelleRemise / 100);
+          }
+          article.total = Math.round(nouveauTotal * 100) / 100;
+          
+          console.log(`   Article ${article.nomProduit}: remise ${ancienneRemise}% → ${nouvelleRemise}%, total: ${article.total}`);
+          
+          articlesModifies++;
+          commandeModifiee = true;
+        }
+      }
+      
+      if (commandeModifiee) {
+        // Recalculer le montant total de la commande
+        let nouveauMontantTotal = 0;
+        for (const article of commande.articles) {
+          nouveauMontantTotal += article.total || 0;
+        }
+        commande.montantTotal = Math.round(nouveauMontantTotal * 100) / 100;
+        
+        // Sauvegarder la commande
+        await commande.save();
+        paniersModifies++;
+       
+      }
+    }
+    
+    return {
+      success: true,
+      paniersModifies,
+      articlesModifies,
+      produitId,
+      nouvelleRemise
+    };
+    
+  } catch (error) {
+    console.log(error);
+    return {
+      success: false,
+      error: error.message
+    };
+  }
+}
 
 module.exports = router;
