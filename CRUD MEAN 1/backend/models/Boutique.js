@@ -24,7 +24,11 @@ const BoutiqueSchema = new Schema({
     type: Schema.Types.ObjectId,
     ref: 'Categorie',
     required: true
-  }
+  },
+  dateEntryBox: {
+    type: Date,
+    default: null
+  },
 }, { timestamps: true });
 
 module.exports = mongoose.model('Boutique', BoutiqueSchema);

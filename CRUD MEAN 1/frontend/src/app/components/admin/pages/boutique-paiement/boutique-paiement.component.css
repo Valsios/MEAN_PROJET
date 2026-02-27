@@ -1,0 +1,442 @@
+/* Style général */
+.container {
+  max-width: 1400px;
+  padding: 2rem 1.5rem;
+}
+
+/* Titres */
+.page-title {
+  font-size: 2.2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-title i {
+  color: #28a745;
+  font-size: 2.2rem;
+}
+
+/* Lien de retour */
+.back-link {
+  color: #6c757d;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  transition: all 0.3s ease;
+}
+
+.back-link:hover {
+  color: #28a745;
+  transform: translateX(-5px);
+}
+
+/* Cartes */
+.card {
+  border-radius: 15px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+}
+
+.card-header {
+  border-bottom: none;
+}
+
+.card-header.bg-primary {
+  background: linear-gradient(135deg, #3498db, #2980b9) !important;
+}
+
+.card-header.bg-info {
+  background: linear-gradient(135deg, #17a2b8, #138496) !important;
+}
+
+.card-header.bg-success {
+  background: linear-gradient(135deg, #28a745, #218838) !important;
+}
+
+/* Avatars */
+.shop-avatar {
+  width: 100px;
+  height: 100px;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+}
+
+.shop-avatar i {
+  font-size: 4rem !important;
+  color: #1976d2;
+}
+
+/* Listes d'informations */
+.info-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.info-row:hover {
+  background: #e9ecef;
+  transform: translateX(5px);
+}
+
+.info-row i {
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 8px;
+  color: #3498db;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+  margin-bottom: 0.1rem;
+}
+
+.info-value {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #2c3e50;
+}
+
+/* Résumé des paiements */
+.payment-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.summary-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+}
+
+.summary-item.highlight {
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-left: 4px solid #3498db;
+}
+
+.summary-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.summary-value {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+/* Cartes de montant */
+.amount-card {
+  padding: 1rem;
+  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+  border-radius: 10px;
+  text-align: center;
+  transition: all 0.3s ease;
+}
+
+.amount-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.amount-card.highlight {
+  background: linear-gradient(135deg, #d4edda, #c3e6cb);
+  border-left: 4px solid #28a745;
+}
+
+.amount-label {
+  display: block;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+  margin-bottom: 0.5rem;
+}
+
+.amount-value {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2c3e50;
+}
+
+/* Grille des mois */
+.months-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.month-chip {
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, #e8f5e9, #c8e6c9);
+  border-radius: 50px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: #2c3e50;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+  transition: all 0.3s ease;
+}
+
+.month-chip:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 10px rgba(40,167,69,0.2);
+}
+
+/* Total à payer */
+.total-card {
+  padding: 1.5rem;
+  background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+  border-radius: 10px;
+  border-left: 4px solid #fd7e14;
+}
+
+.total-label {
+  font-size: 1rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #6c757d;
+}
+
+.total-amount {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fd7e14;
+}
+
+.total-details {
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+  color: #6c757d;
+}
+
+/* Formulaire */
+.form-label {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.form-control, .input-group-text {
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.form-control:focus, .input-group-text:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 0.25rem rgba(40,167,69,0.15);
+  outline: none;
+}
+
+.form-control-lg {
+  font-size: 1.1rem;
+  padding: 1rem 1.25rem;
+}
+
+.input-group-text {
+  background: white;
+  color: #6c757d;
+}
+
+/* Boutons */
+.btn {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+.btn-success {
+  background: linear-gradient(135deg, #28a745, #218838);
+  border: none;
+  box-shadow: 0 4px 15px rgba(40,167,69,0.3);
+}
+
+.btn-success:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(40,167,69,0.4);
+  background: linear-gradient(135deg, #218838, #1e7e34);
+}
+
+.btn-success:disabled {
+  opacity: 0.7;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-outline-secondary {
+  border: 2px solid #dee2e6;
+  color: #6c757d;
+  background: white;
+}
+
+.btn-outline-secondary:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  border-color: #adb5bd;
+  color: #495057;
+}
+
+/* Notice de paiement */
+.payment-notice {
+  background: #f8f9fa;
+  border-radius: 10px;
+  border-left: 4px solid #28a745;
+}
+
+/* Alertes */
+.alert {
+  border-radius: 15px;
+  border: none;
+  padding: 2rem;
+}
+
+.alert-danger {
+  background: linear-gradient(135deg, #f8d7da, #f5c6cb);
+  color: #721c24;
+  border-left: 4px solid #dc3545;
+}
+
+/* Spinner */
+.spinner-border {
+  color: #28a745 !important;
+}
+
+/* Animation de chargement */
+@keyframes pulse {
+  0% { opacity: 0.6; }
+  50% { opacity: 1; }
+  100% { opacity: 0.6; }
+}
+
+.spinner-border {
+  animation: spinner-border 0.75s linear infinite, pulse 1.5s ease-in-out infinite;
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.8rem;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+  }
+
+  .total-amount {
+    font-size: 1.5rem;
+  }
+
+  .amount-value {
+    font-size: 1.1rem;
+  }
+
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+  }
+
+  .info-row i {
+    margin-bottom: 0.5rem;
+  }
+
+  .d-flex.gap-3 {
+    flex-direction: column;
+  }
+
+  .btn-lg {
+    width: 100%;
+  }
+}
+
+/* Print styles */
+@media print {
+  .btn, .back-link {
+    display: none;
+  }
+  
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #dee2e6;
+    break-inside: avoid;
+  }
+}

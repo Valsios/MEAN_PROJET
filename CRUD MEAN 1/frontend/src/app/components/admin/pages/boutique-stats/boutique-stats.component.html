@@ -1,0 +1,302 @@
+<div class="container">
+  <!-- EN-TÊTE -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+      <h1 class="page-title">
+        <i class="bi bi-bar-chart-line me-2"></i>
+        Statistiques boutique
+      </h1>
+      <div class="d-flex align-items-center gap-2">
+        <a routerLink="/admin/boutiques" class="back-link">
+          <i class="bi bi-arrow-left me-1"></i>
+          Retour à la liste des boutiques
+        </a>
+        <span class="text-muted">|</span>
+        <span class="text-muted" *ngIf="boutique">
+          <i class="bi bi-shop me-1"></i>
+          {{ boutique.nom }}
+        </span>
+      </div>
+    </div>
+    
+    <!-- Bouton rafraîchir -->
+    <button class="btn btn-outline-primary btn-lg" (click)="loadMouvements()" [disabled]="loading">
+      <i class="bi bi-arrow-repeat me-2" [class.spinning]="loading"></i>
+      Rafraîchir
+    </button>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <p class="mt-3 text-muted">Chargement des statistiques...</p>
+  </div>
+
+  <!-- Error -->
+  <div *ngIf="error" class="alert alert-danger text-center py-4" role="alert">
+    <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+    <h5>{{ error }}</h5>
+    <button class="btn btn-outline-danger mt-3" (click)="loadMouvements()">
+      <i class="bi bi-arrow-repeat me-2"></i>Réessayer
+    </button>
+  </div>
+
+  <!-- Contenu principal -->
+  <div *ngIf="!loading && !error && boutique" class="row g-4">
+    <!-- Colonne gauche : Informations boutique -->
+    <div class="col-lg-4">
+      <!-- Carte boutique -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-primary text-white py-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-shop fs-4 me-2"></i>
+            <h5 class="mb-0">Informations boutique</h5>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <div class="shop-info text-center mb-4">
+            <div class="shop-avatar mb-3">
+              <i class="bi bi-shop fs-1 text-primary"></i>
+            </div>
+            <h4>{{ boutique.nom }}</h4>
+            <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mt-2">
+              <i class="bi bi-tag me-1"></i>
+              {{ boutique.categorieId?.nom || 'Non catégorisée' }}
+            </span>
+          </div>
+
+          <div class="info-list">
+            <div class="info-row">
+              <i class="bi bi-envelope text-primary"></i>
+              <div>
+                <span class="info-label">Email</span>
+                <span class="info-value">{{ boutique.email || 'Non disponible' }}</span>
+              </div>
+            </div>
+
+            <div class="info-row">
+              <i class="bi bi-telephone text-primary"></i>
+              <div>
+                <span class="info-label">Téléphone</span>
+                <span class="info-value">{{ boutique.telephone || 'Non disponible' }}</span>
+              </div>
+            </div>
+
+            <div class="info-row" *ngIf="boutique.boxActuelleId">
+              <i class="bi bi-box text-primary"></i>
+              <div>
+                <span class="info-label">Box actuelle</span>
+                <span class="info-value">
+                  Box {{ boutique.boxActuelleId.numero }} - Étage {{ boutique.boxActuelleId.etage }}
+                  <small class="text-muted d-block">{{ boutique.boxActuelleId.prixActuel | number }} Ar/mois</small>
+                </span>
+              </div>
+            </div>
+
+            <div class="info-row" *ngIf="!boutique.boxActuelleId">
+              <i class="bi bi-box text-primary"></i>
+              <div>
+                <span class="info-label">Box actuelle</span>
+                <span class="info-value text-muted">Aucune box assignée</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistiques rapides -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-info text-white py-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-speedometer2 fs-4 me-2"></i>
+            <h5 class="mb-0">Statistiques rapides</h5>
+          </div>
+        </div>
+        <div class="card-body p-4">
+          <div class="stats-grid">
+            <div class="stat-item">
+              <span class="stat-label">Total mouvements</span>
+              <span class="stat-value">{{ mouvements.length }}</span>
+            </div>
+            
+            <div class="stat-item">
+              <span class="stat-label">Total paiements</span>
+              <span class="stat-value">{{ paiements.length }}</span>
+            </div>
+            
+            <div class="stat-item" *ngIf="paiements.length > 0">
+              <span class="stat-label">Total payé</span>
+              <span class="stat-value text-success">
+                {{ getTotalPaye() | number }} Ar
+              </span>
+            </div>
+            
+            <div class="stat-item" *ngIf="boutique.boxActuelleId">
+              <span class="stat-label">Dernier paiement</span>
+              <span class="stat-value">
+                {{ getDernierPaiement() || 'Aucun' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colonne droite : Tableaux -->
+    <div class="col-lg-8">
+      <!-- Mouvements Box -->
+      <div class="card shadow-sm border-0 mb-4">
+        <div class="card-header bg-warning text-dark py-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-arrow-left-right fs-4 me-2"></i>
+            <h5 class="mb-0">Historique des mouvements de box</h5>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="py-3 px-4">Box</th>
+                  <th class="py-3">Date début</th>
+                  <th class="py-3">Date fin</th>
+                  <th class="py-3">Statut</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let mvt of mouvements">
+                  <td class="px-4">
+                    <div class="d-flex align-items-center">
+                      <div class="box-icon me-2">
+                        <i class="bi bi-box"></i>
+                      </div>
+                      <div>
+                        <strong>Box {{ mvt.boxId.numero }}</strong>
+                        <br>
+                        <small class="text-muted">Étage {{ mvt.boxId.etage }}</small>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark">
+                      <i class="bi bi-calendar me-1"></i>
+                      {{ mvt.dateDebut | date:'dd/MM/yyyy' }}
+                    </span>
+                    <br>
+                    <small class="text-muted">{{ mvt.dateDebut | date:'HH:mm' }}</small>
+                  </td>
+                  <td>
+                    <span *ngIf="mvt.dateFin" class="badge bg-light text-dark">
+                      <i class="bi bi-calendar me-1"></i>
+                      {{ mvt.dateFin | date:'dd/MM/yyyy' }}
+                    </span>
+                    <span *ngIf="!mvt.dateFin" class="badge bg-success bg-opacity-10 text-success">
+                      <i class="bi bi-clock me-1"></i>
+                      En cours
+                    </span>
+                    <br *ngIf="mvt.dateFin">
+                    <small *ngIf="mvt.dateFin" class="text-muted">{{ mvt.dateFin | date:'HH:mm' }}</small>
+                  </td>
+                  <td>
+                    <span class="badge status-badge" [ngClass]="{
+                      'bg-success': mvt.statut === 'terminee',
+                      'bg-warning text-dark': mvt.statut === 'en_cours',
+                      'bg-secondary': mvt.statut === 'annulee'
+                    }">
+                      <i class="bi" [ngClass]="{
+                        'bi-check-circle': mvt.statut === 'terminee',
+                        'bi-hourglass-split': mvt.statut === 'en_cours',
+                        'bi-x-circle': mvt.statut === 'annulee'
+                      }"></i>
+                      {{ mvt.statut === 'en_cours' ? 'En cours' : (mvt.statut === 'terminee' ? 'Terminé' : 'Annulé') }}
+                    </span>
+                  </td>
+                </tr>
+
+                <tr *ngIf="mouvements.length === 0">
+                  <td colspan="4" class="text-center py-5">
+                    <i class="bi bi-arrow-left-right fs-1 d-block mb-3 text-muted"></i>
+                    <h5 class="text-muted">Aucun mouvement</h5>
+                    <p class="text-muted mb-0">Cette boutique n'a pas encore eu de mouvement de box</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Paiements Loyer -->
+      <div class="card shadow-sm border-0">
+        <div class="card-header bg-success text-white py-3">
+          <div class="d-flex align-items-center">
+            <i class="bi bi-cash-coin fs-4 me-2"></i>
+            <h5 class="mb-0">Historique des paiements de loyer</h5>
+          </div>
+        </div>
+        <div class="card-body p-0">
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead class="table-light">
+                <tr>
+                  <th class="py-3 px-4">Mois</th>
+                  <th class="py-3">Année</th>
+                  <th class="py-3">Montant</th>
+                  <th class="py-3">Date de paiement</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let p of paiements">
+                  <td class="px-4">
+                    <div class="d-flex align-items-center">
+                      <div class="month-icon me-2">
+                        <i class="bi bi-calendar-month"></i>
+                      </div>
+                      <strong>{{ moisFrancais[p.mois] }}</strong>
+                    </div>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark">
+                      {{ p.annee }}
+                    </span>
+                  </td>
+                  <td>
+                    <span class="fw-bold text-success">
+                      {{ p.montant | number }} Ar
+                    </span>
+                  </td>
+                  <td>
+                    <span class="badge bg-light text-dark">
+                      <i class="bi bi-calendar me-1"></i>
+                      {{ p.datePaiement | date:'dd/MM/yyyy' }}
+                    </span>
+                    <br>
+                    <small class="text-muted">{{ p.datePaiement | date:'HH:mm' }}</small>
+                  </td>
+                </tr>
+
+                <tr *ngIf="paiements.length === 0">
+                  <td colspan="4" class="text-center py-5">
+                    <i class="bi bi-cash-stack fs-1 d-block mb-3 text-muted"></i>
+                    <h5 class="text-muted">Aucun paiement</h5>
+                    <p class="text-muted mb-0">Cette boutique n'a pas encore effectué de paiement de loyer</p>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pied de tableau avec total -->
+          <div *ngIf="paiements.length > 0" class="card-footer bg-light py-3 px-4">
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="fw-semibold">Total des paiements</span>
+              <span class="total-amount">{{ getTotalPaye() | number }} Ar</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

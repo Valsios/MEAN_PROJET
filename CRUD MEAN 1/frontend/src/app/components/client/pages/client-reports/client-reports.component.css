@@ -1,0 +1,50 @@
+/* À ajouter dans votre fichier CSS global ou dans le composant */
+.empty-state {
+  padding: 3rem;
+  text-align: center;
+  background: #f8f9fa;
+  border-radius: 8px;
+}
+
+.reports-header {
+  background: #f8f9fa;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px 8px 0 0;
+  font-weight: bold;
+  color: #495057;
+  border: 1px solid #dee2e6;
+  border-bottom: none;
+}
+
+.report-card {
+  transition: all 0.3s ease;
+  border: 1px solid #dee2e6;
+}
+
+.report-card:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.modal {
+  overflow-y: auto;
+}
+
+.modal.show {
+  display: block;
+}
+
+.badge {
+  padding: 0.5em 0.75em;
+  font-size: 0.85em;
+}
+
+@media (max-width: 767px) {
+  .report-card .card-body {
+    padding: 1rem;
+  }
+  
+  .btn-sm {
+    padding: 0.4rem 0.8rem;
+  }
+}

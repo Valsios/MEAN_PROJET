@@ -1,0 +1,95 @@
+<div class="account-login section">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-6 offset-lg-3 col-md-10 offset-md-1 col-12">
+
+        <!-- FORMULAIRE INSCRIPTION -->
+        <form class="card login-form" (ngSubmit)="onRegister()" #registerForm="ngForm">
+          <div class="card-body">
+
+            <div class="title text-center">
+              <h3>Inscription Client</h3>
+              <p>Créez votre compte client</p>
+            </div>
+
+            <!-- NOM -->
+            <div class="form-group input-group">
+              <label>Nom <span class="text-danger">*</span></label>
+              <input class="form-control" type="text" name="nom" [(ngModel)]="nom" required placeholder="Votre nom" />
+            </div>
+
+            <!-- PRENOM -->
+            <div class="form-group input-group">
+              <label>Prénom <span class="text-danger">*</span></label>
+              <input class="form-control" type="text" name="prenom" [(ngModel)]="prenom" required
+                placeholder="Votre prénom" />
+            </div>
+
+            <!-- EMAIL -->
+            <div class="form-group input-group">
+              <label>Email <span class="text-danger">*</span></label>
+              <input class="form-control" type="email" name="email" [(ngModel)]="email" required
+                placeholder="Votre email" />
+            </div>
+
+            <!-- TELEPHONE -->
+            <div class="form-group input-group">
+              <label>Téléphone <span class="text-danger">*</span></label>
+              <input class="form-control" type="tel" name="telephone" [(ngModel)]="telephone" required
+                placeholder="Votre numéro de téléphone" />
+            </div>
+
+            <!-- ADRESSE -->
+            <div class="form-group input-group">
+              <label>Adresse <span class="text-danger">*</span></label>
+              <input class="form-control" type="text" name="adresse" [(ngModel)]="adresse" required
+                placeholder="Votre adresse" />
+            </div>
+
+            <!-- MOT DE PASSE -->
+            <div class="form-group input-group">
+              <label>Mot de passe <span class="text-danger">*</span></label>
+              <input class="form-control" type="password" name="password" [(ngModel)]="password" required minlength="6"
+                placeholder="Minimum 6 caractères" />
+            </div>
+
+            <!-- CONFIRMATION MOT DE PASSE -->
+            <div class="form-group input-group">
+              <label>Confirmer le mot de passe <span class="text-danger">*</span></label>
+              <input class="form-control" type="password" name="confirmPassword" [(ngModel)]="confirmPassword" required
+                placeholder="Confirmez votre mot de passe" />
+            </div>
+
+            <!-- MESSAGES -->
+            <p *ngIf="error" class="text-danger text-center">
+              {{ error }}
+            </p>
+            <p *ngIf="success" class="text-success text-center">
+              {{ success }}
+            </p>
+
+            <!-- BOUTON INSCRIPTION -->
+            <div class="button text-center">
+              <button class="btn" type="submit" [disabled]="submitting">
+                <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+                S'inscrire
+              </button>
+            </div>
+
+            <!-- LIEN CONNEXION -->
+            <div class="text-center mt-3">
+              <p>Déjà un compte ?
+                <a href="javascript:void(0)" (click)="goToLogin()" class="login-link">
+                  Se connecter
+                </a>
+              </p>
+            </div>
+
+          </div>
+        </form>
+        <!-- FIN FORM -->
+
+      </div>
+    </div>
+  </div>
+</div>

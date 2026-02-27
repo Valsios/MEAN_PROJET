@@ -9,19 +9,19 @@ export interface Box {
   etage: number;
   prixActuel: number;
   statut?: 'libre' | 'occupee';
+  etat?: 'actif' | 'inactif';
 }
 
 @Injectable({
   providedIn: 'root'
 })
 export class BoxService {
-  private apiUrl = `${environment.apiUrl}/boxes`; // Assurez-vous d'avoir environment.apiUrl défini
+  private apiUrl = `${environment.apiUrl}/boxes`;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<Box[]> {
-    console.log (this.apiUrl);
-    return this.http.get<Box[]>(this.apiUrl);
+  getAll(params?: any): Observable<Box[]> {
+    return this.http.get<Box[]>(this.apiUrl, { params });
   }
 
   create(box: Box): Observable<Box> {
@@ -36,8 +36,11 @@ export class BoxService {
     return this.http.delete(`${this.apiUrl}/${id}`);
   }
 
-  getBoxesLibres() {
-    return this.http.get<any[]>(`${this.apiUrl}?statut=libre`);
+  reactivate(id: string): Observable<Box> {
+    return this.http.patch<Box>(`${this.apiUrl}/${id}/reactiver`, {});
   }
 
+  getBoxesLibres() {
+    return this.http.get<any[]>(`${this.apiUrl}?statut=libre&etat=actif`);
+  }
 }

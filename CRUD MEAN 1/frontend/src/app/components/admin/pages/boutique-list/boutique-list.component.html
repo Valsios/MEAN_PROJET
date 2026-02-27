@@ -1,100 +1,373 @@
 <div class="container">
+  <!-- EN-TÊTE -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="page-title">
+      <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-shop'"></i>
+      {{ isEditMode ? 'Modifier une boutique' : 'Créer une nouvelle boutique' }}
+    </h2>
+  </div>
 
-    <h2>{{ isEditMode ? 'Modifier' : 'Ajouter' }} Boutique</h2>
-
-    <form (ngSubmit)="submit()">
-        <div class="row">
-            <div class="col-md-6">
-                <input class="form-control mb-2" [(ngModel)]="form.nom" name="nom" placeholder="Nom" required>
-            </div>
-            <div class="col-md-6">
-                <input class="form-control mb-2" [(ngModel)]="form.telephone" name="telephone" placeholder="Téléphone"
-                    required>
-            </div>
+  <!-- FORMULAIRE -->
+  <form (ngSubmit)="submit()" class="mb-5 card p-4 shadow-sm border-0">
+    <div class="row g-4">
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-building me-1"></i>Nom de la boutique
+        </label>
+        <input 
+          type="text" 
+          class="form-control form-control-lg" 
+          [(ngModel)]="form.nom"
+          name="nom"
+          placeholder="Ex: Boutique Moda, Épicerie Centrale..."
+          required
+          [class.is-invalid]="submitted && !form.nom">
+        <div class="invalid-feedback" *ngIf="submitted && !form.nom">
+          Le nom est requis
         </div>
-        <div class="row">
-            <div class="col-md-6">
-                <input class="form-control mb-2" [(ngModel)]="form.email" name="email" placeholder="Email" required>
-            </div>
-            <div class="col-md-6">
-                <select class="form-control mb-2" [(ngModel)]="form.categorieId" name="categorieId" required>
-                    <option value="">Choisir catégorie</option>
-                    <option *ngFor="let c of categories" [value]="c._id">
-                        {{ c.nom }}
-                    </option>
-                </select>
-            </div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-telephone me-1"></i>Téléphone
+        </label>
+        <input 
+          type="tel" 
+          class="form-control form-control-lg" 
+          [(ngModel)]="form.telephone"
+          name="telephone"
+          placeholder="Ex: 034 12 345 67"
+          required
+          [class.is-invalid]="submitted && !form.telephone">
+        <div class="invalid-feedback" *ngIf="submitted && !form.telephone">
+          Le téléphone est requis
         </div>
-        <div class="row">
-            <div class="col-mg-12">
-                <label><strong>Box (Facultatif)</strong></label>
-                <select class="form-control mb-3" [(ngModel)]="form.boxActuelleId" name="boxActuelleId">
-                    <option [ngValue]="null">Aucun</option>
-                    <option *ngFor="let box of boxesLibres" [value]="box._id">
-                        Box {{ box.numero }} - Étage {{ box.etage }}
-                    </option>
-                </select>
-            </div>
+      </div>
+
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-envelope me-1"></i>Email
+        </label>
+        <input 
+          type="email" 
+          class="form-control form-control-lg" 
+          [(ngModel)]="form.email"
+          name="email"
+          placeholder="Ex: contact@boutique.com"
+          required
+          [class.is-invalid]="submitted && !form.email">
+        <div class="invalid-feedback" *ngIf="submitted && !form.email">
+          L'email est requis
         </div>
+      </div>
 
+      <div class="col-md-6">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-tags me-1"></i>Catégorie
+        </label>
+        <select 
+          class="form-select form-select-lg" 
+          [(ngModel)]="form.categorieId" 
+          name="categorieId" 
+          required
+          [class.is-invalid]="submitted && !form.categorieId">
+          <option value="">Sélectionner une catégorie</option>
+          <option *ngFor="let c of categories" [value]="c._id">
+            {{ c.nom }}
+          </option>
+        </select>
+        <div class="invalid-feedback" *ngIf="submitted && !form.categorieId">
+          La catégorie est requise
+        </div>
+      </div>
 
+      <div class="col-12">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-box me-1"></i>Box (Optionnel)
+        </label>
+        <select class="form-select form-select-lg" [(ngModel)]="form.boxActuelleId" name="boxActuelleId">
+          <option [ngValue]="null">Aucune box assignée</option>
+          <option *ngFor="let box of boxesLibres" [value]="box._id">
+            <i class="bi bi-box-seam me-1"></i>
+            Box {{ box.numero }} - Étage {{ box.etage }} ({{ box.prixActuel | number }} Ar/mois)
+          </option>
+        </select>
+        <small class="text-muted">
+          <i class="bi bi-info-circle me-1"></i>
+          Une boutique peut fonctionner sans box physique
+        </small>
+      </div>
+    </div>
 
+    <div class="mt-4 d-flex gap-2">
+      <button type="submit" class="btn btn-primary btn-lg px-4">
+        <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
+        {{ isEditMode ? 'Mettre à jour' : 'Créer la boutique' }}
+      </button>
 
+      <button *ngIf="isEditMode" 
+              type="button" 
+              class="btn btn-outline-secondary btn-lg px-4" 
+              (click)="resetForm()">
+        <i class="bi bi-x-circle"></i> Annuler
+      </button>
+    </div>
+  </form>
 
+  <!-- SECTION LISTE -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">
+      <i class="bi bi-shop me-2"></i>Liste des boutiques
+    </h3>
+    <span class="badge bg-primary bg-gradient px-3 py-2">
+      <i class="bi bi-grid me-1"></i>
+      {{ filteredBoutiques.length }} boutique(s)
+    </span>
+  </div>
 
+  <!-- FILTRES AVANCÉS -->
+  <div class="filters-card card p-4 shadow-sm border-0 mb-4">
+    <div class="row g-3">
+      <!-- Recherche multicritères -->
+      <div class="col-md-4">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-search me-1"></i>Recherche globale
+        </label>
+        <div class="input-group">
+          <span class="input-group-text bg-white">
+            <i class="bi bi-search"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control form-control-lg" 
+            [(ngModel)]="searchTerm" 
+            (ngModelChange)="applyFilters()"
+            placeholder="Nom, email...">
+          <button *ngIf="searchTerm" 
+                  class="btn btn-outline-secondary" 
+                  type="button" 
+                  (click)="clearSearch()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+        <small class="text-muted">
+          <i class="bi bi-info-circle me-1"></i>
+          Recherche par nom ou email
+        </small>
+      </div>
 
+      <!-- Filtre par catégorie -->
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-tags me-1"></i>Catégorie
+        </label>
+        <select class="form-select form-select-lg" [(ngModel)]="filters.categorie" (ngModelChange)="applyFilters()">
+          <option value="">Toutes les catégories</option>
+          <option *ngFor="let cat of categories" [value]="cat._id">
+            {{ cat.nom }}
+          </option>
+        </select>
+      </div>
 
+      <!-- Filtre par statut box -->
+      <div class="col-md-3">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-box me-1"></i>Statut box
+        </label>
+        <select class="form-select form-select-lg" [(ngModel)]="filters.boxStatut" (ngModelChange)="applyFilters()">
+          <option value="all">Toutes les boutiques</option>
+          <option value="withBox">Avec box assignée</option>
+          <option value="withoutBox">Sans box</option>
+        </select>
+      </div>
 
+      <!-- Tri -->
+      <div class="col-md-2">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-sort-down me-1"></i>Trier par
+        </label>
+        <select class="form-select form-select-lg" [(ngModel)]="sortBy" (ngModelChange)="applyFilters()">
+          <option value="nom">Nom (A-Z)</option>
+          <option value="nomDesc">Nom (Z-A)</option>
+          <option value="date">Plus récent</option>
+          <option value="dateDesc">Plus ancien</option>
+        </select>
+      </div>
+    </div>
 
+    <!-- Badges des filtres actifs -->
+    <div class="mt-3 d-flex gap-2 flex-wrap" *ngIf="hasActiveFilters()">
+      <span class="badge bg-light text-dark p-2">
+        <i class="bi bi-funnel me-1"></i>Filtres actifs:
+      </span>
+      <span class="badge bg-info text-white p-2" *ngIf="searchTerm">
+        <i class="bi bi-search me-1"></i> "{{ searchTerm }}"
+        <i class="bi bi-x-circle ms-1" style="cursor: pointer;" (click)="clearSearch()"></i>
+      </span>
+      <span class="badge bg-info text-white p-2" *ngIf="filters.categorie">
+        <i class="bi bi-tag me-1"></i> {{ getCategorieName(filters.categorie) }}
+        <i class="bi bi-x-circle ms-1" style="cursor: pointer;" (click)="filters.categorie=''; applyFilters()"></i>
+      </span>
+      <span class="badge bg-info text-white p-2" *ngIf="filters.boxStatut !== 'all'">
+        <i class="bi bi-box me-1"></i> {{ filters.boxStatut === 'withBox' ? 'Avec box' : 'Sans box' }}
+        <i class="bi bi-x-circle ms-1" style="cursor: pointer;" (click)="filters.boxStatut='all'; applyFilters()"></i>
+      </span>
+      <button class="btn btn-sm btn-outline-secondary" (click)="resetFilters()">
+        <i class="bi bi-arrow-counterclockwise me-1"></i>Réinitialiser
+      </button>
+    </div>
+  </div>
 
-        <button class="btn btn-primary me-2">
-            {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
-        </button>
+  <!-- TABLEAU -->
+  <div class="table-responsive">
+    <table class="table table-hover align-middle">
+      <thead class="table-light">
+        <tr>
+          <th class="py-3">Boutique</th>
+          <th class="py-3">Contact</th>
+          <th class="py-3">Catégorie</th>
+          <th class="py-3">Box assignée</th>
+          <th class="py-3 text-center" style="width: 280px;">Actions</th>
+        </tr>
+      </thead>
 
-        <button *ngIf="isEditMode" type="button" class="btn btn-secondary" (click)="resetForm()">
-            Annuler
-        </button>
+      <tbody>
+        <tr *ngFor="let b of paginatedBoutiques">
+          <td class="py-3">
+            <div class="d-flex align-items-center">
+              <div class="shop-icon me-3">
+                <i class="bi bi-shop fs-4 text-primary"></i>
+              </div>
+              <div>
+                <strong class="fs-5">{{ b.nom }}</strong>
+                <div class="text-muted small">
+                  <i class="bi bi-clock me-1"></i>
+                  Créé le {{ b.createdAt | date:'dd/MM/yyyy' }}
+                </div>
+              </div>
+            </div>
+          </td>
+          
+          <td class="py-3">
+            <div><i class="bi bi-envelope me-2 text-muted"></i>{{ b.email }}</div>
+            <div class="mt-1"><i class="bi bi-telephone me-2 text-muted"></i>{{ b.telephone }}</div>
+          </td>
+          
+          <td class="py-3">
+            <span class="badge bg-secondary bg-opacity-10 text-dark px-3 py-2">
+              <i class="bi bi-tag me-1"></i>
+              {{ b.categorieId?.nom || 'Non catégorisé' }}
+            </span>
+          </td>
+          
+          <td class="py-3">
+            <div *ngIf="b.boxActuelleId" class="d-flex align-items-center">
+              <span class="badge bg-success bg-opacity-10 text-success px-3 py-2">
+                <i class="bi bi-box me-1"></i>
+                Box {{ b.boxActuelleId.numero }} - Étage {{ b.boxActuelleId.etage }}
+              </span>
+              <small class="text-muted ms-2">
+                ({{ b.boxActuelleId.prixActuel | number }} Ar/mois)
+              </small>
+            </div>
+            <span *ngIf="!b.boxActuelleId" class="badge bg-secondary bg-opacity-10 text-muted px-3 py-2">
+              <i class="bi bi-dash-circle me-1"></i>
+              Aucune box
+            </span>
+          </td>
+          
+          <td class="py-3 text-center">
+            <div class="btn-group" role="group">
+              <button class="btn btn-outline-warning" 
+                      (click)="edit(b)"
+                      title="Modifier">
+                <i class="bi bi-pencil"></i>
+              </button>
 
-    </form>
+              <button class="btn btn-outline-info" 
+                      [routerLink]="['/admin/boutique', b._id, 'stats']"
+                      title="Statistiques">
+                <i class="bi bi-graph-up"></i>
+              </button>
 
-    <hr>
+              <!-- Paiement de loyer - Uniquement si boutique a une box -->
+              <button *ngIf="b.boxActuelleId" 
+                      class="btn btn-outline-success" 
+                      [routerLink]="['/admin/boutique', b._id, 'paiement']"
+                      title="Payer le loyer">
+                <i class="bi bi-cash"></i>
+              </button>
+              <button *ngIf="!b.boxActuelleId" 
+                      class="btn btn-outline-secondary" 
+                      disabled
+                      title="Paiement indisponible (pas de box)">
+                <i class="bi bi-cash"></i>
+              </button>
 
-    <h3>Liste des Boutiques</h3>
+              <!-- Libérer box - Uniquement si boutique a une box -->
+              <button *ngIf="b.boxActuelleId" 
+                      class="btn btn-outline-danger" 
+                      (click)="liberer(b)"
+                      title="Libérer la box">
+                <i class="bi bi-box-arrow-right"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
 
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>Nom</th>
-                <th>Email</th>
-                <th>Catégorie</th>
-                <th>Box</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
-        <tbody>
-            <tr *ngFor="let b of boutiques">
-                <td>{{ b.nom }}</td>
-                <td>{{ b.email }}</td>
-                <td>{{ b.categorieId?.nom }}</td>
-                <td>
-                    {{ b.boxActuelleId ? 'Box ' + b.boxActuelleId.numero : 'Aucune' }}
-                </td>
-                <td>
-                    <button class="btn btn-warning btn-sm me-2" (click)="edit(b)">
-                        Modifier
-                    </button>
-
-                    <button class="btn btn-info btn-sm me-2">
-                        Statistiques
-                    </button>
-
-                    <button *ngIf="b.boxActuelleId" class="btn btn-danger btn-sm" (click)="liberer(b)">
-                        Libérer Box
-                    </button>
-                </td>
-            </tr>
-        </tbody>
+        <!-- Message si aucun résultat -->
+        <tr *ngIf="filteredBoutiques.length === 0">
+          <td colspan="5" class="text-center text-muted py-5">
+            <i class="bi bi-inbox fs-1 d-block mb-3"></i>
+            <h5>Aucune boutique trouvée</h5>
+            <p class="mb-0">Essayez de modifier vos filtres de recherche</p>
+          </td>
+        </tr>
+      </tbody>
     </table>
+  </div>
 
+  <!-- PAGINATION -->
+  <div class="d-flex justify-content-between align-items-center mt-4" *ngIf="filteredBoutiques.length > 0">
+    <div class="text-muted">
+      <i class="bi bi-info-circle me-1"></i>
+      Affichage de <strong>{{ (currentPage - 1) * pageSize + 1 }}</strong> à 
+      <strong>{{ Math.min(currentPage * pageSize, filteredBoutiques.length) }}</strong> 
+      sur <strong>{{ filteredBoutiques.length }}</strong> boutiques
+    </div>
+    
+    <div class="pagination-controls d-flex gap-2">
+      <button class="btn btn-outline-primary" 
+              (click)="changePage(currentPage - 1)" 
+              [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      
+      <button class="btn" 
+              *ngFor="let page of pages" 
+              (click)="changePage(page)" 
+              [class.btn-primary]="currentPage === page"
+              [class.btn-outline-primary]="currentPage !== page">
+        {{ page }}
+      </button>
+      
+      <button class="btn btn-outline-primary" 
+              (click)="changePage(currentPage + 1)" 
+              [disabled]="currentPage === totalPages">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <div class="d-flex align-items-center gap-2">
+      <label class="text-muted">
+        <i class="bi bi-list me-1"></i>Lignes par page:
+      </label>
+      <select class="form-select w-auto" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+        <option [value]="5">5</option>
+        <option [value]="10">10</option>
+        <option [value]="20">20</option>
+        <option [value]="50">50</option>
+      </select>
+    </div>
+  </div>
 </div>

@@ -4,6 +4,8 @@ const router = express.Router();
 const Boutique = require('../models/Boutique');
 const Box = require('../models/Box');
 const MouvementBox = require('../models/MouvementBox');
+const PaiementLoyer = require('../models/PaiementLoyer');
+
 
 
 // ======================
@@ -15,6 +17,21 @@ router.get('/', async (req, res) => {
       .populate('boxActuelleId')
       .populate('categorieId');
     res.json(boutiques);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET une boutique par ID
+router.get('/:id', async (req, res) => {
+  try {
+    const boutique = await Boutique.findById(req.params.id)
+      .populate('categorieId')
+      .populate('boxActuelleId');
+    if (!boutique) {
+      return res.status(404).json({ message: 'Boutique non trouvée' });
+    }
+    res.json(boutique);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -41,6 +58,7 @@ router.post('/', async (req, res) => {
       await box.save();
 
       boutique.boxActuelleId = box._id;
+      boutique.dateEntryBox = new Date();
       await boutique.save();
 
       await MouvementBox.create({
@@ -91,6 +109,9 @@ router.put('/:id', async (req, res) => {
           return res.status(400).json({ message: 'Box non disponible' });
         }
 
+        boutique.dateEntryBox = new Date();
+        await boutique.save();
+
         newBox.statut = 'occupee';
         await newBox.save();
 
@@ -134,6 +155,7 @@ router.post('/:id/liberer-box', async (req, res) => {
     );
 
     boutique.boxActuelleId = null;
+    boutique.dateEntryBox = null;
     await boutique.save();
 
     res.json({ message: 'Box libéré' });
@@ -143,4 +165,35 @@ router.post('/:id/liberer-box', async (req, res) => {
   }
 });
 
+// Obtenir une boutique par ID avec ses mouvements et ses paiement
+router.get('/:id/mouvements', async (req, res) => {
+  try {
+    const boutique = await Boutique.findById(req.params.id)
+      .populate('boxActuelleId');
+
+    if (!boutique) {
+      return res.status(404).json({ message: 'Boutique non trouvée' });
+    }
+
+    const mouvements = await MouvementBox.find({
+      boutiqueId: boutique._id
+    }).populate('boxId');
+
+    const paiements = await PaiementLoyer.find({
+      boutiqueId: boutique._id
+    }).sort({ annee: -1, mois: -1 });
+
+    res.json({
+      boutique,
+      mouvements,
+      paiements
+    });
+
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
 module.exports = router;
+

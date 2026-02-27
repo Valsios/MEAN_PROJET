@@ -19,15 +19,23 @@ app.use('/articles', require('./routes/articleRoutes'));
 
 app.use('/api/auth', require('./routes/authRoutes'));
 
-app.use('/api/mouvements-prix', require('./routes/mouvementPrixLoyerRoutes'));
-app.use('/api/paiements-loyer', require('./routes/paiementLoyerRoutes'));
-
-
 app.use('/boxes', require('./routes/boxRoutes'));
 
 app.use('/boutiques', require('./routes/boutiqueRoutes'));
 
 app.use('/categories', require('./routes/categorieRoutes'));
+
+app.use('/paiements', require('./routes/paiementLoyerRoutes'));
+
+app.use('/mouvements', require('./routes/mouvementBoxRoutes'));
+
+app.use('/mouvements-prix', require('./routes/mouvementPrixLoyerRoutes'));
+
+app.use('/reports', require('./routes/reportRoutes'));
+
+app.use('/clients', require('./routes/clientRoutes'));
+
+
 
 
 

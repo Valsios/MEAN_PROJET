@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-lg-6 offset-lg-3 col-md-10 offset-md-1 col-12">
 
-        <!-- FORMULAIRE LOGIN BOUTIQUE -->
+        <!-- FORMULAIRE LOGIN CLIENT -->
         <form
           class="card login-form"
           (ngSubmit)="onLoginClient()"
@@ -58,7 +58,16 @@
               </button>
             </div>
 
-            <!-- SWITCH CLIENT -->
+            <!-- LIEN INSCRIPTION -->
+            <div class="text-center mt-3">
+              <p>Pas encore de compte ? 
+                <a href="javascript:void(0)" (click)="goToRegister()" class="register-link">
+                  S'inscrire
+                </a>
+              </p>
+            </div>
+
+            <!-- SWITCH BOUTIQUE -->
             <div class="text-center mt-3">
               <button
                 type="button"

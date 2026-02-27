@@ -1,0 +1,115 @@
+<div class="container">
+  <div class="row mb-4">
+    <div class="col-12">
+      <h1 class="mt-3">Signaler un problème</h1>
+      <p class="text-muted">
+        <a routerLink="/client/boutiques" class="text-decoration-none">← Retour aux boutiques</a>
+      </p>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div *ngIf="loading" class="text-center py-5">
+    <div class="spinner-border text-primary" role="status">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+  </div>
+
+  <!-- Formulaire -->
+  <div *ngIf="!loading && boutique" class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-12">
+      
+      <!-- Informations boutique -->
+      <div class="card mb-4 bg-light">
+        <div class="card-body">
+          <h5 class="card-title">Boutique concernée</h5>
+          <div class="row">
+            <div class="col-md-6">
+              <p class="mb-1"><strong>Nom :</strong> {{ boutique.nom }}</p>
+              <p class="mb-1"><strong>Email :</strong> {{ boutique.email }}</p>
+            </div>
+            <div class="col-md-6">
+              <p class="mb-1"><strong>Téléphone :</strong> {{ boutique.telephone }}</p>
+              <p class="mb-1"><strong>Catégorie :</strong> {{ boutique.categorieId?.nom }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Formulaire de report -->
+      <form (ngSubmit)="onSubmit()" #reportForm="ngForm" class="card">
+        <div class="card-body">
+          
+          <!-- Date auto-remplie -->
+          <div class="form-group mb-3">
+            <label>Date du signalement</label>
+            <input 
+              type="date" 
+              class="form-control" 
+              [value]="today" 
+              disabled
+            />
+            <small class="text-muted">Date automatiquement remplie</small>
+          </div>
+
+          <!-- Titre -->
+          <div class="form-group mb-3">
+            <label for="title">Titre <span class="text-danger">*</span></label>
+            <input
+              type="text"
+              class="form-control"
+              id="title"
+              name="title"
+              [(ngModel)]="title"
+              required
+              placeholder="Ex: Problème de service, produit non conforme..."
+            />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group mb-3">
+            <label for="description">Description (optionnelle)</label>
+            <textarea
+              class="form-control"
+              id="description"
+              name="description"
+              [(ngModel)]="description"
+              rows="4"
+              placeholder="Décrivez le problème rencontré..."
+            ></textarea>
+          </div>
+
+          <!-- Messages -->
+          <div *ngIf="error" class="alert alert-danger">
+            {{ error }}
+          </div>
+          <div *ngIf="success" class="alert alert-success">
+            {{ success }}
+          </div>
+
+          <!-- Boutons -->
+          <div class="d-flex gap-2">
+            <button 
+              type="submit" 
+              class="btn btn-danger flex-grow-1"
+              [disabled]="reportForm.invalid || submitting"
+            >
+              <span *ngIf="submitting" class="spinner-border spinner-border-sm me-2"></span>
+              <i class="lni lni-flag me-2" *ngIf="!submitting"></i>
+              Envoyer le signalement
+            </button>
+            <button 
+              type="button" 
+              class="btn btn-secondary" 
+              (click)="cancel()"
+              [disabled]="submitting"
+            >
+              Annuler
+            </button>
+          </div>
+
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

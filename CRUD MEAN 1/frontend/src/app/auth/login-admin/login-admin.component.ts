@@ -19,7 +19,7 @@ export class LoginAdminComponent {
 
   onLoginAdmin() {
     this.authService.loginAdmin({ email: this.email, password: this.password }).subscribe({
-      next: () => this.router.navigate(['/admin-dashboard']),
+      next: () => this.router.navigate(['/admin/dashboard']),
       error: err => this.error = err.message || 'Erreur login admin'
     });
   }

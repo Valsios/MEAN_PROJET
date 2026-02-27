@@ -1,0 +1,29 @@
+.badge {
+  padding: 0.5em 0.75em;
+  font-weight: 500;
+}
+
+.card {
+  transition: transform 0.2s, box-shadow 0.2s;
+  border: none;
+  border-radius: 10px;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
+}
+
+.btn-outline-danger {
+  border-width: 2px;
+}
+
+.btn-outline-danger:hover {
+  background-color: #dc3545;
+  color: white;
+}
+
+.lni {
+  font-size: 1.1rem;
+  vertical-align: middle;
+}

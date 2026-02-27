@@ -1,98 +1,192 @@
-
-
 <div class="container">
+  <h2 class="mb-4">
+    {{ isEditMode ? 'Modifier une Box' : 'Créer une nouvelle Box' }}
+  </h2>
 
-    <h2 class="mb-4">
-      {{ isEditMode ? 'Modifier une Box' : 'Créer une nouvelle Box' }}
-    </h2>
-
-    <!-- FORMULAIRE -->
-    <form (ngSubmit)="submitForm()" class="mb-5">
-
-      <div class="row">
-        <div class="col-md-4">
-          <input type="number"
-                 class="form-control"
-                 placeholder="Numéro"
-                 [(ngModel)]="boxForm.numero"
-                 name="numero"
-                 required>
-        </div>
-
-        <div class="col-md-4">
-          <input type="number"
-                 class="form-control"
-                 placeholder="Étage"
-                 [(ngModel)]="boxForm.etage"
-                 name="etage"
-                 required>
-        </div>
-
-        <div class="col-md-4">
-          <input type="number"
-                 class="form-control"
-                 placeholder="Prix actuel"
-                 [(ngModel)]="boxForm.prixActuel"
-                 name="prixActuel"
-                 required>
-        </div>
+  <!-- FORMULAIRE -->
+  <form (ngSubmit)="submitForm()" class="mb-5 card p-4 shadow-sm">
+    <div class="row">
+      <div class="col-md-4">
+        <label class="form-label">Numéro</label>
+        <input type="number" class="form-control" placeholder="Ex: 101" [(ngModel)]="boxForm.numero" name="numero"
+          required>
       </div>
 
-      <div class="mt-3">
-        <button type="submit" class="btn btn-primary me-2">
-          {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
-        </button>
-
-        <button *ngIf="isEditMode"
-                type="button"
-                class="btn btn-secondary"
-                (click)="resetForm()">
-          Annuler modification
-        </button>
+      <div class="col-md-4">
+        <label class="form-label">Étage</label>
+        <input type="number" class="form-control" placeholder="Ex: 1" [(ngModel)]="boxForm.etage" name="etage" required>
       </div>
 
-    </form>
+      <div class="col-md-4">
+        <label class="form-label">Prix actuel (Ar)</label>
+        <input type="number" class="form-control" placeholder="Ex: 50000" [(ngModel)]="boxForm.prixActuel"
+          name="prixActuel" (ngModelChange)="onPrixChange()" required>
+      </div>
 
-    <!-- LISTE -->
-    <h3>Liste des Box</h3>
+      <div class="col-md-12 mt-3" *ngIf="isEditMode && prixModifie">
+        <label class="form-label">Motif du changement de prix</label>
+        <input type="text" class="form-control" placeholder="Ex: Augmentation annuelle" [(ngModel)]="motif"
+          name="motif" required>
+      </div>
+    </div>
 
-    <table class="table table-bordered table-striped mt-3">
-      <thead>
+    <div class="mt-4">
+      <button type="submit" class="btn btn-primary me-2">
+        <i class="bi" [ngClass]="isEditMode ? 'bi-pencil-square' : 'bi-plus-circle'"></i>
+        {{ isEditMode ? 'Mettre à jour' : 'Créer' }}
+      </button>
+
+      <button *ngIf="isEditMode" type="button" class="btn btn-secondary" (click)="resetForm()">
+        <i class="bi bi-x-circle"></i> Annuler
+      </button>
+    </div>
+  </form>
+
+  <!-- FILTRES ET LISTE -->
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Liste des Box</h3>
+    <span class="badge bg-primary">{{ filteredBoxes.length }} box(es) trouvée(s)</span>
+  </div>
+
+  <!-- FILTRES -->
+  <div class="row mb-4">
+    <div class="col-md-4">
+      <label class="form-label">Filtrer par étage</label>
+      <select class="form-select" [(ngModel)]="filters.etage" (ngModelChange)="applyFilters()">
+        <option value="">Tous les étages</option>
+        <option *ngFor="let etage of availableEtages" [value]="etage">
+          Étage {{ etage }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-4">
+      <label class="form-label">Filtrer par statut</label>
+      <select class="form-select" [(ngModel)]="filters.statut" (ngModelChange)="applyFilters()">
+        <option value="">Tous les statuts</option>
+        <option value="libre">Libre</option>
+        <option value="occupee">Occupée</option>
+      </select>
+    </div>
+
+    <div class="col-md-4 d-flex align-items-end">
+      <div class="form-check">
+        <input class="form-check-input" type="checkbox" id="showInactives" 
+               [(ngModel)]="filters.showInactives" (ngModelChange)="loadBoxes()">
+        <label class="form-check-label" for="showInactives">
+          Afficher les box inactives
+        </label>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLEAU -->
+  <div class="table-responsive">
+    <table class="table table-hover table-bordered shadow-sm">
+      <thead class="table-light">
         <tr>
           <th>Numéro</th>
           <th>Étage</th>
-          <th>Prix</th>
+          <th>Prix (Ar)</th>
           <th>Statut</th>
           <th>Actions</th>
         </tr>
       </thead>
 
       <tbody>
-        <tr *ngFor="let box of boxes">
+        <tr *ngFor="let box of paginatedBoxes">
           <td>{{ box.numero }}</td>
           <td>{{ box.etage }}</td>
-          <td>{{ box.prixActuel }} Ar</td>
+          <td>{{ box.prixActuel | number }} Ar</td>
           <td>
-            <span [ngClass]="{
-              'text-success': box.statut === 'libre',
-              'text-danger': box.statut === 'occupee'
+            <span class="badge" [ngClass]="{
+              'bg-success': box.statut === 'libre' && box.etat !== 'inactif',
+              'bg-danger': box.statut === 'occupee' && box.etat !== 'inactif',
+              'bg-secondary': box.etat === 'inactif'
             }">
-              {{ box.statut }}
+              <i class="bi" [ngClass]="{
+                'bi-check-circle': box.statut === 'libre' && box.etat !== 'inactif',
+                'bi-x-circle': box.statut === 'occupee' && box.etat !== 'inactif',
+                'bi-dash-circle': box.etat === 'inactif'
+              }"></i>
+              {{ box.etat === 'inactif' ? 'Inactif' : box.statut }}
             </span>
           </td>
           <td>
-            <button class="btn btn-sm btn-warning me-2"
-                    (click)="editBox(box)">
-              Modifier
-            </button>
+            <div class="btn-group btn-group-sm" role="group">
+              <button class="btn btn-outline-warning" (click)="editBox(box)" 
+                      [disabled]="box.etat === 'inactif'"
+                      title="Modifier">
+                <i class="bi bi-pencil"></i>
+              </button>
+              
+              <!-- Bouton conditionnel : Supprimer (actif) ou Réactiver (inactif) -->
+              <button *ngIf="box.etat !== 'inactif'" 
+                      class="btn btn-outline-danger" 
+                      (click)="deleteBox(box._id!)"
+                      [disabled]="box.statut === 'occupee'"
+                      title="Supprimer">
+                <i class="bi bi-trash"></i>
+              </button>
+              
+              <button *ngIf="box.etat === 'inactif'" 
+                      class="btn btn-outline-success" 
+                      (click)="reactivateBox(box._id!)"
+                      title="Réactiver">
+                <i class="bi bi-arrow-repeat"></i> Réactiver
+              </button>
+              
+              <button class="btn btn-outline-info" [routerLink]="['/admin/boxes', box._id, 'historique-prix']"
+                      title="Historique des prix">
+                <i class="bi bi-graph-up"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
 
-            <button class="btn btn-sm btn-danger"
-                    (click)="deleteBox(box._id!)">
-              Supprimer
-            </button>
+        <!-- Message si aucun résultat -->
+        <tr *ngIf="filteredBoxes.length === 0">
+          <td colspan="5" class="text-center text-muted py-4">
+            <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+            Aucune box trouvée
           </td>
         </tr>
       </tbody>
     </table>
-
   </div>
+
+  <!-- PAGINATION -->
+  <div class="d-flex justify-content-between align-items-center mt-3" *ngIf="filteredBoxes.length > 0">
+    <div>
+      <span class="text-muted">
+        Affichage de {{ (currentPage - 1) * pageSize + 1 }} à 
+        {{ Math.min(currentPage * pageSize, filteredBoxes.length) }} sur 
+        {{ filteredBoxes.length }} box
+      </span>
+    </div>
+    
+    <div class="btn-group" role="group">
+      <button class="btn btn-outline-primary" (click)="changePage(currentPage - 1)" 
+              [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i>
+      </button>
+      
+      <button class="btn btn-outline-primary" *ngFor="let page of pages" 
+              (click)="changePage(page)" [class.active]="currentPage === page">
+        {{ page }}
+      </button>
+      
+      <button class="btn btn-outline-primary" (click)="changePage(currentPage + 1)" 
+              [disabled]="currentPage === totalPages">
+        <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+
+    <select class="form-select w-auto" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+      <option [value]="5">5 par page</option>
+      <option [value]="10">10 par page</option>
+      <option [value]="20">20 par page</option>
+      <option [value]="50">50 par page</option>
+    </select>
+  </div>
+</div>

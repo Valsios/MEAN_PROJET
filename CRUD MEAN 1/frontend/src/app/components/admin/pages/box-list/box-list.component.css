@@ -1,0 +1,32 @@
+.table th {
+  background-color: #f8f9fa;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.badge {
+  font-size: 0.9em;
+  padding: 0.5em 0.7em;
+}
+
+.btn-group .btn {
+  transition: all 0.2s;
+}
+
+.btn-group .btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.card {
+  border-radius: 10px;
+  border: none;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+}
+
+.pagination-info {
+  font-size: 0.9em;
+}

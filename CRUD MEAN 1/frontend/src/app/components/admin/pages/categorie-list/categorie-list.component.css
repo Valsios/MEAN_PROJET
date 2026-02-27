@@ -1,0 +1,377 @@
+/* Style général */
+.container {
+  max-width: 1400px;
+  padding: 2rem 1.5rem;
+}
+
+/* Titres */
+.page-title {
+  font-size: 2rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.page-title i {
+  color: #3498db;
+  font-size: 2rem;
+}
+
+/* Cartes et formulaires */
+.card {
+  border-radius: 15px;
+  background: linear-gradient(145deg, #ffffff, #f8f9fa);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 30px rgba(0,0,0,0.1) !important;
+}
+
+.form-label {
+  font-size: 0.95rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.form-control, .form-select {
+  border: 2px solid #e9ecef;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #3498db;
+  box-shadow: 0 0 0 0.25rem rgba(52,152,219,0.15);
+  outline: none;
+}
+
+.form-control-lg {
+  font-size: 1.1rem;
+  padding: 1rem 1.25rem;
+}
+
+.input-group-text {
+  border: 2px solid #e9ecef;
+  border-right: none;
+  border-radius: 10px 0 0 10px;
+  background: white;
+  color: #6c757d;
+}
+
+.input-group .form-control {
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+}
+
+.input-group .btn-outline-secondary {
+  border: 2px solid #e9ecef;
+  border-left: none;
+  border-radius: 0 10px 10px 0;
+  color: #6c757d;
+}
+
+.input-group .btn-outline-secondary:hover {
+  background: #f8f9fa;
+  color: #dc3545;
+  border-color: #e9ecef;
+}
+
+/* Boutons */
+.btn {
+  border-radius: 10px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.btn-lg {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  border: none;
+  box-shadow: 0 4px 15px rgba(52,152,219,0.3);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(52,152,219,0.4);
+  background: linear-gradient(135deg, #2980b9, #2471a3);
+}
+
+.btn-outline-secondary {
+  border: 2px solid #dee2e6;
+  color: #6c757d;
+  background: white;
+}
+
+.btn-outline-secondary:hover {
+  background: #f8f9fa;
+  transform: translateY(-2px);
+  border-color: #adb5bd;
+  color: #495057;
+}
+
+.btn-outline-warning {
+  border: 2px solid #ffc107;
+  color: #856404;
+}
+
+.btn-outline-warning:hover {
+  background: #ffc107;
+  color: #000;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(255,193,7,0.3);
+}
+
+.btn-outline-danger {
+  border: 2px solid #dc3545;
+  color: #721c24;
+}
+
+.btn-outline-danger:hover {
+  background: #dc3545;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(220,53,69,0.3);
+}
+
+.btn-group {
+  gap: 0.25rem;
+}
+
+.btn-group .btn {
+  border-radius: 8px !important;
+  padding: 0.5rem 1rem;
+}
+
+/* Badges et indicateurs */
+.badge {
+  font-size: 1rem;
+  padding: 0.5rem 1rem;
+  border-radius: 50px;
+  font-weight: 500;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.badge.bg-primary {
+  background: linear-gradient(135deg, #3498db, #2980b9) !important;
+}
+
+/* Tableau */
+.table {
+  background: white;
+  border-radius: 15px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+  margin-bottom: 0;
+}
+
+.table thead th {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  color: #495057;
+  padding: 1rem 1.5rem;
+}
+
+.table tbody tr {
+  transition: all 0.3s ease;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.table tbody tr:hover {
+  background: #f8f9fa;
+  transform: scale(1.01);
+  box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.table td {
+  padding: 1.25rem 1.5rem;
+  vertical-align: middle;
+}
+
+/* Icône de catégorie */
+.category-icon {
+  width: 45px;
+  height: 45px;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.category-icon i {
+  font-size: 1.5rem !important;
+  color: #1976d2;
+}
+
+/* Pagination */
+.pagination-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.pagination-controls .btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 10px;
+}
+
+.pagination-controls .btn-primary {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  box-shadow: 0 4px 10px rgba(52,152,219,0.3);
+}
+
+.pagination-controls .btn-outline-primary {
+  border: 2px solid #3498db;
+  color: #3498db;
+  background: white;
+}
+
+.pagination-controls .btn-outline-primary:hover {
+  background: #e3f2fd;
+  transform: translateY(-2px);
+}
+
+/* Sélecteur de lignes par page */
+select.form-select {
+  width: 80px;
+  padding: 0.5rem 2rem 0.5rem 1rem;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Checkbox personnalisée */
+.form-check-input {
+  width: 1.2rem;
+  height: 1.2rem;
+  border: 2px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-right: 0.5rem;
+}
+
+.form-check-input:checked {
+  background-color: #3498db;
+  border-color: #3498db;
+}
+
+.form-check-label {
+  font-size: 1rem;
+  color: #495057;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Messages d'erreur */
+.invalid-feedback {
+  font-size: 0.875rem;
+  color: #dc3545;
+  margin-top: 0.5rem;
+  padding-left: 0.5rem;
+}
+
+/* Animation de survol pour les lignes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.table tbody tr {
+  animation: slideIn 0.3s ease forwards;
+}
+
+/* Style pour l'état vide */
+.text-muted i.bi-inbox {
+  opacity: 0.5;
+  font-size: 4rem !important;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .page-title {
+    font-size: 1.5rem;
+  }
+
+  .btn-lg {
+    padding: 0.75rem 1.5rem;
+  }
+
+  .table td, .table th {
+    padding: 1rem;
+  }
+
+  .d-flex.justify-content-between {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch !important;
+  }
+
+  .pagination-controls {
+    justify-content: center;
+  }
+
+  .badge {
+    align-self: flex-start;
+  }
+}
+
+/* Scrollbar personnalisée */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
+}

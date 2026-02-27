@@ -1,0 +1,28 @@
+<div class="container">
+
+  <h2>Historique des changements de prix</h2>
+
+  <table class="table table-bordered mt-4" *ngIf="mouvements.length > 0">
+    <thead>
+      <tr>
+        <th>Date</th>
+        <th>Ancien Prix</th>
+        <th>Nouveau Prix</th>
+        <th>Motif</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let m of mouvements">
+        <td>{{ m.dateMvt | date:'dd/MM/yyyy HH:mm' }}</td>
+        <td>{{ m.ancienPrix }} Ar</td>
+        <td>{{ m.nouveauPrix }} Ar</td>
+        <td>{{ m.motif || '—' }}</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div *ngIf="mouvements.length === 0" class="alert alert-info">
+    Aucun changement de prix enregistré.
+  </div>
+
+</div>

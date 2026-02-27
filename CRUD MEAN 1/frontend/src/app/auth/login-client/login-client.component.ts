@@ -19,12 +19,16 @@ export class LoginClientComponent {
 
   onLoginClient() {
     this.authService.loginClient({ email: this.email, password: this.password }).subscribe({
-      next: () => this.router.navigate(['/client-dashboard']),
+      next: () => this.router.navigate(['/client/dashboard']),
       error: err => this.error = err.message || 'Erreur login client'
     });
   }
 
   switchToBoutique() {
     this.router.navigate(['/login-boutique']);
+  }
+
+  goToRegister() {
+    this.router.navigate(['/register']);
   }
 }

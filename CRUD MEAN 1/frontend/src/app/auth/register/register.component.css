@@ -1,0 +1,22 @@
+.register-link, .login-link {
+  color: #007bff;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.register-link:hover, .login-link:hover {
+  color: #0056b3;
+}
+
+.btn-alt {
+  background-color: #6c757d;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-alt:hover {
+  background-color: #5a6268;
+}

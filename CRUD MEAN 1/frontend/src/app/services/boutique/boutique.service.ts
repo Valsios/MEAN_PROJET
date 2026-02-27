@@ -3,6 +3,33 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
+export interface Boutique {
+  _id: string;
+  nom: string;
+  telephone: string;
+  email: string;
+  boxActuelleId: {
+    _id: string;
+    numero: string;
+    etage: number;
+  } | null;
+  categorieId: {
+    _id: string;
+    nom: string;
+  };
+}
+
+export interface Report {
+  clientId: string | null;
+  boutiqueId: string;
+  title: string;
+  description?: string;
+  commentaire?: string;
+  dateReport: Date;
+  statut: 'en_attente' | 'valide' | 'refuse';
+}
+
+
 
 @Injectable({ providedIn: 'root' })
 export class BoutiqueService {
@@ -12,7 +39,6 @@ export class BoutiqueService {
   constructor(private http: HttpClient) {}
 
   getAll() {
-    console.log (this.apiUrl);
     return this.http.get<any[]>(this.apiUrl);
   }
 
@@ -26,5 +52,9 @@ export class BoutiqueService {
 
   libererBox(id: string) {
     return this.http.post(`${this.apiUrl}/${id}/liberer-box`, {});
+  }
+
+  getBoutiqueById(id: string) {
+    return this.http.get<Boutique>(`${this.apiUrl}/${id}`)
   }
 }
