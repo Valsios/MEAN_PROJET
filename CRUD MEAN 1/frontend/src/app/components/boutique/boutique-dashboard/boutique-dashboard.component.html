@@ -171,7 +171,7 @@
                     <span class="display-4 fw-bold me-3">{{ noteGlobale | number:'1.1-1' }}</span>
                     <div>
                       <div class="rating-stars mb-1">
-                        <i class="lni lni-star-fill text-warning" *ngFor="let star of [].constructor(5); let i = index"
+                        <i class="lni lni-star-filled text-warning" *ngFor="let star of [].constructor(5); let i = index"
                            [class.text-warning]="i < Math.floor(noteGlobale)"
                            [class.lni-star-half]="i === Math.floor(noteGlobale) && noteGlobale % 1 >= 0.5"
                            [class.text-muted]="i >= Math.ceil(noteGlobale)"></i>
@@ -211,8 +211,8 @@
                         </div>
                       </div>
                       <div class="mb-2">
-                        <i class="lni lni-star-fill text-warning" *ngFor="let star of [].constructor(avis.note)"></i>
-                        <i class="lni lni-star-fill text-muted" *ngFor="let star of [].constructor(5 - avis.note)"></i>
+                        <i class="lni lni-star-filled text-warning" *ngFor="let star of [].constructor(avis.note)"></i>
+                        <i class="lni lni-star-filled text-muted" *ngFor="let star of [].constructor(5 - avis.note)"></i>
                       </div>
                       <p class="mb-0">{{ avis.commentaire }}</p>
                     </div>
