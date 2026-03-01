@@ -35,6 +35,8 @@ app.use('/reports', require('./routes/reportRoutes'));
 
 app.use('/clients', require('./routes/clientRoutes'));
 
+app.use('/dashboard', require('./routes/dashboardAdminRoutes'));
+
 // ------- VALS ---------
 
 app.use('/api/produit', require('./routes/produitRoutesVals'));
