@@ -45,6 +45,12 @@ app.use('/api/mouvements-prix', require('./routes/mouvementPrixLoyerRoutesVals')
 app.use('/api/paiements-loyer', require('./routes/paiementLoyerRoutesVals'));
 
 
+//route de test after
+// Route de test pour vérifier que l'API fonctionne
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'API fonctionne correctement' });
+});
+
 
 
 
