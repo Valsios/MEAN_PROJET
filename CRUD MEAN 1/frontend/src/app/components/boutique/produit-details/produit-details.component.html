@@ -221,127 +221,7 @@
             </div>
         </div>
         
-        <!-- ========== SECTION REVIEWS ========== -->
-        <!-- Section Reviews et Note Globale -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="reviews-section">
-                    <div class="section-title mb-4">
-                        <h2>Avis clients</h2>
-                    </div>
-
-                    <!-- Note globale et statistiques -->
-                    <div class="row mb-4">
-                        <div class="col-lg-4">
-                            <div class="global-rating-card text-center p-4 border rounded">
-                                <div class="global-rating-number">
-                                    <span class="display-1 fw-bold">{{ noteGlobale | number:'1.1-1' }}</span>
-                                    <span class="h4 text-muted">/5</span>
-                                </div>
-                                <div class="global-rating-stars mb-2">
-                                    <i class="lni lni-star-fill" style="color: #ffc107;" *ngFor="let star of [].constructor(5); let i = index" 
-                                       [class.text-warning]="i < Math.floor(noteGlobale)"
-                                       [class.lni-star-half]="i === Math.floor(noteGlobale) && noteGlobale % 1 >= 0.5"
-                                       [class.text-muted]="i >= Math.ceil(noteGlobale)"></i>
-                                </div>
-                                <p class="text-muted">{{ totalReviews }} avis</p>
-                                
-                                <!-- Barres de progression des notes -->
-                                <div class="rating-bars mt-3">
-                                    <div *ngFor="let note of [5,4,3,2,1]" class="rating-bar-item d-flex align-items-center mb-2">
-                                        <span class="me-2" style="min-width: 30px;">{{note}}★</span>
-                                        <div class="progress flex-grow-1" style="height: 8px;">
-                                            <div class="progress-bar bg-warning" 
-                                                 [style.width]="(reviewsParNote[note] / totalReviews * 100) + '%'"
-                                                 [attr.aria-valuenow]="reviewsParNote[note]"
-                                                 aria-valuemin="0" 
-                                                 [attr.aria-valuemax]="totalReviews">
-                                            </div>
-                                        </div>
-                                        <span class="ms-2 small">{{reviewsParNote[note]}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-lg-8">
-                            <!-- Message informatif -->
-                            <div class="alert alert-light border">
-                                <i class="lni lni-information"></i> 
-                                Les avis sont publiés par les clients depuis la plateforme.
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Liste des avis -->
-                    <div class="reviews-list">
-                        <h5 class="mb-3">Tous les avis ({{ totalReviews }})</h5>
-                        
-                        <div *ngIf="isLoadingReviews" class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
-                            </div>
-                        </div>
-
-                        <div *ngIf="!isLoadingReviews && paginatedReviews.length === 0" class="text-center py-5 text-muted">
-                            <i class="lni lni-comments" style="font-size: 3rem;"></i>
-                            <p class="mt-3">Aucun avis pour le moment. Les clients pourront bientôt donner leur avis !</p>
-                        </div>
-
-                        <div class="review-item card mb-3" *ngFor="let review of paginatedReviews">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <div class="reviewer-info d-flex align-items-center mb-2">
-                                            <div class="reviewer-avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                                 style="width: 40px; height: 40px;">
-                                                <i class="lni lni-user fs-5"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0">{{ review.client?.email || 'Client' }}</h6>
-                                                <small class="text-muted">
-                                                    {{ review.createdAt | date:'dd/MM/yyyy' }}
-                                                </small>
-                                            </div>
-                                        </div>
-                                        <div class="review-rating mb-2">
-                                            <i class="lni lni-star-fill text-warning" *ngFor="let star of [].constructor(review.note)"></i>
-                                            <i class="lni lni-star-fill text-muted" *ngFor="let star of [].constructor(5 - review.note)"></i>
-                                        </div>
-                                        <p class="review-comment mb-0">{{ review.commentaire || 'Avis sans commentaire' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="pagination-section mt-4" *ngIf="getTotalPages() > 1">
-                            <nav aria-label="Pagination des avis">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item" [class.disabled]="currentPage === 1">
-                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">
-                                            Précédent
-                                        </a>
-                                    </li>
-                                    <li class="page-item" *ngFor="let page of [].constructor(getTotalPages()); let i = index" 
-                                        [class.active]="currentPage === i + 1">
-                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(i + 1)">
-                                            {{ i + 1 }}
-                                        </a>
-                                    </li>
-                                    <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
-                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">
-                                            Suivant
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ========== FIN SECTION REVIEWS ========== -->
+        
         
         <!-- Section Promotion (après les détails) -->
         <div class="row mt-5">
@@ -433,6 +313,127 @@
                 </div>
             </div>
         </div>
+        <!-- ========== SECTION REVIEWS ========== -->
+        <!-- Section Reviews et Note Globale -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="reviews-section">
+                    <div class="section-title mb-4">
+                        <h2>Avis clients</h2>
+                    </div>
+
+                    <!-- Note globale et statistiques -->
+                    <div class="row mb-4">
+                        <div class="col-lg-4">
+                            <div class="global-rating-card text-center p-4 border rounded">
+                                <div class="global-rating-number">
+                                    <span class="display-1 fw-bold">{{ noteGlobale | number:'1.1-1' }}</span>
+                                    <span class="h4 text-muted">/5</span>
+                                </div>
+                                <div class="global-rating-stars mb-2">
+                                    <i class="lni lni-star-filled" style="color: #ffc107;" *ngFor="let star of [].constructor(5); let i = index" 
+                                       [class.text-warning]="i < Math.floor(noteGlobale)"
+                                       [class.lni-star-half]="i === Math.floor(noteGlobale) && noteGlobale % 1 >= 0.5"
+                                       [class.text-muted]="i >= Math.ceil(noteGlobale)"></i>
+                                </div>
+                                <p class="text-muted">{{ totalReviews }} avis</p>
+                                
+                                <!-- Barres de progression des notes -->
+                                <div class="rating-bars mt-3">
+                                    <div *ngFor="let note of [5,4,3,2,1]" class="rating-bar-item d-flex align-items-center mb-2">
+                                        <span class="me-2" style="min-width: 30px;">{{note}}★</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" 
+                                                 [style.width]="(reviewsParNote[note] / totalReviews * 100) + '%'"
+                                                 [attr.aria-valuenow]="reviewsParNote[note]"
+                                                 aria-valuemin="0" 
+                                                 [attr.aria-valuemax]="totalReviews">
+                                            </div>
+                                        </div>
+                                        <span class="ms-2 small">{{reviewsParNote[note]}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-8">
+                            <!-- Message informatif -->
+                            <div class="alert alert-light border">
+                                <i class="lni lni-information"></i> 
+                                Les avis sont publiés par les clients depuis la plateforme.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liste des avis -->
+                    <div class="reviews-list">
+                        <h5 class="mb-3">Tous les avis ({{ totalReviews }})</h5>
+                        
+                        <div *ngIf="isLoadingReviews" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!isLoadingReviews && paginatedReviews.length === 0" class="text-center py-5 text-muted">
+                            <i class="lni lni-comments" style="font-size: 3rem;"></i>
+                            <p class="mt-3">Aucun avis pour le moment. Les clients pourront bientôt donner leur avis !</p>
+                        </div>
+
+                        <div class="review-item card mb-3" *ngFor="let review of paginatedReviews">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="reviewer-info d-flex align-items-center mb-2">
+                                            <div class="reviewer-avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="lni lni-user fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ review.client?.email || 'Client' }}</h6>
+                                                <small class="text-muted">
+                                                    {{ review.createdAt | date:'dd/MM/yyyy' }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating mb-2">
+                                            <i class="lni lni-star-filled text-warning" *ngFor="let star of [].constructor(review.note)"></i>
+                                            <i class="lni lni-star-filled text-muted" *ngFor="let star of [].constructor(5 - review.note)"></i>
+                                        </div>
+                                        <p class="review-comment mb-0">{{ review.commentaire || 'Avis sans commentaire' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination-section mt-4" *ngIf="getTotalPages() > 1">
+                            <nav aria-label="Pagination des avis">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item" [class.disabled]="currentPage === 1">
+                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">
+                                            Précédent
+                                        </a>
+                                    </li>
+                                    <li class="page-item" *ngFor="let page of [].constructor(getTotalPages()); let i = index" 
+                                        [class.active]="currentPage === i + 1">
+                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(i + 1)">
+                                            {{ i + 1 }}
+                                        </a>
+                                    </li>
+                                    <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
+                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">
+                                            Suivant
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ========== FIN SECTION REVIEWS ========== -->
     </div>
 </section>
 <!-- End Item Details -->

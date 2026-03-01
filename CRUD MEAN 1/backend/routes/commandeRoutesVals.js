@@ -35,6 +35,16 @@ router.get('/annulerCommande/:id', async (req, res) => {
 // Valider une commande
 router.get('/validerCommande/:id', async (req, res) => {
   try {
+
+    //
+    const commandeToInsert = await Commande.findById(req.params.id);
+     // Vérification du stock
+    const check = await checkArticle(commandeToInsert);
+   
+    if (!check.ok) {
+      return res.status(400).json({ message: check.message });
+    }
+    
     const commande = await Commande.findByIdAndUpdate(
       req.params.id,                   
       { 
@@ -46,6 +56,7 @@ router.get('/validerCommande/:id', async (req, res) => {
         runValidators: true                
       }
     );
+    
     updateStock(commande);
 
     // Réponse succès
@@ -71,7 +82,7 @@ router.post('/createCommande', async (req, res) => {
     }
 
     const commande = await Commande.insertOne(commandeToInsert);
-     updateStock(commande);
+    updateStock(commande);
   
     res.status(201).json(commande);
   } catch (error) {
@@ -101,22 +112,26 @@ async function updateStock(commande) {
 
   for (let i = 0; i < articles.length; i++) {
     const art = articles[i];
-
-    await Produit.updateOne(
-      { _id: art.produitId },
-      { $inc: { stockActuel: -art.quantite } }
-    );
     const produit = await Produit.findById(art.produitId);
+    if(produit.gestionStock === true)
+    {
+          await Produit.updateOne(
+          { _id: art.produitId },
+          { $inc: { stockActuel: -art.quantite } }
+        );
+      
 
-    // Enregistrer le mouvement de stock
-    await MouvementStock.create({
-          produitId: new mongoose.Types.ObjectId(art.produitId),
-          quantite: art.quantite,
-          type : 'SORTIE' ,
-          stockAvant: produit.stockActuel,
-          stockApres : produit.stockActuel - art.quantite
-        });
-  }
+        // Enregistrer le mouvement de stock
+        await MouvementStock.create({
+              produitId: new mongoose.Types.ObjectId(art.produitId),
+              quantite: art.quantite,
+              type : 'SORTIE' ,
+              stockAvant: produit.stockActuel,
+              stockApres : produit.stockActuel - art.quantite
+            });
+      }
+    }
+   
 };
 
 module.exports = router;

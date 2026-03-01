@@ -39,6 +39,7 @@ export class ClientCommandeComponent implements OnInit {
     total: 0,
     enAttente: 0,
     validees: 0,
+    annule:0
    
   };
 
@@ -99,7 +100,8 @@ export class ClientCommandeComponent implements OnInit {
     this.stats = {
       total: this.commandes.length,
       enAttente: this.commandes.filter(c => c.statut === 'en_attente').length,
-      validees: this.commandes.filter(c => c.statut === 'validee').length
+      validees: this.commandes.filter(c => c.statut === 'validee').length,
+      annule: this.commandes.filter(c => c.statut === 'annule').length
     };
   }
 

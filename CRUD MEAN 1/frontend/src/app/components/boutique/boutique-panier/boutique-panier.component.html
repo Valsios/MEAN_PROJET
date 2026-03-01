@@ -107,7 +107,7 @@
                         <div>
                           <strong>{{ article.nomProduit }}</strong>
                           <div *ngIf="article.stockRestant !== undefined" class="small text-muted">
-                            Stock restant: {{ article.stockRestant + article.quantite }}
+                            Stock restant: {{ article.stockRestant - article.quantite +1 }}
                           </div>
                         </div>
                       </div>
@@ -129,6 +129,7 @@
                           (input)="changerQuantite(i, $event)"
                           min="1"
                           [max]="article.stockRestant ? article.stockRestant + article.quantite : 999"
+                          disabled
                           style="width: 60px;">
                         <button 
                           class="btn btn-outline-secondary" 

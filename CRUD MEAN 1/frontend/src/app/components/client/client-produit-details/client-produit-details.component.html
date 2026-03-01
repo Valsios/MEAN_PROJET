@@ -73,7 +73,7 @@
                                     <span class="h4 text-muted">/5</span>
                                 </div>
                                 <div class="global-rating-stars mb-2">
-                                    <i class="lni lni-star-fill" style="color: #ffc107;" *ngFor="let star of [].constructor(5); let i = index" 
+                                    <i class="lni lni-star-filled" style="color: #ffc107;" *ngFor="let star of [].constructor(5); let i = index" 
                                        [class.text-warning]="i < Math.floor(noteGlobale)"
                                        [class.lni-star-half]="i === Math.floor(noteGlobale) && noteGlobale % 1 >= 0.5"
                                        [class.text-muted]="i >= Math.ceil(noteGlobale)"></i>
@@ -204,8 +204,8 @@
                                             </div>
                                         </div>
                                         <div class="review-rating mb-2">
-                                            <i class="lni lni-star-fill text-warning" *ngFor="let star of [].constructor(review.note)"></i>
-                                            <i class="lni lni-star-fill text-muted" *ngFor="let star of [].constructor(5 - review.note)"></i>
+                                            <i class="lni lni-star-filled text-warning" *ngFor="let star of [].constructor(review.note)"></i>
+                                            <i class="lni lni-star-filled text-muted" *ngFor="let star of [].constructor(5 - review.note)"></i>
                                         </div>
                                         <p class="review-comment mb-0">{{ review.commentaire || 'Avis sans commentaire' }}</p>
                                     </div>

@@ -287,6 +287,7 @@ export class ClientPanierComponent implements OnInit {
         },
         error: (error) => {
           console.error('Erreur validation:', error);
+          alert('Erreur de validation :' + error.error.message);
           this.showMessage('error', 'Erreur lors de la validation');
         }
       });
@@ -378,7 +379,7 @@ export class ClientPanierComponent implements OnInit {
   getNomBoutique(panier: any): string {
     return panier.boutiqueNom || panier.boutiqueId?.nom || 'Boutique';
   }
-
+  
   // Formater la date
   getDateCommande(date: string): string {
     if (!date) return 'Date inconnue';

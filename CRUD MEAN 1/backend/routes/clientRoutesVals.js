@@ -114,7 +114,15 @@ router.delete('/:commandeId/article/:produitId', async (req, res) => {
 router.put('/:commandeId/valider', async (req, res) => {
   try {
     const { commandeId } = req.params;
+    
     const commande = await Commande.findById(commandeId);
+
+    // Vérification du stock
+    const check = await checkArticle(commande);
+   
+    if (!check.ok) {
+      return res.status(400).json({ message: check.message });
+    }
     
     // Mettre à jour le statut
     commande.statut = 'en_attente';
@@ -136,6 +144,24 @@ router.put('/:commandeId/valider', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+async function checkArticle(commande) {
+  
+  const articles = commande.articles;
+
+  for (let i = 0; i < articles.length; i++) {
+    const art = articles[i];
+    const produit = await Produit.findById(art.produitId);
+    if (produit.gestionStock === true && produit.stockActuel < art.quantite) {
+      return { 
+        ok: false, 
+        message: `Stock insuffisant pour ${produit.nom}` 
+      };
+    }
+  }
+
+  return { ok: true };
+}
 
 // Valider tous les paniers d'un client
 router.put('/:clientId/paniers/valider-tout', async (req, res) => {
@@ -378,11 +404,35 @@ router.get('/:id/commandes', async (req, res) => {
 //noter boutique
 router.post('/noter-boutique', async (req, res) => {
   try {
-    const review = new ReviewBoutique(req.body);
-    await review.save();
-    res.status(201).json(client);
+    const { boutiqueId, clientId, clientEmail, note, commentaire } = req.body;
+    
+    // Vérifier si le client a déjà noté
+    let review = await ReviewBoutique.findOne({
+      'client.id': clientId,
+      boutiqueId: boutiqueId
+    });
+
+    if (review) {
+      // Mise à jour
+      review.note = note;
+      review.commentaire = commentaire || review.commentaire;
+      review.updatedAt = new Date();
+      await review.save();
+    } else {
+      // Création
+      review = new ReviewBoutique({
+        boutiqueId,
+        client: { id: clientId, email: clientEmail },
+        note,
+        commentaire,
+        createdAt: new Date()
+      });
+      await review.save();
+    }
+
+    res.json({ message: 'Avis enregistré', review });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
