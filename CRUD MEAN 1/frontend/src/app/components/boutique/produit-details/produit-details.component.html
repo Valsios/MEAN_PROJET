@@ -1,0 +1,440 @@
+<app-boutique-header></app-boutique-header>
+
+<!-- Start Item Details -->
+<section class="item-details section">
+    <div class="container">
+        <div class="top-area">
+            <div class="row align-items-center">
+                <!-- Colonne gauche - Image du produit -->
+                <div class="col-lg-6 col-md-12 col-12">
+                    <div class="product-images">
+                        <main id="gallery">
+                            <div class="main-img">
+                                <img *ngIf="produit?.image" 
+                                     [src]="'data:image/png;base64,' + produit.image" 
+                                     id="current" 
+                                     alt="{{produit?.nom}}">
+                                <img *ngIf="!produit?.image" 
+                                     src="assets/images/products/No_Image_Available.jpg" 
+                                     id="current" 
+                                     alt="{{produit?.nom}}">
+                            </div>
+                        </main>
+                    </div>
+                </div>
+                
+                <!-- Colonne droite - Informations produit et formulaire prix -->
+                <div class="col-lg-6 col-md-12 col-12">
+                    <div class="product-info">
+                        <h2 class="title">{{produit?.nom}}</h2>
+                        <p class="category"><i class="lni lni-tag"></i> {{produit?.type}}</p>
+                        
+                        <!-- Prix et formulaire de modification (côte à côte) -->
+                        <div class="price-section mb-4">
+                            <div class="row align-items-end">
+                                <div class="col-md-6">
+                                    <div class="current-price-display">
+                                        <h3 class="price mb-1" [ngClass]="{'has-promo': promotionActive}">
+                                            {{prixFinal | currency:'MGA':'symbol':'1.0-0'}}
+                                            <span *ngIf="promotionActive" class="original-price">
+                                                {{produit?.prixActuel | currency:'MGA':'symbol':'1.0-0'}}
+                                            </span>
+                                        </h3>
+                                        <span *ngIf="promotionActive" class="promo-badge">
+                                            -{{promotionActive.pourcentage}}%
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="price-edit-form">
+                                        <form [formGroup]="priceForm" (ngSubmit)="onUpdatePrice()" class="d-flex">
+                                            <div class="input-group">
+                                                <input 
+                                                    type="number" 
+                                                    class="form-control form-control-sm" 
+                                                    formControlName="nouveauPrix"
+                                                    min="0"
+                                                    step="100"
+                                                    placeholder="Nouveau prix">
+                                                <span class="input-group-text">Ar</span>
+                                                <button type="submit" 
+                                                        class="btn btn-primary btn-sm" 
+                                                        [disabled]="priceForm.invalid || isLoading">
+                                                    <i class="lni lni-save"></i>
+                                                </button>
+                                            </div>
+                                        </form>
+                                        <small class="text-danger" *ngIf="priceControl?.invalid && priceControl?.touched">
+                                            Prix invalide
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Description courte -->
+                        <p class="info-text">{{produit?.description}}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Section Détails du produit (avec formulaire update et ravitaillement) -->
+        <div class="product-details-info mt-5">
+            <div class="row">
+                <div class="col-12">
+                    <div class="section-title mb-4">
+                        <h2>Détails et gestion du produit</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-lg-7 col-12">
+                    <!-- Formulaire de mise à jour du produit -->
+                    <div class="single-block">
+                        <div class="card">
+                            <div class="card-header bg-warning">
+                                <h5 class="mb-0"><i class="lni lni-pencil"></i> Modifier les informations</h5>
+                            </div>
+                            <div class="card-body">
+                                <form [formGroup]="updateForm" (ngSubmit)="onUpdateProduct()">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <!-- Nom -->
+                                            <div class="form-group mb-3">
+                                                <label for="nom">Nom du produit <span class="text-danger">*</span></label>
+                                                <input 
+                                                    type="text" 
+                                                    class="form-control" 
+                                                    id="nom" 
+                                                    formControlName="nom"
+                                                    [class.is-invalid]="nomControl?.invalid && nomControl?.touched">
+                                                <div class="invalid-feedback" *ngIf="nomControl?.hasError('required')">
+                                                    Le nom est requis
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <!-- Type (readonly ou select selon besoin) -->
+                                            <div class="form-group mb-3">
+                                                <label for="type">Type</label>
+                                                <input type="text" class="form-control" id="type" [value]="produit?.type" readonly>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Description -->
+                                    <div class="form-group mb-3">
+                                        <label for="description">Description</label>
+                                        <textarea 
+                                            class="form-control" 
+                                            id="description" 
+                                            rows="4"
+                                            formControlName="description"
+                                            placeholder="Description détaillée du produit...">
+                                        </textarea>
+                                    </div>
+
+                                    <!-- Photo -->
+                                    <div class="form-group mb-3">
+                                        <label for="image">Photo du produit</label>
+                                        <input 
+                                            type="file" 
+                                            class="form-control" 
+                                            id="image" 
+                                            (change)="onImageSelected($event)"
+                                            accept="image/*">
+                                        <small class="text-muted">Laissez vide pour conserver l'image actuelle</small>
+                                        
+                                        <div class="row mt-2">
+                                            <div class="col-6" *ngIf="imagePreview">
+                                                <p class="mb-1">Nouvelle image :</p>
+                                                <img [src]="imagePreview" alt="Aperçu" class="img-thumbnail" style="max-height: 100px;">
+                                            </div>
+                                            <div class="col-6" *ngIf="produit?.image && !imagePreview">
+                                                <p class="mb-1">Image actuelle :</p>
+                                                <img [src]="'data:image/png;base64,' + produit.image" alt="Image actuelle" class="img-thumbnail" style="max-height: 100px;">
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <button type="submit" 
+                                            class="btn btn-warning" 
+                                            [disabled]="updateForm.invalid || isLoading">
+                                        <i class="lni lni-save"></i> 
+                                        <span *ngIf="!isLoading">Mettre à jour le produit</span>
+                                        <span *ngIf="isLoading">Mise à jour en cours...</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-5 col-12">
+                    <!-- Ravitaillement du stock (visible seulement si gestionStock = true) -->
+                    <div class="single-block" *ngIf="produit?.gestionStock">
+                        <div class="card">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0"><i class="lni lni-package"></i> Ravitaillement du stock</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="current-stock mb-4 text-center">
+                                    <span class="h2">{{produit?.stockActuel || 0}}</span>
+                                    <span class="text-muted"> unités en stock</span>
+                                </div>
+                                
+                                <form [formGroup]="stockForm" (ngSubmit)="onRestock()">
+                                    <div class="form-group mb-3">
+                                        <label for="quantite">Quantité à ajouter <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input 
+                                                type="number" 
+                                                class="form-control" 
+                                                id="quantite" 
+                                                formControlName="quantite"
+                                                min="1"
+                                                step="1"
+                                                placeholder="Ex: 10">
+                                            <button type="submit" 
+                                                    class="btn btn-info" 
+                                                    [disabled]="stockForm.invalid || isLoading">
+                                                <i class="lni lni-plus"></i> Ajouter
+                                            </button>
+                                        </div>
+                                        <small class="text-danger" *ngIf="quantiteControl?.invalid && quantiteControl?.touched">
+                                            Quantité invalide
+                                        </small>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Message si gestionStock = false -->
+                    <div class="alert alert-info mt-3" *ngIf="produit && !produit.gestionStock">
+                        <i class="lni lni-info-circle"></i> 
+                        La gestion de stock n'est pas activée pour ce produit.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- ========== SECTION REVIEWS ========== -->
+        <!-- Section Reviews et Note Globale -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="reviews-section">
+                    <div class="section-title mb-4">
+                        <h2>Avis clients</h2>
+                    </div>
+
+                    <!-- Note globale et statistiques -->
+                    <div class="row mb-4">
+                        <div class="col-lg-4">
+                            <div class="global-rating-card text-center p-4 border rounded">
+                                <div class="global-rating-number">
+                                    <span class="display-1 fw-bold">{{ noteGlobale | number:'1.1-1' }}</span>
+                                    <span class="h4 text-muted">/5</span>
+                                </div>
+                                <div class="global-rating-stars mb-2">
+                                    <i class="lni lni-star-fill" style="color: #ffc107;" *ngFor="let star of [].constructor(5); let i = index" 
+                                       [class.text-warning]="i < Math.floor(noteGlobale)"
+                                       [class.lni-star-half]="i === Math.floor(noteGlobale) && noteGlobale % 1 >= 0.5"
+                                       [class.text-muted]="i >= Math.ceil(noteGlobale)"></i>
+                                </div>
+                                <p class="text-muted">{{ totalReviews }} avis</p>
+                                
+                                <!-- Barres de progression des notes -->
+                                <div class="rating-bars mt-3">
+                                    <div *ngFor="let note of [5,4,3,2,1]" class="rating-bar-item d-flex align-items-center mb-2">
+                                        <span class="me-2" style="min-width: 30px;">{{note}}★</span>
+                                        <div class="progress flex-grow-1" style="height: 8px;">
+                                            <div class="progress-bar bg-warning" 
+                                                 [style.width]="(reviewsParNote[note] / totalReviews * 100) + '%'"
+                                                 [attr.aria-valuenow]="reviewsParNote[note]"
+                                                 aria-valuemin="0" 
+                                                 [attr.aria-valuemax]="totalReviews">
+                                            </div>
+                                        </div>
+                                        <span class="ms-2 small">{{reviewsParNote[note]}}</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-8">
+                            <!-- Message informatif -->
+                            <div class="alert alert-light border">
+                                <i class="lni lni-information"></i> 
+                                Les avis sont publiés par les clients depuis la plateforme.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Liste des avis -->
+                    <div class="reviews-list">
+                        <h5 class="mb-3">Tous les avis ({{ totalReviews }})</h5>
+                        
+                        <div *ngIf="isLoadingReviews" class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Chargement...</span>
+                            </div>
+                        </div>
+
+                        <div *ngIf="!isLoadingReviews && paginatedReviews.length === 0" class="text-center py-5 text-muted">
+                            <i class="lni lni-comments" style="font-size: 3rem;"></i>
+                            <p class="mt-3">Aucun avis pour le moment. Les clients pourront bientôt donner leur avis !</p>
+                        </div>
+
+                        <div class="review-item card mb-3" *ngFor="let review of paginatedReviews">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start">
+                                    <div>
+                                        <div class="reviewer-info d-flex align-items-center mb-2">
+                                            <div class="reviewer-avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                 style="width: 40px; height: 40px;">
+                                                <i class="lni lni-user fs-5"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0">{{ review.client?.email || 'Client' }}</h6>
+                                                <small class="text-muted">
+                                                    {{ review.createdAt | date:'dd/MM/yyyy' }}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="review-rating mb-2">
+                                            <i class="lni lni-star-fill text-warning" *ngFor="let star of [].constructor(review.note)"></i>
+                                            <i class="lni lni-star-fill text-muted" *ngFor="let star of [].constructor(5 - review.note)"></i>
+                                        </div>
+                                        <p class="review-comment mb-0">{{ review.commentaire || 'Avis sans commentaire' }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="pagination-section mt-4" *ngIf="getTotalPages() > 1">
+                            <nav aria-label="Pagination des avis">
+                                <ul class="pagination justify-content-center">
+                                    <li class="page-item" [class.disabled]="currentPage === 1">
+                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">
+                                            Précédent
+                                        </a>
+                                    </li>
+                                    <li class="page-item" *ngFor="let page of [].constructor(getTotalPages()); let i = index" 
+                                        [class.active]="currentPage === i + 1">
+                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(i + 1)">
+                                            {{ i + 1 }}
+                                        </a>
+                                    </li>
+                                    <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
+                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">
+                                            Suivant
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- ========== FIN SECTION REVIEWS ========== -->
+        
+        <!-- Section Promotion (après les détails) -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="promotion-section">
+                    <div class="section-title mb-4">
+                        <h2>Gestion des promotions</h2>
+                    </div>
+
+                    <!-- Affichage de la promotion active -->
+                    <div *ngIf="promotionActive" class="active-promo-card mb-4">
+                        <div class="card border-danger">
+                            <div class="card-header bg-danger text-white">
+                                <h5 class="mb-0"><i class="lni lni-offer"></i> Promotion active</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-8">
+                                        <p><strong>Réduction:</strong> 
+                                            <span class="badge bg-danger">{{promotionActive.pourcentage}}%</span>
+                                        </p>
+                                        <p><strong>Date de début:</strong> {{promotionActive.dateDebut | date:'dd/MM/yyyy'}}</p>
+                                        <p><strong>Date de fin:</strong> 
+                                            {{promotionActive.dateFin ? (promotionActive.dateFin | date:'dd/MM/yyyy') : 'Illimitée'}}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-4 d-flex align-items-center justify-content-end">
+                                        <button class="btn btn-outline-danger" (click)="onDesactiverPromo()" [disabled]="isLoading">
+                                            <i class="lni lni-close"></i> Désactiver
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire d'ajout/remplacement de promotion -->
+                    <div class="promo-form-card">
+                        <div class="card">
+                            <div class="card-header" [ngClass]="promotionActive ? 'bg-warning' : 'bg-success'">
+                                <h5 class="mb-0 text-white">
+                                    <i class="lni lni-offer"></i> 
+                                    {{promotionActive ? 'Remplacer la promotion' : 'Ajouter une promotion'}}
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <form [formGroup]="promoForm" (ngSubmit)="onAjouterPromo()">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div class="form-group mb-3">
+                                                <label for="pourcentage">Pourcentage %</label>
+                                                <input 
+                                                    type="number" 
+                                                    class="form-control" 
+                                                    id="pourcentage" 
+                                                    formControlName="pourcentage"
+                                                    min="1" max="100"
+                                                    placeholder="20">
+                                                <small class="text-danger" *ngIf="pourcentageControl?.invalid && pourcentageControl?.touched">
+                                                    1-100
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group mb-3">
+                                                <label for="dateFin">Date fin (optionnelle)</label>
+                                                <input 
+                                                    type="date" 
+                                                    class="form-control" 
+                                                    id="dateFin" 
+                                                    formControlName="dateFin"
+                                                    [min]="today">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 d-flex align-items-end">
+                                            <button type="submit" 
+                                                    class="btn w-100" 
+                                                    [ngClass]="promotionActive ? 'btn-warning' : 'btn-success'"
+                                                    [disabled]="promoForm.invalid || isLoading">
+                                                <i class="lni lni-offer"></i> 
+                                                {{promotionActive ? 'Remplacer' : 'Activer'}}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End Item Details -->
+
+<app-boutique-footer></app-boutique-footer>

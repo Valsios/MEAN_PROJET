@@ -1,0 +1,219 @@
+<app-boutique-header></app-boutique-header>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<section class="section" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10 col-12">
+
+        <h2 class="mb-4">Panier</h2>
+
+        <!-- Formulaire d'ajout de ligne de produit -->
+        <div class="card mb-4">
+          <div class="card-header bg-light">
+            <h5 class="mb-0">Ajouter un article</h5>
+          </div>
+          <div class="card-body">
+            <form [formGroup]="lignePanierForm" (ngSubmit)="ajouterLigne()">
+              <div class="row g-3 align-items-end">
+                <!-- Sélection produit avec autocomplete -->
+                <div class="col-md-6">
+                  <label for="rechercheProduit" class="form-label">Produit</label>
+                  <div class="position-relative">
+                    <input 
+                      type="text" 
+                      id="rechercheProduit"
+                      class="form-control" 
+                      autocomplete="off"
+                      placeholder="Rechercher un produit..." 
+                      formControlName="rechercheProduit"
+                      (input)="rechercherProduits()"
+                      (focus)="afficherResultats = true"
+                      (blur)="onBlurRecherche()">
+                    
+                    <!-- Liste déroulante des résultats -->
+                    <div *ngIf="afficherResultats && produitsFiltres.length > 0" 
+                         class="list-group position-absolute w-100 shadow-sm" 
+                         style="z-index: 1000; max-height: 200px; overflow-y: auto;">
+                      <button 
+                        type="button" 
+                        class="list-group-item list-group-item-action" 
+                        *ngFor="let produit of produitsFiltres"
+                        (click)="selectionnerProduit(produit)"
+                        [attr.data-produit-id]="produit._id">
+                        <div class="d-flex justify-content-between align-items-center">
+                          <span>{{ produit.nom }}</span>
+                          <small class="text-muted">{{ produit.prixActuel | number }} MGA</small>
+                        </div>
+                        <small class="text-muted" *ngIf="produit.gestionStock">Stock: {{ produit.stockActuel }}</small>
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Quantité -->
+                <div class="col-md-3">
+                  <label for="quantite" class="form-label">Quantité</label>
+                  <input 
+                    type="number" 
+                    id="quantite"
+                    class="form-control" 
+                    formControlName="quantite" 
+                    min="1"
+                    [max]="quantiteMax">
+                  <small *ngIf="produitSelectionne?.gestionStock" class="text-muted">
+                    Max: {{ quantiteMax }}
+                  </small>
+                </div>
+
+                <!-- Bouton ajouter -->
+                <div class="col-md-3">
+                  <button 
+                    type="submit" 
+                    class="btn btn-primary w-100" 
+                    [disabled]="lignePanierForm.invalid || !produitSelectionne">
+                    <i class="lni lni-plus"></i> Ajouter
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+        </div>
+
+        <!-- Liste des articles du panier -->
+        <div class="card">
+          <div class="card-header bg-light d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Articles commandés</h5>
+            <span class="badge bg-primary">{{ articlesPanier.length }} article(s)</span>
+          </div>
+          
+          <div class="card-body p-0">
+            <div class="table-responsive">
+              <table class="table table-hover mb-0">
+                <thead class="table-light">
+                  <tr>
+                    <th>Produit</th>
+                    <th>Prix unitaire</th>
+                    <th>Quantité</th>
+                    <th>Promotion</th>
+                    <th>Total</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let article of articlesPanier; let i = index">
+                    <td>
+                      <div class="d-flex align-items-center">
+                        <div>
+                          <strong>{{ article.nomProduit }}</strong>
+                          <div *ngIf="article.stockRestant !== undefined" class="small text-muted">
+                            Stock restant: {{ article.stockRestant + article.quantite }}
+                          </div>
+                        </div>
+                      </div>
+                    </td>
+                    <td>{{ article.prixUnitaire | number }} MGA</td>
+                    <td style="width: 150px;">
+                      <div class="input-group input-group-sm">
+                        <button 
+                          class="btn btn-outline-secondary" 
+                          type="button" 
+                          (click)="diminuerQuantite(i)"
+                          [disabled]="article.quantite <= 1">
+                          <i class="lni lni-minus"></i>
+                        </button>
+                        <input 
+                          type="number" 
+                          class="form-control text-center" 
+                          [value]="article.quantite"
+                          (input)="changerQuantite(i, $event)"
+                          min="1"
+                          [max]="article.stockRestant ? article.stockRestant + article.quantite : 999"
+                          style="width: 60px;">
+                        <button 
+                          class="btn btn-outline-secondary" 
+                          type="button" 
+                          (click)="augmenterQuantite(i)"
+                          [disabled]="article.stockRestant !== undefined && article.quantite >= article.stockRestant + article.quantite">
+                          <i class="lni lni-plus"></i>
+                        </button>
+                      </div>
+                    </td>
+                    <td>
+                      <div *ngIf="article.promotion" class="text-success">
+                        <span class="badge bg-success">
+                          <i class="lni lni-tag"></i> {{ article.remise }}%
+                        </span>
+                      </div>
+                      <div *ngIf="!article.promotion" class="text-muted">
+                        <small>Aucune promotion</small>
+                      </div>
+                    </td>
+                    <td><strong>{{ article.total | number }} MGA</strong></td>
+                    <td>
+                      <button class="btn btn-sm btn-danger" (click)="supprimerLigne(i)">
+                        <i class="lni lni-trash-can"></i>
+                      </button>
+                    </td>
+                  </tr>
+                  <tr *ngIf="articlesPanier.length === 0">
+                    <td colspan="6" class="text-center py-4 text-muted">
+                      <i class="lni lni-cart"></i> Aucun article dans le panier
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          
+          <!-- Pied de panier avec totaux -->
+          <div class="card-footer bg-white">
+            <div class="row">
+
+              
+              <div class="col-md-12">
+                <div class="card bg-light">
+                  <div class="card-body">
+                    <h6>Récapitulatif</h6>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Sous-total:</span>
+                      <span>{{ sousTotal | number }} MGA</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                      <span>Remise totale:</span>
+                      <span class="text-danger">-{{ remiseTotale | number }} MGA</span>
+                    </div>
+                    <hr>
+                    <div class="d-flex justify-content-between fw-bold">
+                      <span>Total à payer:</span>
+                      <span class="text-primary fs-5">{{ montantTotal | number }} MGA</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions finales -->
+            <div class="d-flex justify-content-between mt-4">
+              <button class="btn btn-outline-secondary" (click)="viderPanier()" [disabled]="articlesPanier.length === 0">
+                <i class="lni lni-trash"></i> Vider le panier
+              </button>
+              <button 
+                class="btn btn-success" 
+                [disabled]="articlesPanier.length === 0 || isLoading"
+                (click)="validerCommande()">
+                  <span *ngIf="isLoading" class="spinner-border spinner-border-sm me-2"></span>
+                  <i class="lni lni-checkmark" *ngIf="!isLoading"></i>
+                  {{ isLoading ? 'Validation...' : 'Valider la commande' }}
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== END MAIN CONTENT ===================== -->
+
+<app-boutique-footer></app-boutique-footer>
