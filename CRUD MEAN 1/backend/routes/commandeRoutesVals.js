@@ -46,6 +46,12 @@ router.get('/validerCommande/:id', async (req, res) => {
         runValidators: true                
       }
     );
+     // Vérification du stock
+    const check = await checkArticle(commandeToInsert);
+   
+    if (!check.ok) {
+      return res.status(400).json({ message: check.message });
+    }
     updateStock(commande);
 
     // Réponse succès
