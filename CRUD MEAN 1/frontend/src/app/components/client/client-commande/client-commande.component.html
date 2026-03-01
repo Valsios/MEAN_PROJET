@@ -1,0 +1,232 @@
+<app-client-header></app-client-header>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+<section class="section" style="min-height: 60vh; padding: 40px 0;">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-12">
+
+        <!-- En-tête -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2>
+            <i class="lni lni-list"></i> 
+            Mes commandes
+          </h2>
+          <div>
+            <button class="btn btn-outline-secondary btn-sm me-2" (click)="recharger()">
+              <i class="lni lni-reload"></i>
+            </button>
+            <span class="badge bg-primary fs-6">
+              {{ commandes.length }} commande(s)
+            </span>
+          </div>
+        </div>
+
+        <!-- Filtres -->
+        <div class="card mb-4 shadow-sm border-0">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-12">
+                <div class="btn-group w-100 flex-wrap" role="group">
+                  <button class="btn" 
+                          [class.btn-primary]="filtreStatut === 'tous'"
+                          [class.btn-outline-primary]="filtreStatut !== 'tous'"
+                          (click)="changerFiltre('tous')">
+                    Tous <span class="badge bg-light text-dark ms-1">{{ stats.total }}</span>
+                  </button>
+                  <button class="btn" 
+                          [class.btn-warning]="filtreStatut === 'en_attente'"
+                          [class.btn-outline-warning]="filtreStatut !== 'en_attente'"
+                          (click)="changerFiltre('en_attente')">
+                    En attente <span class="badge bg-light text-dark ms-1">{{ stats.enAttente }}</span>
+                  </button>
+                  <button class="btn" 
+                          [class.btn-success]="filtreStatut === 'validee'"
+                          [class.btn-outline-success]="filtreStatut !== 'validee'"
+                          (click)="changerFiltre('validee')">
+                    Validées <span class="badge bg-light text-dark ms-1">{{ stats.validees }}</span>
+                  </button>
+                  
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Loading -->
+        <div *ngIf="isLoading" class="text-center py-5">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+          <p class="mt-2">Chargement de vos commandes...</p>
+        </div>
+
+        <!-- Aucune commande -->
+        <div *ngIf="!isLoading && commandesFiltrees.length === 0" class="text-center py-5">
+          <div class="mb-4">
+            <i class="lni lni-empty-file" style="font-size: 5rem; color: #dee2e6;"></i>
+          </div>
+          <h4>Aucune commande trouvée</h4>
+          <p class="text-muted mb-4">
+            {{ filtreStatut !== 'tous' ? 'Aucune commande avec ce statut' : 'Commencez vos achats dans nos boutiques' }}
+          </p>
+          <button class="btn btn-primary btn-lg" [routerLink]="['/client-dashboard']">
+            <i class="lni lni-store me-2"></i>
+            Découvrir les boutiques
+          </button>
+        </div>
+
+        <!-- Liste des commandes -->
+        <div *ngIf="!isLoading && commandesFiltrees.length > 0" class="row">
+          
+          <!-- Colonne gauche : Liste -->
+          <div [class]="commandeSelectionnee ? 'col-md-5' : 'col-md-12'">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-light">
+                <h5 class="mb-0">Liste des commandes</h5>
+              </div>
+              
+              <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                  <button 
+                    *ngFor="let cmd of commandesFiltrees" 
+                    class="list-group-item list-group-item-action p-3 text-start border-0"
+                    [class.active]="commandeSelectionnee?._id === cmd._id"
+                    (click)="voirDetails(cmd)">
+                    
+                    <div class="d-flex justify-content-between align-items-start mb-2">
+                      <div>
+                        <strong>#{{ cmd._id?.slice(-8) || 'N/A' }}</strong>
+                        <span class="badge ms-2" [ngClass]="getStatutClass(cmd.statut)">
+                          {{ getStatutLabel(cmd.statut) }}
+                        </span>
+                      </div>
+                      <small class="text-muted">
+                        <i class="lni lni-calendar"></i> 
+                        {{ formatDate(cmd.createdAt || cmd.date) }}
+                      </small>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div>
+                        <small class="text-muted">
+                          <i class="lni lni-store"></i> 
+                          {{ cmd.boutiqueId?.nom || 'Boutique' }}
+                        </small>
+                        <small class="ms-3 text-muted">
+                          <i class="lni lni-cart"></i> 
+                          {{ cmd.articles?.length || 0 }} article(s)
+                        </small>
+                      </div>
+                      <strong class="text-primary">{{ calculerTotal(cmd) | number }} MGA</strong>
+                    </div>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Colonne droite : Détails -->
+          <div *ngIf="commandeSelectionnee" class="col-md-7">
+            <div class="card shadow-sm border-0">
+              <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">
+                  <i class="lni lni-file"></i> 
+                  Détails de la commande
+                  <span class="badge ms-2" [ngClass]="getStatutClass(commandeSelectionnee.statut)">
+                    {{ getStatutLabel(commandeSelectionnee.statut) }}
+                  </span>
+                </h5>
+                <button class="btn btn-sm btn-outline-secondary" (click)="fermerDetails()">
+                  <i class="lni lni-close"></i>
+                </button>
+              </div>
+              
+              <div class="card-body">
+                <!-- En-tête commande -->
+                <div class="row mb-4">
+                  <div class="col-md-6">
+                    <p class="mb-1">
+                      <strong>N° commande:</strong> 
+                      #{{ commandeSelectionnee._id }}
+                    </p>
+                    <p class="mb-1">
+                      <strong>Date:</strong> 
+                      {{ formatDate(commandeSelectionnee.createdAt || commandeSelectionnee.date) }}
+                    </p>
+                    <p class="mb-1">
+                      <strong>Boutique:</strong> 
+                      {{ commandeSelectionnee.boutiqueId?.nom || 'Boutique' }}
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <p class="mb-1">
+                      <strong>Type:</strong> 
+                      <span class="badge bg-info">
+                        {{ commandeSelectionnee.typeCommande || 'En ligne' }}
+                      </span>
+                    </p>
+                    
+                  </div>
+                </div>
+                
+                <!-- Articles commandés -->
+                <h6 class="mb-3">Articles commandés</h6>
+                <div class="table-responsive">
+                  <table class="table table-sm table-bordered">
+                    <thead class="table-light">
+                      <tr>
+                        <th>Produit</th>
+                        <th class="text-center">Qté</th>
+                        <th class="text-end">Prix unitaire</th>
+                        <th class="text-end">Remise</th>
+                        <th class="text-end">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr *ngFor="let art of commandeSelectionnee.articles">
+                        <td>
+                          
+                            {{ art.nomProduit }}
+                          
+                        </td>
+                        <td class="text-center">{{ art.quantite }}</td>
+                        <td class="text-end">{{ art.prixUnitaire | number }} MGA</td>
+                        <td class="text-end">
+                          <span *ngIf="art.remise > 0" class="text-danger">{{ art.remise }}%</span>
+                          <span *ngIf="!art.remise">-</span>
+                        </td>
+                        <td class="text-end">
+                          <strong>{{ art.total || (art.prixUnitaire * art.quantite) | number }} MGA</strong>
+                        </td>
+                      </tr>
+                    </tbody>
+                    <tfoot class="table-light">
+                      <tr>
+                        <td colspan="4" class="text-end fw-bold">Total:</td>
+                        <td class="text-end fw-bold text-primary fs-6">
+                          {{ commandeSelectionnee.montantTotal | number }} MGA
+                        </td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+              
+              <!-- Bouton retour -->
+              <div class="card-footer bg-white">
+                <button class="btn btn-outline-secondary w-100" (click)="fermerDetails()">
+                  <i class="lni lni-arrow-left"></i> Retour à la liste
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+<!-- ===================== END MAIN CONTENT ===================== -->
+
+<app-client-footer></app-client-footer>

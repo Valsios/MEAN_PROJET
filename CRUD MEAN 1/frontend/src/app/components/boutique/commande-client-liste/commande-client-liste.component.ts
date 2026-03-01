@@ -70,7 +70,7 @@ export class CommandeClientListeComponent implements OnInit {
   validerCommande() {
     if (!this.commandeSelectionnee) return;
     
-    if (confirm('Valider cette commande ? Le stock sera décrémenté.')) {
+    if (confirm('Valider cette commande ?')) {
       this.isLoadingAction = true;
       
       this.boutiqueService.validerCommande(this.commandeSelectionnee._id).subscribe({

@@ -2,7 +2,6 @@ import { Routes } from '@angular/router';
 import { LoginClientComponent } from './auth/login-client/login-client.component';
 import { LoginBoutiqueComponent } from './auth/login-boutique/login-boutique.component';
 import { LoginAdminComponent } from './auth/login-admin/login-admin.component';
-import { ClientDashboardComponent } from './components/client/pages/client-dashboard/client-dashboard.component';
 import { BoutiqueDashboardComponent } from './components/boutique/boutique-dashboard/boutique-dashboard.component';
 import { AdminDashboardComponent } from './components/admin/pages/admin-dashboard/admin-dashboard.component';
 import { BoxListComponent } from './components/admin/pages/box-list/box-list.component';
@@ -22,6 +21,17 @@ import { ClientLayoutComponent } from './components/client/layout/client-layout.
 import { ClientBoutiquesComponent } from './components/client/pages/client-boutique-list/client-boutique-list.component';
 import { ClientReportComponent } from './components/client/pages/client-report/client-report.component';
 import { ClientReportsComponent } from './components/client/pages/client-reports/client-reports.component';
+import { CommandeClientListeComponent } from './components/boutique/commande-client-liste/commande-client-liste.component';
+import { BoutiqueLoyersComponent } from './components/boutique/boutique-loyers/boutique-loyers.component';
+import { BoutiqueProduitsComponent } from './components/boutique/boutique-produits/boutique-produits.component';
+import { ProduitFormComponent } from './components/boutique/produit-form/produit-form.component';
+import { BoutiquePanierComponent } from './components/boutique/boutique-panier/boutique-panier.component';
+import { ClientPanierComponent } from './components/client/client-panier/client-panier.component';
+import { ClientCommandeComponent } from './components/client/client-commande/client-commande.component';
+import { ClientCatalogueProduitComponent } from './components/client/client-catalogue-produit/client-catalogue-produit.component';
+import { ProduitDetailsComponent } from './components/boutique/produit-details/produit-details.component';
+import { ClientProduitDetailsComponent } from './components/client/client-produit-details/client-produit-details.component';
+import { ClientDashboardComponent } from './components/client/client-dashboard/client-dashboard.component';
 
 
 
@@ -31,9 +41,20 @@ export const routes: Routes = [
   { path: 'login-client', component: LoginClientComponent },
   { path: 'login-boutique', component: LoginBoutiqueComponent },
   { path: 'login-admin', component: LoginAdminComponent },
+  { path: 'register', component: RegisterComponent },
+  { path: 'commande-client-liste', component: CommandeClientListeComponent },
+  { path: 'boutique-loyers', component: BoutiqueLoyersComponent },
   { path: 'client-dashboard', component: ClientDashboardComponent },
   { path: 'boutique-dashboard', component: BoutiqueDashboardComponent },
-  { path: 'register', component: RegisterComponent },
+  { path: 'admin-dashboard', component: AdminDashboardComponent },
+  { path: 'boutique-produit', component: BoutiqueProduitsComponent },
+  { path: 'produit-form', component: ProduitFormComponent },
+  { path: 'panier-boutique', component: BoutiquePanierComponent },
+  { path: 'client-panier', component: ClientPanierComponent },
+  { path: 'client-commande', component: ClientCommandeComponent },
+  { path: 'client-catalogue-produit/:id', component: ClientCatalogueProduitComponent },
+  { path: 'produit-details/:id', component: ProduitDetailsComponent },
+  { path: 'client-produit-details/:id', component: ClientProduitDetailsComponent },
   // ADMIN
   {
     path: 'admin',
@@ -56,7 +77,6 @@ export const routes: Routes = [
     path: 'client',
     component: ClientLayoutComponent,
     children: [
-      { path: 'dashboard', component: ClientDashboardComponent },
       { path: 'boutiques', component: ClientBoutiquesComponent },
       { path: 'report/:id', component: ClientReportComponent },
       { path: 'reports', component: ClientReportsComponent },

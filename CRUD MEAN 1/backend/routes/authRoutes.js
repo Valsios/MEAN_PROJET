@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
 const Client = require('../models/Client');
+const Boutique = require('../models/Boutique');
 
 // POST /api/auth/register-client - Inscription client
 router.post('/register-client', async (req, res) => {
@@ -139,6 +140,20 @@ router.post('/login', async (req, res) => {
       { expiresIn: '1d' }
     );
 
+     var profile;
+    if(user.role === "boutique")
+    {
+      profile = await Boutique.findById(user.profilId);
+    }
+    else if(user.role === "client")
+    {
+      profile = await Client.findById(user.profilId);
+    }
+    else
+    {
+      profile = user;
+    }
+
     // Si c'est un client, récupérer ses informations
     let clientData = null;
     if (user.role === 'client' && user.profilId) {
@@ -164,7 +179,8 @@ router.post('/login', async (req, res) => {
         profilId: user.profilId,
         status: user.status
       },
-      client: clientData
+      client: clientData,
+      profile
     });
 
   } catch (error) {

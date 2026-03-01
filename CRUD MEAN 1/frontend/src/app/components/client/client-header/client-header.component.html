@@ -1,0 +1,62 @@
+<!-- ===================== HEADER ===================== -->
+<header class="header navbar-area">
+
+  <!-- Header Middle (logo + user) -->
+  <div class="header-middle">
+    <div class="container">
+      <div class="row align-items-center">
+
+        <!-- Logo -->
+        <div class="col-lg-3 col-md-3 col-12">
+          <a class="navbar-brand" href="#">
+            <img src="assets/images/logo/logo.svg" alt="Logo">
+          </a>
+        </div>
+
+        <!-- Admin info -->
+        <div class="col-lg-9 col-md-9 col-12 text-end">
+          <div class="user">
+            <i class="lni lni-user"></i>
+             {{profile.nom +' '+ profile.prenom}}
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- Simple Navbar -->
+  <div class="container">
+    <nav class="navbar navbar-expand-lg">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/client-dashboard']">Les Boutiques</a>
+        </li>
+        
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/client-panier']">Panier</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/client-commande']">Vos commandes</a>
+        </li>
+
+      
+        <!-- Dans la navbar, ajoutez ce lien -->
+        <li class="nav-item">
+          <a class="nav-link" routerLink="/client/reports" routerLinkActive="active">
+            <i class="lni lni-flag me-1"></i>Mes signalements
+          </a>
+        </li>
+        
+        
+        
+        <li class="nav-item">
+          <a class="nav-link text-danger"(click)="logout(); $event.preventDefault()">Logout</a>
+        </li>
+      </ul>
+    </nav>
+  </div>
+
+</header>
+<!-- ===================== END HEADER ===================== -->
+

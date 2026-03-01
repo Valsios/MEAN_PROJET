@@ -1,0 +1,116 @@
+<app-client-header></app-client-header>
+
+<!-- ===================== FILTRES ===================== -->
+<section class="search-section py-3">
+  <div class="container">
+    <div class="row align-items-center">
+      <!-- Barre de recherche (à gauche) -->
+      <div class="col-md-8">
+        <div class="input-group">
+          <span class="input-group-text bg-white">
+            <i class="lni lni-search"></i>
+          </span>
+          <input type="text" class="form-control" placeholder="Rechercher une boutique par nom..."
+            [(ngModel)]="searchTerm" (ngModelChange)="filtrerBoutiques()">
+          <span class="input-group-text bg-white" *ngIf="searchTerm" style="cursor: pointer;" (click)="resetFiltre()">
+            <i class="lni lni-close text-danger"></i>
+          </span>
+        </div>
+      </div>
+
+      <!-- Filtre catégorie (à droite) -->
+      <div class="col-md-4 text-end">
+        <select class="form-select" [(ngModel)]="categorieActive" (ngModelChange)="filtrerBoutiques()">
+          <option value="">Toutes catégories</option>
+          <option *ngFor="let cat of listeCategoriesBoutique" [value]="cat._id">
+            {{ cat.nom }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Indicateur de résultats -->
+    <div class="row" *ngIf="searchTerm || categorieActive">
+      <div class="col-12">
+        <small class="text-muted">
+          {{ boutiquesFiltrees.length }} boutique(s) trouvée(s)
+        </small>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ===================== LISTE DES BOUTIQUES ===================== -->
+<section class="section" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row">
+
+      <!-- Message si aucune boutique -->
+      <div class="col-12 text-center py-5" *ngIf="boutiquesFiltrees.length === 0">
+        <i class="lni lni-store" style="font-size: 4rem; color: #ccc;"></i>
+        <h4 class="mt-3 text-muted">Aucune boutique trouvée</h4>
+      </div>
+
+      <!-- Boucle sur les boutiques -->
+      <div class="col-lg-4 col-md-6 col-12" *ngFor="let boutique of boutiquesFiltrees">
+        <!-- Start Single Boutique Card -->
+        <div class="single-product boutique-card" (click)="voirBoutique(boutique._id)" style="cursor: pointer;">
+
+          <!-- Image de la boutique -->
+          <div class="product-image boutique-image">
+            <!-- Image de la boutique (binaire base64) -->
+            <img *ngIf="boutique.image" [src]="'data:image/png;base64,' + boutique.image"
+              alt="{{boutique.nomBoutique}}">
+            <!-- Image par défaut si pas d'image -->
+            <img *ngIf="!boutique.image" src="assets/images/products/No_Image_Available.jpg" alt="Boutique par défaut">
+
+            <div class="button">
+              <a class="btn"><i class="lni lni-eye"></i> Voir</a>
+            </div>
+          </div>
+
+          <!-- Infos boutique -->
+          <div class="product-info">
+            <!-- Catégorie -->
+            <span class="category">{{ getCategorieBoutique(boutique) || 'Non catégorisé' }}</span>
+
+            <!-- Nom de la boutique -->
+            <h4 class="title">
+              <p>{{ boutique.nom || boutique.email }}</p>
+            </h4>
+
+            <!-- Date de création -->
+            <div class="d-flex justify-content-center align-items-center gap-2 mb-2">
+              <i class="lni lni-calendar" style="font-size: 0.9rem;"></i>
+              <small class="text-muted">
+                Depuis {{ boutique.dateEntryBox | date:'MMMM yyyy' }}
+              </small>
+            </div>
+
+            <!-- Statistiques -->
+            <div class="row mt-3 g-2">
+              <div class="col-12">
+                <div class="border rounded p-2">
+                  <small class="text-muted d-block">Produits</small>
+                  <strong>{{ boutique.nombreProduit || 0 }}</strong>
+                </div>
+              </div>
+
+            </div>
+            <div class="row mt-2">
+              <div class="d-grid">
+                <button class="btn btn-outline-danger" (click)="reportBoutique(boutique._id)">
+                  <i class="lni lni-flag me-2"></i>Signaler un problème
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ===================== END MAIN CONTENT ===================== -->
+<app-client-footer></app-client-footer>

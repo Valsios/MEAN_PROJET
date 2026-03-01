@@ -22,19 +22,28 @@
     <nav class="navbar navbar-expand-lg">
       <ul class="navbar-nav ms-auto">
         <li class="nav-item">
-          <a class="nav-link" routerLink="/client/dashboard">Dashboard</a>
+          <a class="nav-link" [routerLink]="['/client-dashboard']">Les Boutiques</a>
+        </li>
+
+        <li class="nav-item">
+          <a class="nav-link" [routerLink]="['/client-panier']">Panier</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" routerLink="/client/boutiques">Boutiques</a>
+          <a class="nav-link" [routerLink]="['/client-commande']">Vos commandes</a>
         </li>
+
+        
         <!-- Dans la navbar, ajoutez ce lien -->
         <li class="nav-item">
           <a class="nav-link" routerLink="/client/reports" routerLinkActive="active">
             <i class="lni lni-flag me-1"></i>Mes signalements
           </a>
         </li>
+
+
+
         <li class="nav-item">
-          <a class="nav-link text-danger" href="#">Logout</a>
+          <a class="nav-link text-danger" (click)="logout(); $event.preventDefault()">Logout</a>
         </li>
       </ul>
     </nav>

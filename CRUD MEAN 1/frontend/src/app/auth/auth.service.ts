@@ -55,6 +55,7 @@ export class AuthService {
           if (res.user.role !== 'client') throw new Error('Accès refusé pour client');
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify(res.user));
+          localStorage.setItem('profile', JSON.stringify(res.profile));
         })
       );
   }
@@ -66,6 +67,7 @@ export class AuthService {
           if (res.user.role !== 'boutique') throw new Error('Accès refusé pour boutique');
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify(res.user));
+          localStorage.setItem('profile', JSON.stringify(res.profile));
         })
       );
   }
@@ -77,6 +79,7 @@ export class AuthService {
           if (res.user.role !== 'admin') throw new Error('Accès refusé pour admin');
           localStorage.setItem('token', res.token);
           localStorage.setItem('user', JSON.stringify(res.user));
+          localStorage.setItem('profile', JSON.stringify(res.profile));
         })
       );
   }

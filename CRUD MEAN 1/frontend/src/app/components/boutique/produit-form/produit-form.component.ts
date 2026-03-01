@@ -5,7 +5,7 @@ import { BoutiqueHeaderComponent } from '../header/boutique-header/boutique-head
 import { BoutiqueFooterComponent } from '../footer/boutique-footer/boutique-footer.component';
 import { BoutiqueService } from '../../../services/boutique/boutique.service'
 import { Router } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-produit-form',

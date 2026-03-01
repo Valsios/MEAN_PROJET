@@ -6,7 +6,7 @@ import { FormGroup, Validators, FormBuilder, ReactiveFormsModule } from '@angula
 import { BoutiqueService } from '../../../services/boutique/boutique.service';
 import { ProduitService } from '../../../services/produit/produit.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../auth/auth.service';
+import { AuthService } from '../../../auth/auth.service';
 
 @Component({
   selector: 'app-boutique-panier',
