@@ -12,12 +12,25 @@
           Retour à la liste des boutiques
         </a>
         <span class="text-muted">|</span>
-        <span class="text-muted">
-          <i class="bi bi-shop me-1"></i>
-          {{ boutique?.nom || 'Boutique' }}
+        <span class="text-muted" *ngIf="boutique">
+          <img *ngIf="boutique.image" 
+               [src]="boutique.image" 
+               class="rounded-circle me-1" 
+               width="20" 
+               height="20"
+               style="object-fit: cover;">
+          <i *ngIf="!boutique.image" class="bi bi-shop me-1"></i>
+          {{ boutique.nom }}
         </span>
       </div>
     </div>
+
+    <!-- Bouton Statistiques -->
+    <a [routerLink]="['/admin/boutique', boutiqueId, 'stats']" 
+       class="btn btn-info btn-lg text-white">
+      <i class="bi bi-bar-chart-line me-2"></i>
+      Voir les statistiques
+    </a>
   </div>
 
   <!-- Loading -->
@@ -39,7 +52,7 @@
 
   <!-- Contenu principal -->
   <div *ngIf="boutique && !error" class="row g-4">
-    <!-- Colonne gauche : Informations boutique -->
+    <!-- Colonne gauche : Informations boutique avec image -->
     <div class="col-lg-5">
       <!-- Carte boutique -->
       <div class="card shadow-sm border-0 mb-4">
@@ -52,7 +65,14 @@
         <div class="card-body p-4">
           <div class="shop-info text-center mb-4">
             <div class="shop-avatar mb-3">
-              <i class="bi bi-shop fs-1 text-primary"></i>
+              <img *ngIf="boutique.image" 
+                   [src]="boutique.image" 
+                   class="rounded-circle shop-image" 
+                   width="100" 
+                   height="100"
+                   style="object-fit: cover; border: 3px solid #0d6efd;"
+                   alt="{{ boutique.nom }}">
+              <i *ngIf="!boutique.image" class="bi bi-shop fs-1 text-primary"></i>
             </div>
             <h4>{{ boutique.nom }}</h4>
           </div>
@@ -62,8 +82,12 @@
               <i class="bi bi-box text-primary"></i>
               <div>
                 <span class="info-label">Box assignée</span>
-                <span class="info-value">
+                <span class="info-value" *ngIf="boutique.boxActuelleId">
                   Box {{ boutique.boxActuelleId.numero }} - Étage {{ boutique.boxActuelleId.etage }}
+                  <small class="text-muted d-block">{{ boutique.boxActuelleId.prixActuel | number }} Ar/mois</small>
+                </span>
+                <span class="info-value text-muted" *ngIf="!boutique.boxActuelleId">
+                  Aucune box assignée
                 </span>
               </div>
             </div>
@@ -128,7 +152,7 @@
               </span>
             </div>
 
-            <div class="summary-item">
+            <div class="summary-item" *ngIf="boutique.boxActuelleId">
               <span class="summary-label">Montant mensuel</span>
               <span class="summary-value text-success fw-bold">
                 <i class="bi bi-cash me-1"></i>
@@ -156,7 +180,7 @@
     </div>
 
     <!-- Colonne droite : Formulaire de paiement -->
-    <div class="col-lg-7">
+    <div class="col-lg-7" *ngIf="boutique.boxActuelleId">
       <div class="card shadow-sm border-0">
         <div class="card-header bg-success text-white py-3">
           <div class="d-flex align-items-center">
@@ -276,6 +300,19 @@
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- Message si pas de box -->
+    <div class="col-lg-7" *ngIf="!boutique.boxActuelleId">
+      <div class="alert alert-warning text-center py-5">
+        <i class="bi bi-exclamation-triangle fs-1 d-block mb-3"></i>
+        <h4>Paiement impossible</h4>
+        <p class="mb-3">Cette boutique n'a pas de box assignée. Les paiements de loyer ne sont disponibles que pour les boutiques avec un box.</p>
+        <a routerLink="/admin/boutiques" class="btn btn-outline-warning btn-lg">
+          <i class="bi bi-arrow-left me-2"></i>
+          Retour à la liste
+        </a>
       </div>
     </div>
   </div>

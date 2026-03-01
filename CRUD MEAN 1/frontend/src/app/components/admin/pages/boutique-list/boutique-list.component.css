@@ -411,3 +411,46 @@
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
+
+.image-preview-container {
+  width: 120px;
+  height: 120px;
+  border: 2px dashed #dee2e6;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.3s ease;
+}
+
+.image-preview-container:hover {
+  border-color: #0d6efd;
+  background-color: #f8f9fa;
+}
+
+.image-preview-container.has-image {
+  border: 2px solid #0d6efd;
+}
+
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder-image {
+  text-align: center;
+  color: #6c757d;
+}
+
+.placeholder-image i {
+  font-size: 2rem;
+  display: block;
+  margin-bottom: 0.5rem;
+}
+
+.placeholder-image span {
+  font-size: 0.8rem;
+}

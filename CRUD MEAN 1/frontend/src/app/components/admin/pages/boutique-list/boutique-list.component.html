@@ -10,6 +10,42 @@
   <!-- FORMULAIRE -->
   <form (ngSubmit)="submit()" class="mb-5 card p-4 shadow-sm border-0">
     <div class="row g-4">
+      <!-- Image de la boutique -->
+      <div class="col-12">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-image me-1"></i>Image de la boutique
+        </label>
+        <div class="d-flex align-items-center gap-3">
+          <div class="image-preview-container" 
+               [ngClass]="{'has-image': imagePreview}"
+               (click)="fileInput.click()">
+            <img *ngIf="imagePreview" [src]="imagePreview" class="preview-image" alt="Aperçu">
+            <div *ngIf="!imagePreview" class="placeholder-image">
+              <i class="bi bi-cloud-upload fs-1"></i>
+              <span>Cliquez pour uploader</span>
+            </div>
+          </div>
+          <div class="flex-grow-1">
+            <input 
+              type="file" 
+              #fileInput
+              class="d-none" 
+              accept="image/*"
+              (change)="onFileSelected($event)">
+            <button type="button" class="btn btn-outline-primary" (click)="fileInput.click()">
+              <i class="bi bi-upload me-1"></i>Choisir une image
+            </button>
+            <button *ngIf="imagePreview" type="button" class="btn btn-outline-danger ms-2" (click)="removeImage()">
+              <i class="bi bi-trash"></i>
+            </button>
+            <small class="text-muted d-block mt-2">
+              <i class="bi bi-info-circle me-1"></i>
+              Format accepté : JPG, PNG. Taille max : 5MB
+            </small>
+          </div>
+        </div>
+      </div>
+
       <div class="col-md-6">
         <label class="form-label fw-semibold">
           <i class="bi bi-building me-1"></i>Nom de la boutique
@@ -59,6 +95,28 @@
         <div class="invalid-feedback" *ngIf="submitted && !form.email">
           L'email est requis
         </div>
+      </div>
+
+      <!-- Champ mot de passe - UNIQUEMENT en création -->
+      <div class="col-md-6" *ngIf="!isEditMode">
+        <label class="form-label fw-semibold">
+          <i class="bi bi-lock me-1"></i>Mot de passe
+        </label>
+        <input 
+          type="password" 
+          class="form-control form-control-lg" 
+          [(ngModel)]="form.password"
+          name="password"
+          placeholder="Mot de passe pour l'utilisateur"
+          required
+          [class.is-invalid]="submitted && !form.password">
+        <div class="invalid-feedback" *ngIf="submitted && !form.password">
+          Le mot de passe est requis
+        </div>
+        <small class="text-muted">
+          <i class="bi bi-info-circle me-1"></i>
+          Ce mot de passe sera utilisé pour le compte utilisateur associé
+        </small>
       </div>
 
       <div class="col-md-6">
@@ -236,7 +294,8 @@
           <td class="py-3">
             <div class="d-flex align-items-center">
               <div class="shop-icon me-3">
-                <i class="bi bi-shop fs-4 text-primary"></i>
+                <img *ngIf="b.image" [src]="b.image" class="rounded-circle" width="40" height="40" style="object-fit: cover;">
+                <i *ngIf="!b.image" class="bi bi-shop fs-4 text-primary"></i>
               </div>
               <div>
                 <strong class="fs-5">{{ b.nom }}</strong>

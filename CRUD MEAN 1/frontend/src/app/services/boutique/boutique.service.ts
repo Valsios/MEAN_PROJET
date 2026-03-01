@@ -8,15 +8,28 @@ export interface Boutique {
   nom: string;
   telephone: string;
   email: string;
+  image?: string;
   boxActuelleId: {
     _id: string;
     numero: string;
     etage: number;
+    prixActuel?: number;
   } | null;
   categorieId: {
     _id: string;
     nom: string;
   };
+  createdAt?: string;
+}
+
+export interface BoutiqueCreate {
+  nom: string;
+  telephone: string;
+  email: string;
+  image?: string;
+  categorieId: string;
+  boxActuelleId?: string | null;
+  password: string;
 }
 
 export interface Report {
@@ -44,7 +57,7 @@ export class BoutiqueService {
     return this.http.get<any[]>(this.myApiUrl);
   }
 
-  create(data: any) {
+  create(data: BoutiqueCreate) {
     return this.http.post(this.myApiUrl, data);
   }
 
@@ -65,12 +78,7 @@ export class BoutiqueService {
     return this.http.get<{ estPaye: boolean; message: string }>(`${this.myApiUrl}/${id}/verifier-paiement-loyer`);
   }
 
-
-
-
-
   // --------------- VALS -----------------
-
 
   getBoutiqueByIdVals(boutiqueId : any) : Observable<any>
   {
@@ -166,8 +174,4 @@ getClient(clientId : string) : Observable<any>
   }): Observable<any> {
     return this.http.post(`${this.apiUrlClient}/noter-boutique`, data);
   }
-
-
-
-
 }

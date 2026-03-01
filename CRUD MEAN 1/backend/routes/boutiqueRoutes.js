@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const Boutique = require('../models/Boutique');
+const User = require('../models/User');
 const Box = require('../models/Box');
 const MouvementBox = require('../models/MouvementBox');
 const PaiementLoyer = require('../models/PaiementLoyer');
@@ -92,19 +93,39 @@ router.get('/:id', async (req, res) => {
 });
 
 // ======================
-// CREATE
+// CREATE - avec création automatique d'utilisateur
 // ======================
 router.post('/', async (req, res) => {
   try {
-    const { boxActuelleId } = req.body;
+    const { boxActuelleId, password, ...boutiqueData } = req.body;
 
-    const boutique = new Boutique(req.body);
+    // Vérifier si l'email existe déjà
+    const emailExiste = await Boutique.findOne({ email: boutiqueData.email });
+    if (emailExiste) {
+      return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+    }
+
+    // Créer la boutique
+    const boutique = new Boutique(boutiqueData);
     await boutique.save();
+
+    // Créer l'utilisateur associé
+    const user = new User({
+      email: boutique.email,
+      password: password, // À hasher avec bcrypt dans une vraie application
+      role: 'boutique',
+      profilId: boutique._id,
+      status: true
+    });
+    await user.save();
 
     if (boxActuelleId) {
       const box = await Box.findById(boxActuelleId);
 
       if (!box || box.statut !== 'libre') {
+        // Supprimer la boutique et l'utilisateur si erreur
+        await Boutique.findByIdAndDelete(boutique._id);
+        await User.findByIdAndDelete(user._id);
         return res.status(400).json({ message: 'Box non disponible' });
       }
 
@@ -123,7 +144,14 @@ router.post('/', async (req, res) => {
       });
     }
 
-    res.status(201).json(boutique);
+    res.status(201).json({
+      boutique,
+      user: {
+        _id: user._id,
+        email: user.email,
+        role: user.role
+      }
+    });
 
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -131,14 +159,13 @@ router.post('/', async (req, res) => {
 });
 
 // ======================
-// UPDATE - AVEC VÉRIFICATION DE LOYER
+// UPDATE - SEULEMENT BOUTIQUE, PAS D'UTILISATEUR
 // ======================
 router.put('/:id', async (req, res) => {
   try {
     const boutique = await Boutique.findById(req.params.id);
     const ancienBoxId = boutique.boxActuelleId;
     const nouveauBoxId = req.body.boxActuelleId;
-
 
     // Vérification du loyer si changement de box
     if (ancienBoxId?.toString() !== nouveauBoxId && nouveauBoxId) {
@@ -174,9 +201,6 @@ router.put('/:id', async (req, res) => {
           return res.status(400).json({ message: 'Box non disponible' });
         }
 
-        boutique.dateEntryBox = new Date();
-        await boutique.save();
-
         newBox.statut = 'occupee';
         await newBox.save();
 
@@ -189,6 +213,7 @@ router.put('/:id', async (req, res) => {
       }
     }
 
+    // Mise à jour de la boutique (sans le mot de passe)
     Object.assign(boutique, req.body);
     await boutique.save();
 

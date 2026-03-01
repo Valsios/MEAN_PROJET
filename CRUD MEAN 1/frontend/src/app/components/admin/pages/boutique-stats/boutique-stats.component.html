@@ -13,17 +13,34 @@
         </a>
         <span class="text-muted">|</span>
         <span class="text-muted" *ngIf="boutique">
-          <i class="bi bi-shop me-1"></i>
+          <img *ngIf="boutique.image" 
+               [src]="boutique.image" 
+               class="rounded-circle me-1" 
+               width="20" 
+               height="20"
+               style="object-fit: cover;">
+          <i *ngIf="!boutique.image" class="bi bi-shop me-1"></i>
           {{ boutique.nom }}
         </span>
       </div>
     </div>
     
-    <!-- Bouton rafraîchir -->
-    <button class="btn btn-outline-primary btn-lg" (click)="loadMouvements()" [disabled]="loading">
-      <i class="bi bi-arrow-repeat me-2" [class.spinning]="loading"></i>
-      Rafraîchir
-    </button>
+    <!-- Groupe de boutons -->
+    <div class="d-flex gap-2">
+      <!-- Bouton Paiement Loyer -->
+      <a *ngIf="boutique && boutique.boxActuelleId" 
+         [routerLink]="['/admin/boutique', boutiqueId, 'paiement']" 
+         class="btn btn-success btn-lg">
+        <i class="bi bi-cash-coin me-2"></i>
+        Payer le loyer
+      </a>
+      
+      <!-- Bouton rafraîchir -->
+      <button class="btn btn-outline-primary btn-lg" (click)="loadMouvements()" [disabled]="loading">
+        <i class="bi bi-arrow-repeat me-2" [class.spinning]="loading"></i>
+        Rafraîchir
+      </button>
+    </div>
   </div>
 
   <!-- Loading -->
@@ -47,7 +64,7 @@
   <div *ngIf="!loading && !error && boutique" class="row g-4">
     <!-- Colonne gauche : Informations boutique -->
     <div class="col-lg-4">
-      <!-- Carte boutique -->
+      <!-- Carte boutique avec image -->
       <div class="card shadow-sm border-0 mb-4">
         <div class="card-header bg-primary text-white py-3">
           <div class="d-flex align-items-center">
@@ -58,7 +75,14 @@
         <div class="card-body p-4">
           <div class="shop-info text-center mb-4">
             <div class="shop-avatar mb-3">
-              <i class="bi bi-shop fs-1 text-primary"></i>
+              <img *ngIf="boutique.image" 
+                   [src]="boutique.image" 
+                   class="rounded-circle shop-image" 
+                   width="100" 
+                   height="100"
+                   style="object-fit: cover; border: 3px solid #0d6efd;"
+                   alt="{{ boutique.nom }}">
+              <i *ngIf="!boutique.image" class="bi bi-shop fs-1 text-primary"></i>
             </div>
             <h4>{{ boutique.nom }}</h4>
             <span class="badge bg-primary bg-opacity-10 text-primary px-3 py-2 mt-2">
@@ -284,7 +308,7 @@
                 </tr>
 
                 <tr *ngIf="paiements.length === 0">
-                  <td colspan="4" class="text-center py-5">
+                  <td colspan="5" class="text-center py-5">
                     <i class="bi bi-cash-stack fs-1 d-block mb-3 text-muted"></i>
                     <h5 class="text-muted">Aucun paiement</h5>
                     <p class="text-muted mb-0">Cette boutique n'a pas encore effectué de paiement de loyer</p>

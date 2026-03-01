@@ -15,6 +15,10 @@ const BoutiqueSchema = new Schema({
     required: true,
     unique: true
   },
+  image: {
+    type: String, // Base64
+    default: null
+  },
   boxActuelleId: {
     type: Schema.Types.ObjectId,
     ref: 'Box',

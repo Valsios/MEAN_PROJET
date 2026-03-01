@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
-import { BoutiqueService } from '../../../../services/boutique/boutique.service';
+import { BoutiqueService, BoutiqueCreate } from '../../../../services/boutique/boutique.service';
 import { BoxService } from '../../../../services/box/box.service';
 import { CategorieService } from '../../../../services/categorie/categorie.service';
 import { MouvementService } from '../../../../services/mouvement-box/mouvement-box.service';
@@ -44,12 +44,18 @@ export class BoutiqueListComponent implements OnInit {
   isEditMode = false;
   selectedId: string | null = null;
 
+  // Image preview
+  imagePreview: string | null = null;
+  selectedFile: File | null = null;
+
   form: any = {
     nom: '',
     telephone: '',
     email: '',
+    password: '',
     categorieId: '',
-    boxActuelleId: null
+    boxActuelleId: null,
+    image: null
   };
 
   constructor(
@@ -218,6 +224,26 @@ export class BoutiqueListComponent implements OnInit {
     return cat ? cat.nom : 'Catégorie inconnue';
   }
 
+  // Gestion de l'image
+  onFileSelected(event: any) {
+    const file = event.target.files[0];
+    if (file) {
+      this.selectedFile = file;
+      const reader = new FileReader();
+      reader.onload = (e: any) => {
+        this.imagePreview = e.target.result;
+        this.form.image = e.target.result; // Base64
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  removeImage() {
+    this.imagePreview = null;
+    this.selectedFile = null;
+    this.form.image = null;
+  }
+
   // NOUVELLE MÉTHODE : Vérifier le paiement avant action
   verifierPaiementAvantAction(boutique: any, action: string): Promise<boolean> {
     return new Promise((resolve) => {
@@ -256,6 +282,12 @@ export class BoutiqueListComponent implements OnInit {
       return;
     }
 
+    // Validation du mot de passe uniquement en création
+    if (!this.isEditMode && !this.form.password) {
+      this.showError('Le mot de passe est requis pour la création');
+      return;
+    }
+
     if (this.isEditMode && this.selectedId) {
       await this.updateBoutique();
     } else {
@@ -276,7 +308,17 @@ export class BoutiqueListComponent implements OnInit {
       }
     }
 
-    this.boutiqueService.update(this.selectedId!, this.form)
+    // Préparer les données sans le mot de passe
+    const updateData = {
+      nom: this.form.nom,
+      telephone: this.form.telephone,
+      email: this.form.email,
+      categorieId: this.form.categorieId,
+      boxActuelleId: this.form.boxActuelleId,
+      image: this.form.image
+    };
+
+    this.boutiqueService.update(this.selectedId!, updateData)
       .subscribe({
         next: () => {
           // Gestion du changement de box
@@ -298,11 +340,22 @@ export class BoutiqueListComponent implements OnInit {
   }
 
   private createBoutique() {
-    this.boutiqueService.create(this.form)
+    // Préparer les données avec le mot de passe
+    const createData: any = {
+      nom: this.form.nom,
+      telephone: this.form.telephone,
+      email: this.form.email,
+      password: this.form.password,
+      categorieId: this.form.categorieId,
+      boxActuelleId: this.form.boxActuelleId,
+      image: this.form.image
+    };
+
+    this.boutiqueService.create(createData)
       .subscribe({
         next: (newBoutique: any) => {
           if (this.form.boxActuelleId) {
-            this.createMouvement(newBoutique._id, this.form.boxActuelleId);
+            this.createMouvement(newBoutique.boutique._id, this.form.boxActuelleId);
           } else {
             this.afterSave();
             this.showSuccess('Boutique créée avec succès');
@@ -361,9 +414,12 @@ export class BoutiqueListComponent implements OnInit {
       nom: b.nom,
       telephone: b.telephone,
       email: b.email,
+      password: '', // Vide en édition
       categorieId: b.categorieId?._id,
-      boxActuelleId: b.boxActuelleId?._id || null
+      boxActuelleId: b.boxActuelleId?._id || null,
+      image: b.image || null
     };
+    this.imagePreview = b.image || null;
     this.submitted = false;
     
     document.querySelector('form')?.scrollIntoView({ 
@@ -405,9 +461,13 @@ export class BoutiqueListComponent implements OnInit {
       nom: '',
       telephone: '',
       email: '',
+      password: '',
       categorieId: '',
-      boxActuelleId: null
+      boxActuelleId: null,
+      image: null
     };
+    this.imagePreview = null;
+    this.selectedFile = null;
     this.submitted = false;
   }
 
