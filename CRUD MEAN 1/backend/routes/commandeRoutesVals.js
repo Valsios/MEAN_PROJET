@@ -35,6 +35,14 @@ router.get('/annulerCommande/:id', async (req, res) => {
 // Valider une commande
 router.get('/validerCommande/:id', async (req, res) => {
   try {
+
+     // Vérification du stock
+    const check = await checkArticle(commandeToInsert);
+   
+    if (!check.ok) {
+      return res.status(400).json({ message: check.message });
+    }
+    
     const commande = await Commande.findByIdAndUpdate(
       req.params.id,                   
       { 
@@ -46,12 +54,7 @@ router.get('/validerCommande/:id', async (req, res) => {
         runValidators: true                
       }
     );
-     // Vérification du stock
-    const check = await checkArticle(commandeToInsert);
-   
-    if (!check.ok) {
-      return res.status(400).json({ message: check.message });
-    }
+    
     updateStock(commande);
 
     // Réponse succès
