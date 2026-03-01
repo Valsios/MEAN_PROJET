@@ -185,7 +185,7 @@ export class BoutiquePanierComponent implements OnInit {
 
   augmenterQuantite(index: number) {
     const article = this.articlesPanier[index];
-    if (!article.stockRestant || article.quantite < article.stockRestant) {
+    if (!article.stockRestant || article.quantite <= article.stockRestant) {
       article.quantite++;
       this.mettreAJourTotal(index);
     }
@@ -266,7 +266,7 @@ validerCommande() {
     next: (response) => {
       console.log('✅ Commande créée avec succès:', response);
      if (confirm('Commande validée avec succès ! Cliquez sur OK pour recharger la page.')) {
-  window.location.reload();
+      window.location.reload();
 }
       
       

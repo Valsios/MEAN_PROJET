@@ -46,6 +46,12 @@
                           (click)="changerFiltre('validee')">
                     Validées <span class="badge bg-light text-dark ms-1">{{ stats.validees }}</span>
                   </button>
+                  <button class="btn" 
+                          [class.btn-danger]="filtreStatut === 'annule'"
+                          [class.btn-outline-danger]="filtreStatut !== 'annule'"
+                          (click)="changerFiltre('validee')">
+                    Annulées <span class="badge bg-light text-dark ms-1">{{ stats.annule }}</span>
+                  </button>
                   
                 </div>
               </div>

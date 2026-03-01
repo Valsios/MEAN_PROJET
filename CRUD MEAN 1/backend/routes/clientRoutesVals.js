@@ -114,7 +114,15 @@ router.delete('/:commandeId/article/:produitId', async (req, res) => {
 router.put('/:commandeId/valider', async (req, res) => {
   try {
     const { commandeId } = req.params;
+    
     const commande = await Commande.findById(commandeId);
+
+    // Vérification du stock
+    const check = await checkArticle(commande);
+   
+    if (!check.ok) {
+      return res.status(400).json({ message: check.message });
+    }
     
     // Mettre à jour le statut
     commande.statut = 'en_attente';
@@ -136,6 +144,24 @@ router.put('/:commandeId/valider', async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 });
+
+async function checkArticle(commande) {
+  
+  const articles = commande.articles;
+
+  for (let i = 0; i < articles.length; i++) {
+    const art = articles[i];
+    const produit = await Produit.findById(art.produitId);
+    if (produit.gestionStock === true && produit.stockActuel < art.quantite) {
+      return { 
+        ok: false, 
+        message: `Stock insuffisant pour ${produit.nom}` 
+      };
+    }
+  }
+
+  return { ok: true };
+}
 
 // Valider tous les paniers d'un client
 router.put('/:clientId/paniers/valider-tout', async (req, res) => {
