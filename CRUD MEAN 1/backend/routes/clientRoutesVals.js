@@ -404,11 +404,35 @@ router.get('/:id/commandes', async (req, res) => {
 //noter boutique
 router.post('/noter-boutique', async (req, res) => {
   try {
-    const review = new ReviewBoutique(req.body);
-    await review.save();
-    res.status(201).json(client);
+    const { boutiqueId, clientId, clientEmail, note, commentaire } = req.body;
+    
+    // Vérifier si le client a déjà noté
+    let review = await ReviewBoutique.findOne({
+      'client.id': clientId,
+      boutiqueId: boutiqueId
+    });
+
+    if (review) {
+      // Mise à jour
+      review.note = note;
+      review.commentaire = commentaire || review.commentaire;
+      review.updatedAt = new Date();
+      await review.save();
+    } else {
+      // Création
+      review = new ReviewBoutique({
+        boutiqueId,
+        client: { id: clientId, email: clientEmail },
+        note,
+        commentaire,
+        createdAt: new Date()
+      });
+      await review.save();
+    }
+
+    res.json({ message: 'Avis enregistré', review });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 

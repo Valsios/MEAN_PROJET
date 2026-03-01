@@ -156,6 +156,17 @@ getClient(clientId : string) : Observable<any>
   {
     return this.http.delete(`${this.apiUrl}/deleteProduit/${produitId}`);
   }
+    // Dans client.service.ts
+  noterBoutique(data: {
+    boutiqueId: string,
+    clientId: string,
+    clientEmail: string,
+    note: number,
+    commentaire?: string | null
+  }): Observable<any> {
+    return this.http.post(`${this.apiUrlClient}/noter-boutique`, data);
+  }
+
 
 
 
