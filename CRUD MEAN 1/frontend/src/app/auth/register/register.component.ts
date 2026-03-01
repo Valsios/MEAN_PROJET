@@ -47,11 +47,11 @@ export class RegisterComponent {
     }
 
     // Validation téléphone (simple)
-    const phoneRegex = /^[0-9+\-\s]{8,}$/;
-    if (!phoneRegex.test(this.telephone)) {
+    /*const phoneRegex = /^[0-9+\-\s]{8,}$/;
+    if (this.telephone) {
       this.error = 'Veuillez saisir un numéro de téléphone valide';
       return;
-    }
+    }*/
 
 
     if (this.password !== this.confirmPassword) {
@@ -75,7 +75,7 @@ export class RegisterComponent {
       next: (response) => {
         this.success = 'Inscription réussie ! Redirection...';
         setTimeout(() => {
-          this.router.navigate(['/client/dashboard']);
+          this.router.navigate(['/client-dashboard']);
         }, 2000);
       },
       error: (err) => {

@@ -36,7 +36,7 @@ const PaiementLoyerSchema = new mongoose.Schema({
 });
 
 PaiementLoyerSchema.index(
-  { boutiqueId: 1, mois: 1, annee: 1 },
+  { boutiqueId: 1, boxId: 1, mois: 1, annee: 1 },
   { unique: true }
 );
 

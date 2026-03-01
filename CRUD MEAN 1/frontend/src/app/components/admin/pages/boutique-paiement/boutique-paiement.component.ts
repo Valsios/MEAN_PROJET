@@ -105,7 +105,6 @@ export class BoutiquePaiementComponent implements OnInit {
   }
 
   payer() {
-    console.log("rzrejkgzrehgnvzehgzioegvzeg");
     if (this.nombreMois < 1 || this.nombreMois > 12) {
       alert('Veuillez saisir un nombre de mois valide (entre 1 et 12)');
       return;

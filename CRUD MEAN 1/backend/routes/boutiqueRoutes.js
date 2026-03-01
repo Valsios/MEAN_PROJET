@@ -28,6 +28,7 @@ async function verifierPaiementLoyerMoisActuel(boutiqueId) {
     // Vérifier si un paiement existe pour le mois et l'année en cours
     const paiementExiste = await PaiementLoyer.findOne({
       boutiqueId: boutiqueId,
+      boxId: boutique.boxActuelleId,
       mois: moisActuel,
       annee: anneeActuelle
     });

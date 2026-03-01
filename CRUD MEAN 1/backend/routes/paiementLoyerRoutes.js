@@ -208,11 +208,13 @@ router.post('/payer', async (req, res) => {
 
     await PaiementLoyer.insertMany(paiements);
 
+    
+
     res.status(201).json({ message: 'Paiement enregistré' });
 
   } catch (error) {
     res.status(400).json({
-      message: 'Paiement déjà existant ou erreur'
+      message: error.message
     });
   }
 });
