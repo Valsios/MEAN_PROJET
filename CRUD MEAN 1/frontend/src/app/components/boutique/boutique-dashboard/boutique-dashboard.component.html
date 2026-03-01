@@ -99,7 +99,7 @@
     <div class="row">
       <div class="col-12">
         <!-- Liste des commandes (CA) -->
-        <div class="card shadow-sm border-0" *ngIf="activeListe === 'ca'">
+        <div class="card shadow-sm border-0" [hidden]="activeListe !== 'ca'">
           <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="lni lni-wallet me-2"></i>Détail des commandes validées</h5>
             <span class="badge bg-light text-primary">{{ commandesValidees.length }} commandes</span>
@@ -111,7 +111,9 @@
               </div>
             </div>
             <div class="table-responsive" *ngIf="!isLoadingCA">
-              <table class="table table-hover mb-0">
+              <table datatable 
+                  [dtOptions]="dtOptions[0]"
+                  class="table table-hover mb-0">
                 <thead class="table-light">
                   <tr>
                     <th>N° commande</th>
@@ -123,7 +125,7 @@
                 </thead>
                 <tbody>
                   <tr *ngFor="let cmd of commandesValidees">
-                    <td><strong>#{{ cmd._id?.slice(-6) || 'N/A' }}</strong></td>
+                    <td><strong>#{{ formatId(cmd._id) }}</strong></td>
                     <td>{{ cmd.validateOrCanceledAt | date:'dd/MM/yyyy' }}</td>
                     <td>{{ formatClient(cmd.client) }}</td>
                     <td class="fw-bold">{{ cmd.montantTotal | currency:'MGA':'symbol':'1.0-0' }}</td>
@@ -149,7 +151,7 @@
         </div>
 
         <!-- Liste des avis boutique -->
-        <div class="card shadow-sm border-0" *ngIf="activeListe === 'note'">
+        <div class="card shadow-sm border-0" [hidden]="activeListe !== 'note'">
           <div class="card-header bg-warning text-white d-flex justify-content-between align-items-center">
             <h5 class="mb-0"><i class="lni lni-star-fill me-2"></i>Avis reçus sur la boutique</h5>
             <span class="badge bg-light text-warning">{{ avisBoutique.length }} avis</span>
@@ -226,7 +228,7 @@
         </div>
 
         <!-- Liste des paiements de loyer -->
-        <div class="card shadow-sm border-0" *ngIf="activeListe === 'loyer'">
+        <div class="card shadow-sm border-0" [hidden]="activeListe !== 'loyer'">
           <div class="card-header" [ngClass]="estLoyerPaye ? 'bg-success text-white' : 'bg-danger text-white'">
             <h5 class="mb-0"><i class="lni lni-apartment me-2"></i>Historique des paiements - {{ boxInfo }}</h5>
           </div>
@@ -238,11 +240,11 @@
             </div>
             
             <div *ngIf="!isLoadingLoyer">
-              
-
               <!-- Tableau historique -->
               <div class="table-responsive">
-                <table class="table">
+                <table datatable 
+                  [dtOptions]="dtOptions[1]"
+                  class="table table-hover mb-0">
                   <thead>
                     <tr>
                       <th>Période</th>
@@ -270,8 +272,6 @@
                   </tbody>
                 </table>
               </div>
-
-             
             </div>
           </div>
         </div>

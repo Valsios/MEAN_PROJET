@@ -1,9 +1,12 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { BoutiqueHeaderComponent } from '../header/boutique-header/boutique-header.component';
 import { BoutiqueFooterComponent } from '../footer/boutique-footer/boutique-footer.component';
 import { BoutiqueService } from '../../../services/boutique/boutique.service';
-import { FormsModule } from '@angular/forms'; // À ajouter dans les imports
+import { FormsModule } from '@angular/forms';
+import { Config } from 'datatables.net';
+import { DataTablesModule } from 'angular-datatables';
+declare var $: any;
 
 // Interfaces
 interface Client {
@@ -81,18 +84,25 @@ interface Profile {
 @Component({
   selector: 'app-dashboard-boutique',
   standalone: true,
-  imports: [CommonModule, FormsModule, BoutiqueHeaderComponent, BoutiqueFooterComponent],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    BoutiqueHeaderComponent, 
+    BoutiqueFooterComponent, 
+    DataTablesModule
+  ],
   templateUrl: './boutique-dashboard.component.html'
 })
-export class BoutiqueDashboardComponent implements OnInit {
+export class BoutiqueDashboardComponent implements OnInit, OnDestroy {
+
+  // ========== PROPRIÉTÉS DATATABLES ==========
+  dtOptions: Config[] = [];
+
+  // ========== PROPRIÉTÉS MÉTIER ==========
   activeListe: string | null = null;
-  
-  // Profile
   profile: Profile | null = null;
-  
-  // Données typées
-  boutique: any ;
-  box : Box | null = null;
+  boutique: any;
+  box: Box | null = null;
   commandesValidees: Commande[] = [];
   avisBoutique: AvisClient[] = [];
   paiementsLoyer: PaiementLoyer[] = [];
@@ -143,10 +153,40 @@ export class BoutiqueDashboardComponent implements OnInit {
     if (this.profile?._id) {
       this.boutiqueId = this.profile._id;
       this.boutique = this.profile;
+      this.initDataTablesOptions();
       this.chargerDonnees();
     } else {
       console.error('Aucun profil trouvé');
     }
+  }
+
+  initDataTablesOptions() {
+    // Options pour la table des commandes validées (index 0)
+    this.dtOptions[0] = {
+      paging: true,
+      pagingType: 'simple_numbers',
+      pageLength: 10,
+      lengthChange: true,
+      lengthMenu: [5, 10, 25, 50],
+      ordering: true,
+      info: true,
+      searching: false,
+      autoWidth: false,
+    };
+
+    // Options pour la table des paiements de loyer (index 1)
+    this.dtOptions[1] = {
+      paging: true,
+      pagingType: 'simple_numbers',
+      pageLength: 10,
+      lengthChange: true,
+      lengthMenu: [5, 10, 25, 50],
+      ordering: true,
+      info: true,
+      searching: false,
+      autoWidth: false,
+      
+    };
   }
 
   chargerDonnees() {
@@ -196,7 +236,6 @@ export class BoutiqueDashboardComponent implements OnInit {
   }
 
   // ========== MÉTHODES POUR LE LOYER ==========
-  
   chargerPaiementsLoyer() {
     this.isLoadingLoyer = true;
     this.boutiqueService.getAllPayementLoyers(this.boutiqueId).subscribe({
@@ -234,8 +273,60 @@ export class BoutiqueDashboardComponent implements OnInit {
     };
   }
 
-  
+  // ========== GESTION DES ONGLETS ==========
+  toggleListe(liste: string): void {
+    this.activeListe = this.activeListe === liste ? null : liste;
+    
+    // Rafraîchir les données si nécessaire
+    if (this.activeListe === 'ca') {
+      this.refreshCommandes();
+    } else if (this.activeListe === 'loyer') {
+      this.refreshLoyers();
+    }
+  }
 
+  // ========== MÉTHODES DE RAFRAÎCHISSEMENT ==========
+  refreshCommandes() {
+    this.isLoadingCA = true;
+    this.boutiqueService.getCommandesValidee(this.boutiqueId).subscribe({
+      next: (commandes: Commande[]) => {
+        this.commandesValidees = commandes || [];
+        this.isLoadingCA = false;
+        
+        // Optionnel : rafraîchir l'affichage DataTables
+        setTimeout(() => {
+          const table = $('table').DataTable();
+          if (table) {
+            table.draw();
+          }
+        }, 100);
+      },
+      error: (err: any) => {
+        console.error('Erreur rechargement commandes:', err);
+        this.commandesValidees = [];
+        this.isLoadingCA = false;
+      }
+    });
+  }
+
+  refreshLoyers() {
+    this.chargerPaiementsLoyer();
+    
+    // Optionnel : rafraîchir l'affichage DataTables
+    setTimeout(() => {
+      const table = $('table').DataTable();
+      if (table) {
+        table.draw();
+      }
+    }, 100);
+  }
+
+  changerAnnee(annee: number) {
+    this.anneeSelectionnee = annee;
+    this.calculerStatistiquesLoyer();
+  }
+
+  // ========== MÉTHODES DE FORMATAGE ==========
   formatDate(date: any): string {
     if (!date) return '-';
     const d = new Date(date);
@@ -246,9 +337,54 @@ export class BoutiqueDashboardComponent implements OnInit {
     });
   }
 
+  formatDateTime(date: any): string {
+    if (!date) return '-';
+    const d = new Date(date);
+    return d.toLocaleDateString('fr-FR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  }
 
- 
-  // Calculs pour le CA
+  formatMontant(montant: number): string {
+    return montant.toLocaleString('fr-FR', {
+      style: 'currency',
+      currency: 'MGA',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+
+  formatMois(mois: number): string {
+    return this.moisListe.find(m => m.index === mois)?.nom || mois.toString();
+  }
+
+  formatClient(client: Client | null): string {
+    if (!client) return 'Client sur place';
+    return client.email || client.telephone || 'Client inconnu';
+  }
+
+  formatId(id: string | null | undefined): string {
+    if (!id) return 'N/A';
+    return id.slice(-8);
+  }
+
+  // ========== MÉTHODES POUR LE BOX ==========
+  getBoxInfo(): string {
+    if (this.box) {
+      return `Box n°${this.box.numero} - Étage ${this.box.etage}`;
+    }
+    return 'Box non assigné';
+  }
+
+  get boxInfo(): string {
+    return this.getBoxInfo();
+  }
+
+  // ========== GETTERS POUR LES CALCULS ==========
   get caTotal(): number {
     if (!this.commandesValidees || this.commandesValidees.length === 0) return 0;
     return this.commandesValidees.reduce((sum, cmd) => sum + (cmd.montantTotal || 0), 0);
@@ -258,7 +394,6 @@ export class BoutiqueDashboardComponent implements OnInit {
     return this.commandesValidees?.length || 0;
   }
 
-  // Calculs pour les avis
   get totalAvis(): number {
     return this.avisBoutique?.length || 0;
   }
@@ -284,7 +419,6 @@ export class BoutiqueDashboardComponent implements OnInit {
     return counts;
   }
 
-  // Calculs pour le loyer (anciennes méthodes adaptées)
   get montantLoyer(): number {
     return this.box?.prixActuel || 0;
   }
@@ -306,7 +440,6 @@ export class BoutiqueDashboardComponent implements OnInit {
     return new Date(aujourdhui.getFullYear(), aujourdhui.getMonth() + 1, 1);
   }
 
-  // Historique des loyers (ancienne méthode adaptée)
   get historiqueLoyerMois(): Array<{ 
     mois: number; 
     annee: number; 
@@ -345,31 +478,8 @@ export class BoutiqueDashboardComponent implements OnInit {
     return historique;
   }
 
-  // Méthode pour basculer l'affichage
-  toggleListe(liste: string): void {
-    if (this.activeListe === liste) {
-      this.activeListe = null;
-    } else {
-      this.activeListe = liste;
-    }
-  }
-
-  // Méthode pour formater l'affichage client
-  formatClient(client: Client | null): string {
-    if (!client) return 'Client sur place';
-    return client.email || client.telephone || 'Client inconnu';
-  }
-
-  // Méthode pour obtenir les infos du box
-  getBoxInfo(): string {
-    if (this.box) {
-      return `Box n°${this.box.numero} - Étage ${this.box.etage}`;
-    }
-    return 'Box non assigné';
-  }
-
-  // Getter pour boxInfo (pour le template)
-  get boxInfo(): string {
-    return this.getBoxInfo();
+  // ========== NETTOYAGE ==========
+  ngOnDestroy(): void {
+    // Rien à nettoyer car nous n'utilisons plus de Subject
   }
 }
