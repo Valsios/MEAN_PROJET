@@ -81,7 +81,7 @@ router.get('/:id/mouvements', async (req, res) => {
 
     const paiements = await PaiementLoyer.find({
       boutiqueId: boutique._id
-    }).sort({ annee: -1, mois: -1 });
+    }).populate('boxId').sort({ annee: -1, mois: -1 });
 
     res.json({
       boutique,

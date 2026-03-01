@@ -113,6 +113,10 @@
                   moisFrancais[dernierPaiement.mois] + ' ' + dernierPaiement.annee :
                   'Aucun paiement'
                 }}
+                <span *ngIf="dernierPaiement && dernierPaiement.boxId !== boxActuelleId" 
+                      class="badge bg-warning text-dark ms-2">
+                  <i class="bi bi-arrow-left-right"></i> Ancien box
+                </span>
               </span>
             </div>
 
@@ -130,6 +134,14 @@
                 <i class="bi bi-cash me-1"></i>
                 {{ boutique.boxActuelleId.prixActuel | number }} Ar
               </span>
+            </div>
+          </div>
+
+          <!-- Message d'information sur le calcul -->
+          <div *ngIf="messageInfo" class="info-message mt-3 p-3 bg-light rounded">
+            <div class="d-flex align-items-start gap-2">
+              <i class="bi bi-info-circle-fill text-info flex-shrink-0 mt-1"></i>
+              <small class="text-muted">{{ messageInfo }}</small>
             </div>
           </div>
 

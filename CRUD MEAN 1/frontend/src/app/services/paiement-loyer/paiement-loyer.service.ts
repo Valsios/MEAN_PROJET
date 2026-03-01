@@ -14,6 +14,7 @@ export class PaiementLoyerService {
   }
 
   payer(data: any) {
+    console.log("aaaaazazazazazza");
     return this.http.post(`${this.apiUrl}/payer`, data);
   }
 }

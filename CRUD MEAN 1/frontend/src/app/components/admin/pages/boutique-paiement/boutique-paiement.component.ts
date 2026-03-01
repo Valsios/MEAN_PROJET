@@ -23,6 +23,10 @@ export class BoutiquePaiementComponent implements OnInit {
   boutiqueId!: string;
   error: string = '';
 
+  // Propriétés pour afficher des informations supplémentaires
+  boxActuelleId: string | null = null;
+  messageInfo: string = '';
+
   moisFrancais = [
     '', 'Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin',
     'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'
@@ -51,6 +55,10 @@ export class BoutiquePaiementComponent implements OnInit {
         this.dernierPaiement = res.dernierPaiement;
         this.prochainMois = res.prochainMois;
         this.prochaineAnnee = res.prochaineAnnee;
+        this.boxActuelleId = res.boutique.boxActuelleId?._id;
+        
+        // Générer un message explicatif
+        this.genererMessageInfo();
         this.genererMois();
       },
       error: (err) => {
@@ -58,6 +66,19 @@ export class BoutiquePaiementComponent implements OnInit {
         console.error('Erreur:', err);
       }
     });
+  }
+
+  /**
+   * Génère un message explicatif sur le calcul du prochain mois
+   */
+  genererMessageInfo() {
+    if (!this.boutique || !this.dernierPaiement) {
+      this.messageInfo = 'Premier paiement pour cette boutique. Le loyer est dû à partir de la date d\'entrée dans le box.';
+    } else if (this.dernierPaiement.boxId === this.boxActuelleId) {
+      this.messageInfo = `Dernier paiement effectué pour le box actuel. Le prochain mois à payer est ${this.moisFrancais[this.prochainMois]} ${this.prochaineAnnee}.`;
+    } else {
+      this.messageInfo = `Dernier paiement effectué pour un ancien box. Le calcul reprend à partir du dernier paiement du box actuel ou de la date d'entrée.`;
+    }
   }
 
   genererMois() {
@@ -84,6 +105,7 @@ export class BoutiquePaiementComponent implements OnInit {
   }
 
   payer() {
+    console.log("rzrejkgzrehgnvzehgzioegvzeg");
     if (this.nombreMois < 1 || this.nombreMois > 12) {
       alert('Veuillez saisir un nombre de mois valide (entre 1 et 12)');
       return;

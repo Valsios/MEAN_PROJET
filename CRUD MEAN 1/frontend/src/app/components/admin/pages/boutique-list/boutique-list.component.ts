@@ -218,8 +218,36 @@ export class BoutiqueListComponent implements OnInit {
     return cat ? cat.nom : 'Catégorie inconnue';
   }
 
+  // NOUVELLE MÉTHODE : Vérifier le paiement avant action
+  verifierPaiementAvantAction(boutique: any, action: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      // Si la boutique n'a pas de box, pas de vérification nécessaire
+      if (!boutique.boxActuelleId) {
+        resolve(true);
+        return;
+      }
+
+
+      this.boutiqueService.verifierPaiementLoyer(boutique._id).subscribe({
+        next: (resultat) => {
+          console.log(resultat);
+          if (resultat.estPaye) {
+            resolve(true);
+          } else {
+            this.showError(`Action impossible : ${resultat.message}. Veuillez payer le loyer du mois en cours avant de ${action}.`);
+            resolve(false);
+          }
+        },
+        error: (error) => {
+          this.showError('Erreur lors de la vérification du paiement');
+          resolve(false);
+        }
+      });
+    });
+  }
+
   // CRUD Operations
-  submit() {
+  async submit() {
     this.submitted = true;
 
     // Validation
@@ -229,16 +257,24 @@ export class BoutiqueListComponent implements OnInit {
     }
 
     if (this.isEditMode && this.selectedId) {
-      this.updateBoutique();
+      await this.updateBoutique();
     } else {
       this.createBoutique();
     }
   }
 
-  private updateBoutique() {
+  private async updateBoutique() {
     const ancienneBoutique = this.boutiques.find(b => b._id === this.selectedId);
     const ancienneBoxId = ancienneBoutique?.boxActuelleId?._id || null;
     const nouvelleBoxId = this.form.boxActuelleId;
+
+    // Vérification si on essaie de changer de box
+    if (ancienneBoxId !== nouvelleBoxId && nouvelleBoxId) {
+      const peutChanger = await this.verifierPaiementAvantAction(ancienneBoutique, 'changer de box');
+      if (!peutChanger) {
+        return;
+      }
+    }
 
     this.boutiqueService.update(this.selectedId!, this.form)
       .subscribe({
@@ -252,7 +288,11 @@ export class BoutiqueListComponent implements OnInit {
           }
         },
         error: (error) => {
-          this.showError(this.getErrorMessage(error));
+          if (error.error?.code === 'LOYER_IMPAYE') {
+            this.showError(error.error.message);
+          } else {
+            this.showError(this.getErrorMessage(error));
+          }
         }
       });
   }
@@ -305,7 +345,7 @@ export class BoutiqueListComponent implements OnInit {
       boxId: boxId,
       dateDebut: new Date(),
       dateFin: null,
-      status: 'en_cours'
+      statut: 'en_cours'
     }).subscribe();
   }
 
@@ -332,7 +372,14 @@ export class BoutiqueListComponent implements OnInit {
     });
   }
 
-  liberer(b: any) {
+  async liberer(b: any) {
+    // Vérification du paiement avant de libérer
+    const peutLiberer = await this.verifierPaiementAvantAction(b, 'libérer la box');
+    console.log(peutLiberer)
+    if (!peutLiberer) {
+      return;
+    }
+    
     if (confirm(`Êtes-vous sûr de vouloir libérer la box de la boutique "${b.nom}" ?`)) {
       this.boutiqueService.libererBox(b._id)
         .subscribe({
@@ -341,7 +388,11 @@ export class BoutiqueListComponent implements OnInit {
             this.loadData();
           },
           error: (error) => {
-            this.showError(this.getErrorMessage(error));
+            if (error.error?.code === 'LOYER_IMPAYE') {
+              this.showError(error.error.message);
+            } else {
+              this.showError(this.getErrorMessage(error));
+            }
           }
         });
     }
@@ -362,7 +413,6 @@ export class BoutiqueListComponent implements OnInit {
 
   // Gestion des messages
   private showSuccess(message: string) {
-    // Idéalement, utilisez un service de toast
     alert('✓ ' + message);
   }
 

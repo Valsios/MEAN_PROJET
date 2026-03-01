@@ -29,12 +29,10 @@ export interface Report {
   statut: 'en_attente' | 'valide' | 'refuse';
 }
 
-
-
 @Injectable({ providedIn: 'root' })
 export class BoutiqueService {
 
-  private apiUrl = `${environment.apiUrl}/boutiques`; // Assurez-vous d'avoir environment.apiUrl défini
+  private apiUrl = `${environment.apiUrl}/boutiques`;
 
   constructor(private http: HttpClient) {}
 
@@ -55,6 +53,11 @@ export class BoutiqueService {
   }
 
   getBoutiqueById(id: string) {
-    return this.http.get<Boutique>(`${this.apiUrl}/${id}`)
+    return this.http.get<Boutique>(`${this.apiUrl}/${id}`);
+  }
+
+  // NOUVELLE MÉTHODE : Vérifier le paiement du loyer
+  verifierPaiementLoyer(id: string) {
+    return this.http.get<{ estPaye: boolean; message: string }>(`${this.apiUrl}/${id}/verifier-paiement-loyer`);
   }
 }
