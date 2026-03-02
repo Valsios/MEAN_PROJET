@@ -503,6 +503,7 @@ export class BoutiqueListComponent implements OnInit {
   // Gestion des messages
   private showSuccess(message: string) {
     alert('✓ ' + message);
+    window.location.reload();
   }
 
   private showError(message: string) {

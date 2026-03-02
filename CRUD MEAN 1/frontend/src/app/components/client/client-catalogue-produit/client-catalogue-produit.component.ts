@@ -295,9 +295,7 @@ export class ClientCatalogueProduitComponent {
         
         // Fermer le modal après 1.5 secondes
         setTimeout(() => {
-          this.closeRatingModal();
-          // Recharger les avis
-          this.chargerBoutiqueReviews();
+          window.location.reload();
         }, 1500);
       },
       error: (error) => {
