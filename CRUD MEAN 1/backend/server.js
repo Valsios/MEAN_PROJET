@@ -48,6 +48,9 @@ app.use('/api/paiements-loyer', require('./routes/paiementLoyerRoutesVals'));
 
 
 
+app.get('/health', (req, res) => {
+  res.status(200).json({ status: 'OK', message: 'API fonctionne correctement' });
+});
 
 
 
