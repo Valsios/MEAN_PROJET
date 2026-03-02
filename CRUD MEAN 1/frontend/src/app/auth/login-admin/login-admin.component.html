@@ -1,7 +1,12 @@
 <div class="account-login section">
   <div class="container">
-
-
+    
+    <!-- Logo -->
+    <div class="text-center mb-4">
+      <a href="/">
+        <img src="assets/images/logo/logo.svg" alt="Logo Centre Commercial" style="max-height: 60px;">
+      </a>
+    </div>
 
     <div class="row">
       <div class="col-lg-6 offset-lg-3 col-md-10 offset-md-1 col-12">
@@ -9,13 +14,6 @@
         <!-- FORMULAIRE ANGULAR -->
         <form class="card login-form" (ngSubmit)="onLoginAdmin()" #loginForm="ngForm">
           <div class="card-body">
-
-            <!-- Logo -->
-            <div class="text-center mb-4">
-              <a href="/">
-                <img src="assets/images/logo/logo.svg" alt="Logo Centre Commercial" style="max-height: 60px;">
-              </a>
-            </div>
 
             <div class="title text-center">
               <h3>Login Admin</h3>
@@ -25,14 +23,29 @@
             <!-- EMAIL -->
             <div class="form-group input-group">
               <label>Email</label>
-              <input class="form-control" type="email" name="email" [(ngModel)]="email" required placeholder="Email" />
+              <input
+                class="form-control"
+                type="email"
+                name="email"
+                [(ngModel)]="email"
+                required
+                placeholder="Email"
+                [disabled]="loading"
+              />
             </div>
 
             <!-- PASSWORD -->
             <div class="form-group input-group">
               <label>Mot de passe</label>
-              <input class="form-control" type="password" name="password" [(ngModel)]="password" required
-                placeholder="Mot de passe" />
+              <input
+                class="form-control"
+                type="password"
+                name="password"
+                [(ngModel)]="password"
+                required
+                placeholder="Mot de passe"
+                [disabled]="loading"
+              />
             </div>
 
             <!-- ERREUR -->
@@ -40,22 +53,27 @@
               {{ error }}
             </p>
 
-            <!-- BOUTON -->
+            <!-- BOUTON AVEC SPINNER -->
             <div class="button text-center">
-              <button class="btn" type="submit" [disabled]="loginForm.invalid">
-                Se connecter
+              <button 
+                class="btn" 
+                type="submit" 
+                [disabled]="loginForm.invalid || loading"
+              >
+                <span *ngIf="loading" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                {{ loading ? 'Connexion en cours...' : 'Se connecter' }}
               </button>
             </div>
 
             <!-- LIENS DE REDIRECTION -->
             <div class="text-center mt-4">
               <div class="mb-2">
-                <a href="javascript:void(0)" (click)="goToClientLogin()" class="text-primary">
+                <a href="javascript:void(0)" (click)="!loading && goToClientLogin()" class="text-primary" [class.disabled]="loading">
                   <i class="lni lni-users"></i> Se connecter en tant que Client
                 </a>
               </div>
               <div>
-                <a href="javascript:void(0)" (click)="goToBoutiqueLogin()" class="text-primary">
+                <a href="javascript:void(0)" (click)="!loading && goToBoutiqueLogin()" class="text-primary" [class.disabled]="loading">
                   <i class="lni lni-store"></i> Se connecter en tant que Boutique
                 </a>
               </div>

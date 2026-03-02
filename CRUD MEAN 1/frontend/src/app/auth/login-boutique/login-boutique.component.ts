@@ -14,8 +14,11 @@ export class LoginBoutiqueComponent {
   email = 'boutique1@gmail.com';
   password = 'boutique1';
   error = '';
+  loading: boolean = false;  // Ajout de la propriété loading
 
-  constructor(private authService: AuthService, private router: Router) {}
+
+
+  constructor(private authService: AuthService, private router: Router) { }
 
   onLoginBoutique() {
     this.authService.loginBoutique({ email: this.email, password: this.password }).subscribe({
@@ -29,10 +32,10 @@ export class LoginBoutiqueComponent {
   }
 
   goToAdminLogin() {
-  this.router.navigate(['/login-admin']);
-}
+    this.router.navigate(['/login-admin']);
+  }
 
-goToClientLogin() {
-  this.router.navigate(['/login-client']);
-}
+  goToClientLogin() {
+    this.router.navigate(['/login-client']);
+  }
 }

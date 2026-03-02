@@ -14,6 +14,8 @@ export class LoginAdminComponent {
   email = 'admin@centre.mg';
   password = 'admin';
   error = '';
+  loading: boolean = false;  // Ajout de la propriété loading
+
 
   constructor(private authService: AuthService, private router: Router) {}
 

@@ -14,6 +14,8 @@ export class LoginClientComponent {
   email = 'client1@gmail.com';
   password = 'client1';
   error = '';
+    loading: boolean = false;  // Ajout de la propriété loading
+
 
   constructor(private authService: AuthService, private router: Router) {}
 
