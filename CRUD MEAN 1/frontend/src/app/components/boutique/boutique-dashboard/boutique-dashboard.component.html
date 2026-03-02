@@ -111,9 +111,12 @@
               </div>
             </div>
             <div class="table-responsive" *ngIf="!isLoadingCA">
-              <table datatable 
+              <table
+                  id="table-commandes"
+                  datatable 
                   [dtOptions]="dtOptions[0]"
-                  class="table table-hover mb-0">
+                  class="table table-hover mb-0"
+                  >
                 <thead class="table-light">
                   <tr>
                     <th>N° commande</th>
@@ -242,8 +245,9 @@
             <div *ngIf="!isLoadingLoyer">
               <!-- Tableau historique -->
               <div class="table-responsive">
-                <table datatable 
-                  [dtOptions]="dtOptions[1]"
+                <table 
+                  id="table-paiements"
+                  
                   class="table table-hover mb-0">
                   <thead>
                     <tr>

@@ -241,6 +241,7 @@ export class BoutiqueDashboardComponent implements OnInit, OnDestroy {
       next: (paiements: PaiementLoyer[]) => {
         this.paiementsLoyer = paiements || [];
         this.calculerStatistiquesLoyer();
+        console.log(this.paiementsLoyer);
         this.isLoadingLoyer = false;
       },
       error: (err: any) => {
@@ -292,9 +293,8 @@ export class BoutiqueDashboardComponent implements OnInit, OnDestroy {
         this.commandesValidees = commandes || [];
         this.isLoadingCA = false;
         
-        // Optionnel : rafraîchir l'affichage DataTables
         setTimeout(() => {
-          const table = $('table').DataTable();
+          const table = $('#table-commandes').DataTable();
           if (table) {
             table.draw();
           }
@@ -311,19 +311,15 @@ export class BoutiqueDashboardComponent implements OnInit, OnDestroy {
   refreshLoyers() {
     this.chargerPaiementsLoyer();
     
-    // Optionnel : rafraîchir l'affichage DataTables
     setTimeout(() => {
-      const table = $('table').DataTable();
+      const table = $('#table-paiements').DataTable();
       if (table) {
         table.draw();
       }
     }, 100);
   }
 
-  changerAnnee(annee: number) {
-    this.anneeSelectionnee = annee;
-    this.calculerStatistiquesLoyer();
-  }
+
 
   // ========== MÉTHODES DE FORMATAGE ==========
   formatDate(date: any): string {
