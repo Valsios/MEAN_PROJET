@@ -25,12 +25,17 @@
               "src/assets"
             ],
             "styles": [
+              "src/assets/css/bootstrap.min.css",
+              "src/assets/css/glightbox.min.css",
+              "src/assets/css/tiny-slider.css",
+              "src/assets/css/LineIcons.3.0.css",
+              "src/assets/css/main.css",
               "src/styles.css",
-              "node_modules/datatables.net-dt/css/dataTables.dataTables.css" 
+              "node_modules/datatables.net-dt/css/dataTables.dataTables.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/datatables.net/js/dataTables.js" 
+              "node_modules/datatables.net/js/dataTables.js"
             ]
           },
           "configurations": {
@@ -38,13 +43,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "500kb",
-                  "maximumError": "1mb"
+                  "maximumWarning": "1.5 MB",
+                  "maximumError": "2.0 MB"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "2kb",
-                  "maximumError": "4kb"
+                  "maximumWarning": "6 kB",
+                  "maximumError": "10 kB"
                 }
               ],
               "outputHashing": "all"
@@ -88,12 +93,17 @@
               "src/assets"
             ],
             "styles": [
+              "src/assets/css/bootstrap.min.css",
+              "src/assets/css/glightbox.min.css",
+              "src/assets/css/tiny-slider.css",
+              "src/assets/css/LineIcons.3.0.css",
+              "src/assets/css/main.css",
               "src/styles.css",
-              "node_modules/datatables.net-dt/css/dataTables.dataTables.css" 
+              "node_modules/datatables.net-dt/css/dataTables.dataTables.css"
             ],
             "scripts": [
               "node_modules/jquery/dist/jquery.min.js",
-              "node_modules/datatables.net/js/dataTables.js" 
+              "node_modules/datatables.net/js/dataTables.js"
             ]
           }
         }
