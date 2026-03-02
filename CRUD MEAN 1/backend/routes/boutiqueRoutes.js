@@ -309,4 +309,41 @@ router.get("/:id/mouvements", async (req, res) => {
   }
 });
 
+// ======================
+// CHANGER MOT DE PASSE
+// ======================
+router.post('/:id/change-password', async (req, res) => {
+  try {
+    const { ancienMotDePasse, nouveauMotDePasse } = req.body;
+    const boutique = await Boutique.findById(req.params.id);
+    if (!boutique) {
+      return res.status(404).json({ message: 'Boutique non trouvée' });
+    }
+
+    // Trouver l'utilisateur associé via profilId
+    const user = await User.findOne({ profilId: boutique._id, role: 'boutique' });
+    if (!user) {
+      return res.status(404).json({ message: 'Utilisateur non trouvé' });
+    }
+
+    // Vérifier l'ancien mot de passe
+    const isMatch = await bcrypt.compare(ancienMotDePasse, user.password);
+    if (!isMatch) {
+      return res.status(400).json({ message: 'Ancien mot de passe incorrect' });
+    }
+
+    // Hasher le nouveau mot de passe
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(nouveauMotDePasse, salt);
+
+    // Mettre à jour
+    user.password = hashedPassword;
+    await user.save();
+
+    res.json({ message: 'Mot de passe modifié avec succès' });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 module.exports = router;

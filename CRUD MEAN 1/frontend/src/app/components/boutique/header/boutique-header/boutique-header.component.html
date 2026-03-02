@@ -15,9 +15,9 @@
 
         <!-- Admin info -->
         <div class="col-lg-9 col-md-9 col-12 text-end">
-          <div class="user">
+          <div class="user" routerLink="/boutique-profil" style="cursor: pointer;">
             <i class="lni lni-user"></i>
-             {{profile.nom}}
+            {{profile.nom}}
           </div>
         </div>
 
@@ -35,7 +35,7 @@
         <li class="nav-item">
           <a class="nav-link" [routerLink]="['/boutique-produit']">Vos Produits</a>
         </li>
-         <li class="nav-item">
+        <li class="nav-item">
           <a class="nav-link" [routerLink]="['/panier-boutique']">Sur Place</a>
         </li>
         <li class="nav-item">
@@ -44,8 +44,8 @@
         <li class="nav-item">
           <a class="nav-link" [routerLink]="['/boutique-loyers']">Payement loyer</a>
         </li>
-        
-        
+
+
         <li class="nav-item">
           <a class="nav-link text-danger" (click)="logout(); $event.preventDefault()">Logout</a>
         </li>
@@ -55,4 +55,3 @@
 
 </header>
 <!-- ===================== END HEADER ===================== -->
-

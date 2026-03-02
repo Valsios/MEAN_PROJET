@@ -1,0 +1,122 @@
+<app-boutique-header></app-boutique-header>
+
+<section class="section" style="min-height: 60vh;">
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2 class="mb-4">Profil de la boutique</h2>
+
+        <!-- Loading -->
+        <div *ngIf="loading" class="text-center">
+          <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Chargement...</span>
+          </div>
+        </div>
+
+        <!-- Erreur -->
+        <div *ngIf="error" class="alert alert-danger">{{ error }}</div>
+
+        <!-- Contenu du profil -->
+        <div *ngIf="!loading && boutique" class="row">
+          <!-- Colonne gauche : infos actuelles / formulaire d'édition -->
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <span>Informations personnelles</span>
+                <button *ngIf="!editMode" class="btn btn-sm btn-light" (click)="editMode = true">
+                  <i class="lni lni-pencil"></i> Modifier
+                </button>
+                <button *ngIf="editMode" class="btn btn-sm btn-light" (click)="cancelEdit()">
+                  <i class="lni lni-close"></i> Annuler
+                </button>
+              </div>
+              <div class="card-body">
+                <!-- Mode affichage -->
+                <div *ngIf="!editMode">
+                  <div class="text-center mb-3">
+                    <img *ngIf="boutique.image" [src]="boutique.image" alt="Photo" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                    <img *ngIf="!boutique.image" src="assets/images/avatar-default.png" alt="Photo par défaut" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                  </div>
+                  <p><strong>Nom :</strong> {{ boutique.nom }}</p>
+                  <p><strong>Téléphone :</strong> {{ boutique.telephone }}</p>
+                  <p><strong>Email :</strong> {{ boutique.email }}</p>
+                </div>
+
+                <!-- Mode édition -->
+                <div *ngIf="editMode">
+                  <form (ngSubmit)="saveInfos()" #infoForm="ngForm">
+                    <div class="mb-3 text-center">
+                      <img [src]="editImagePreview || 'assets/images/avatar-default.png'" alt="Aperçu" class="rounded-circle" style="width: 120px; height: 120px; object-fit: cover;">
+                      <input type="file" class="form-control mt-2" accept="image/*" (change)="onFileSelected($event)">
+                      <small class="text-muted">Laissez vide pour conserver l'image actuelle</small>
+                    </div>
+                    <div class="mb-3">
+                      <label for="nom" class="form-label">Nom</label>
+                      <input type="text" class="form-control" id="nom" [(ngModel)]="editNom" name="nom" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="telephone" class="form-label">Téléphone</label>
+                      <input type="text" class="form-control" id="telephone" [(ngModel)]="editTelephone" name="telephone" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="email" class="form-label">Email</label>
+                      <input type="email" class="form-control" id="email" [value]="boutique.email" disabled readonly>
+                      <small class="text-muted">L'email ne peut pas être modifié</small>
+                    </div>
+                    <button type="submit" class="btn btn-success" [disabled]="!infoForm.form.valid">
+                      <i class="lni lni-save"></i> Enregistrer
+                    </button>
+                  </form>
+                  <!-- Messages -->
+                  <div *ngIf="updateSuccess" class="alert alert-success mt-3">{{ updateSuccess }}</div>
+                  <div *ngIf="updateError" class="alert alert-danger mt-3">{{ updateError }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Colonne droite : changement de mot de passe -->
+          <div class="col-md-6">
+            <div class="card">
+              <div class="card-header bg-secondary text-white d-flex justify-content-between align-items-center">
+                <span>Sécurité</span>
+                <button class="btn btn-sm btn-light" (click)="showPasswordForm = !showPasswordForm">
+                  <i class="lni lni-lock"></i> {{ showPasswordForm ? 'Annuler' : 'Changer mot de passe' }}
+                </button>
+              </div>
+              <div class="card-body">
+                <div *ngIf="!showPasswordForm">
+                  <p>Mot de passe : ********</p>
+                  <p class="text-muted">Cliquez sur le bouton pour modifier votre mot de passe.</p>
+                </div>
+                <div *ngIf="showPasswordForm">
+                  <form (ngSubmit)="changePassword()" #passwordForm="ngForm">
+                    <div class="mb-3">
+                      <label for="oldPassword" class="form-label">Ancien mot de passe</label>
+                      <input type="password" class="form-control" id="oldPassword" [(ngModel)]="oldPassword" name="oldPassword" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="newPassword" class="form-label">Nouveau mot de passe</label>
+                      <input type="password" class="form-control" id="newPassword" [(ngModel)]="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="mb-3">
+                      <label for="confirmPassword" class="form-label">Confirmer le nouveau mot de passe</label>
+                      <input type="password" class="form-control" id="confirmPassword" [(ngModel)]="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <button type="submit" class="btn btn-warning" [disabled]="!passwordForm.form.valid">
+                      <i class="lni lni-checkmark-circle"></i> Mettre à jour
+                    </button>
+                  </form>
+                  <div *ngIf="passwordError" class="alert alert-danger mt-3">{{ passwordError }}</div>
+                  <div *ngIf="passwordSuccess" class="alert alert-success mt-3">{{ passwordSuccess }}</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<app-boutique-footer></app-boutique-footer>

@@ -51,7 +51,7 @@ export class BoutiqueService {
   private apiUrlCommande = `${environment.apiUrl}/api/commande`;
   private apiUrlClient = `${environment.apiUrl}/api/client`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
   getAll() {
     return this.http.get<any[]>(this.myApiUrl);
@@ -78,93 +78,83 @@ export class BoutiqueService {
     return this.http.get<{ estPaye: boolean; message: string }>(`${this.myApiUrl}/${id}/verifier-paiement-loyer`);
   }
 
+  // Dans boutique.service.ts
+  changePassword(id: string, data: { ancienMotDePasse: string; nouveauMotDePasse: string }): Observable<any> {
+    return this.http.post(`${this.myApiUrl}/${id}/change-password`, data);
+  }
+
   // --------------- VALS -----------------
 
-  getBoutiqueByIdVals(boutiqueId : any) : Observable<any>
-  {
+  getBoutiqueByIdVals(boutiqueId: any): Observable<any> {
     return this.http.get(`${this.apiUrl}/${boutiqueId}`);
   }
-  getAllBoutique() : Observable<any>
-  {
-    
+  getAllBoutique(): Observable<any> {
+
     return this.http.get(`${this.apiUrl}/`);
   }
-  getAllCategorie() : Observable<any>
-  {
-    
+  getAllCategorie(): Observable<any> {
+
     return this.http.get(`${this.apiUrl}/allCategories`);
   }
 
   //get review
-  getAvisClient(boutiqueId : string) : Observable<any>
-  {
-    
+  getAvisClient(boutiqueId: string): Observable<any> {
+
     return this.http.get(`${this.apiUrl}/${boutiqueId}/reviews`);
   }
-//get Info client
+  //get Info client
 
-getClient(clientId : string) : Observable<any>
-  {
-    
+  getClient(clientId: string): Observable<any> {
+
     return this.http.get(`${this.apiUrlClient}/${clientId}`);
   }
-//get Info box
-  getBox(boutiqueId : string) : Observable<any>
-  {
+  //get Info box
+  getBox(boutiqueId: string): Observable<any> {
     return this.http.get(`${this.apiUrl}/${boutiqueId}/box`);
   }
 
-  getPayementLoyers(data : any) : Observable<any>
-  {
-    return this.http.post(`${this.apiUrl}/payementLoyers`,data);
+  getPayementLoyers(data: any): Observable<any> {
+    return this.http.post(`${this.apiUrl}/payementLoyers`, data);
   }
 
-  getAllPayementLoyers(boutiqueId : any) : Observable<any>
-  {
+  getAllPayementLoyers(boutiqueId: any): Observable<any> {
     return this.http.get(`${this.apiUrl}/${boutiqueId}/payementLoyers`);
   }
 
 
-  validerCommande(commandeId : any) : Observable<any>
-  {
-      return this.http.get(`${this.apiUrlCommande}/validerCommande/${commandeId}`);
+  validerCommande(commandeId: any): Observable<any> {
+    return this.http.get(`${this.apiUrlCommande}/validerCommande/${commandeId}`);
   }
 
-  annulerCommande(commandeId : any) : Observable<any>
-  {
-      return this.http.get(`${this.apiUrlCommande}/annulerCommande/${commandeId}`);
+  annulerCommande(commandeId: any): Observable<any> {
+    return this.http.get(`${this.apiUrlCommande}/annulerCommande/${commandeId}`);
   }
 
   //get commande non validé
-  getCommandesValidee(boutiqueId : any) : Observable<any>
-  {
-      return this.http.get(`${this.apiUrl}/${boutiqueId}/commandes-validee`);
+  getCommandesValidee(boutiqueId: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${boutiqueId}/commandes-validee`);
   }
   //get commande non validé
-  getCommandes(boutiqueId : any) : Observable<any>
-  {
-      return this.http.get(`${this.apiUrl}/${boutiqueId}/commandes`);
+  getCommandes(boutiqueId: any): Observable<any> {
+    return this.http.get(`${this.apiUrl}/${boutiqueId}/commandes`);
   }
-  
+
   //histoire commande amzay
-  createCommande(commande : any) : Observable<any>
-  {
-      return this.http.post(`${this.apiUrlCommande}/createCommande`, commande);
+  createCommande(commande: any): Observable<any> {
+    return this.http.post(`${this.apiUrlCommande}/createCommande`, commande);
   }
   // Récupérer lees produits d'une boutique
   getBoutiqueWithProduits(boutiqueId: string): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/${boutiqueId}/produits`);
   }
 
-  createProduit(produit : any) : Observable<any>
-  {
+  createProduit(produit: any): Observable<any> {
     return this.http.post(`${this.apiUrl}/createProduit`, produit);
   }
-  deleteProduit(produitId : any) : Observable<any>
-  {
+  deleteProduit(produitId: any): Observable<any> {
     return this.http.delete(`${this.apiUrl}/deleteProduit/${produitId}`);
   }
-    // Dans client.service.ts
+  // Dans client.service.ts
   noterBoutique(data: {
     boutiqueId: string,
     clientId: string,

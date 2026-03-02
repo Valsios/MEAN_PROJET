@@ -32,6 +32,7 @@ import { ClientCatalogueProduitComponent } from './components/client/client-cata
 import { ProduitDetailsComponent } from './components/boutique/produit-details/produit-details.component';
 import { ClientProduitDetailsComponent } from './components/client/client-produit-details/client-produit-details.component';
 import { ClientDashboardComponent } from './components/client/client-dashboard/client-dashboard.component';
+import { BoutiqueProfilComponent } from './components/boutique/boutique-profil/boutique-profil.component';
 
 
 
@@ -55,6 +56,7 @@ export const routes: Routes = [
   { path: 'client-catalogue-produit/:id', component: ClientCatalogueProduitComponent },
   { path: 'produit-details/:id', component: ProduitDetailsComponent },
   { path: 'client-produit-details/:id', component: ClientProduitDetailsComponent },
+  { path: 'boutique-profil', component: BoutiqueProfilComponent},
   // ADMIN
   {
     path: 'admin',
