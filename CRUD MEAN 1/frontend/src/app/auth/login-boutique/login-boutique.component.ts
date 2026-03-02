@@ -27,4 +27,12 @@ export class LoginBoutiqueComponent {
   switchToClient() {
     this.router.navigate(['/login-client']);
   }
+
+  goToAdminLogin() {
+  this.router.navigate(['/login-admin']);
+}
+
+goToClientLogin() {
+  this.router.navigate(['/login-client']);
+}
 }

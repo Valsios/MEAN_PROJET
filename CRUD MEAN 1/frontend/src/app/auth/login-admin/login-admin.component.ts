@@ -23,4 +23,12 @@ export class LoginAdminComponent {
       error: err => this.error = err.message || 'Erreur login admin'
     });
   }
+
+  goToClientLogin() {
+  this.router.navigate(['/login-client']);
+}
+
+goToBoutiqueLogin() {
+  this.router.navigate(['/login-boutique']);
+}
 }

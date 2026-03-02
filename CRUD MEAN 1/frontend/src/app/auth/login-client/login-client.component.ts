@@ -31,4 +31,12 @@ export class LoginClientComponent {
   goToRegister() {
     this.router.navigate(['/register']);
   }
+
+  goToAdminLogin() {
+  this.router.navigate(['/login-admin']);
+}
+
+goToBoutiqueLogin() {
+  this.router.navigate(['/login-boutique']);
+}
 }
