@@ -20,6 +20,7 @@ export class ClientLayoutComponent {
   }
 
   ngOnInit() {
+    this.checkTokenValidity();
     // Vérifier toutes les 10 secondes si le token est toujours valide
     this.checkInterval = setInterval(() => {
       this.checkTokenValidity();
