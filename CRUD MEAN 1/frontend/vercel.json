@@ -1,8 +1,8 @@
 {
-  "buildCommand": "npm build",
-  "outputDirectory": "dist/frontend",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/frontend/browser",
   "devCommand": "ng serve",
-  "installCommand": "npm install",
+  "installCommand": "npm install --legacy-peer-deps",
   "routes": [
     {
       "src": "/(.*)",
