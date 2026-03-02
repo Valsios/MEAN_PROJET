@@ -185,7 +185,6 @@ export class BoutiqueDashboardComponent implements OnInit, OnDestroy {
       info: true,
       searching: false,
       autoWidth: false,
-      
     };
   }
 

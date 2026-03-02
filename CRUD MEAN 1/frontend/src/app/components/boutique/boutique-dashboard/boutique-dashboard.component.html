@@ -228,7 +228,7 @@
         </div>
 
         <!-- Liste des paiements de loyer -->
-        <div class="card shadow-sm border-0" [hidden]="activeListe !== 'loyer'">
+        <div class="card shadow-sm border-0" *ngIf="activeListe === 'loyer'">
           <div class="card-header" [ngClass]="estLoyerPaye ? 'bg-success text-white' : 'bg-danger text-white'">
             <h5 class="mb-0"><i class="lni lni-apartment me-2"></i>Historique des paiements - {{ boxInfo }}</h5>
           </div>
