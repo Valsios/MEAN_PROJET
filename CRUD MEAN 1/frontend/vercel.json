@@ -1,0 +1,12 @@
+{
+  "buildCommand": "npm build",
+  "outputDirectory": "dist/frontend",
+  "devCommand": "ng serve",
+  "installCommand": "npm install",
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
+    }
+  ]
+}
