@@ -1,4 +1,16 @@
-<div class="container">
+<!-- LOADING - Affiché pendant le chargement -->
+<div *ngIf="!dataLoaded" class="loading-container">
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <h5 class="text-muted">Chargement des box...</h5>
+    <p class="text-muted small">Veuillez patienter</p>
+  </div>
+</div>
+
+<!-- CONTENU PRINCIPAL - Affiché uniquement quand les données sont chargées -->
+<div *ngIf="dataLoaded" class="container">
   <!-- EN-TÊTE -->
   <div class="d-flex justify-content-between align-items-center mb-4">
     <h2 class="page-title">

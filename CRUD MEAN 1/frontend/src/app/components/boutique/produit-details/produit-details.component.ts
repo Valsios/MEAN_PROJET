@@ -22,6 +22,9 @@ export class ProduitDetailsComponent {
   imagePreview: string | null = null;
   selectedFileBase64: string | null = null;
   
+  // AJOUT : État de chargement principal
+  dataLoaded: boolean = false;
+  
   // Propriétés pour les reviews
   noteGlobale: number = 0;
   totalReviews: number = 0;
@@ -41,8 +44,12 @@ export class ProduitDetailsComponent {
 
   today: string = new Date().toISOString().split('T')[0];
   
-  // Loading states
+  // Loading states pour les actions
   isLoading: boolean = false;
+
+  // Compteur pour suivre les requêtes terminées
+  private loadedRequests: number = 0;
+  private totalRequests: number = 3; // produit + promotion + reviews
 
   Math = Math; // Pour utiliser Math dans le template
 
@@ -84,7 +91,19 @@ export class ProduitDetailsComponent {
     }
   }
 
+  private checkAllDataLoaded() {
+    this.loadedRequests++;
+    if (this.loadedRequests === this.totalRequests) {
+      // Toutes les requêtes sont terminées
+      this.dataLoaded = true;
+    }
+  }
+
   chargerDonneesCompletes() {
+    // Réinitialiser
+    this.dataLoaded = false;
+    this.loadedRequests = 0;
+    
     // Charger produit
     this.produitService.getProduitById(this.produitId).subscribe({
       next: (produit) => {
@@ -97,9 +116,11 @@ export class ProduitDetailsComponent {
         });
         
         this.calculerPrixFinal();
+        this.checkAllDataLoaded();
       },
       error: (error) => {
         console.error('Erreur chargement produit:', error);
+        this.checkAllDataLoaded(); // Compter même en erreur
       }
     });
 
@@ -127,13 +148,15 @@ export class ProduitDetailsComponent {
             dateFin: this.promotionActive.dateFin ? new Date(this.promotionActive.dateFin).toISOString().split('T')[0] : ''
           });
         }
+        this.checkAllDataLoaded();
       },
       error: (error) => {
         console.error('Erreur chargement promotion:', error);
+        this.checkAllDataLoaded(); // Compter même en erreur
       }
     });
 
-    // Charger les reviews avec la fonction du service
+    // Charger les reviews
     this.loadReviews();
   }
 
@@ -150,10 +173,12 @@ export class ProduitDetailsComponent {
         this.calculateGlobalNote();
         this.updatePaginatedReviews();
         this.isLoadingReviews = false;
+        this.checkAllDataLoaded(); // Compter la requête reviews
       },
       error: (error) => {
         console.error('Erreur chargement reviews:', error);
         this.isLoadingReviews = false;
+        this.checkAllDataLoaded(); // Compter même en erreur
       }
     });
   }

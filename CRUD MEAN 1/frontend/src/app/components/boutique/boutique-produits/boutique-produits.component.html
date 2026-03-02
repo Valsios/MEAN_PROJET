@@ -1,97 +1,126 @@
-
 <app-boutique-header></app-boutique-header>
-<!-- ===================== FILTRE ET BOUTON SUR LA MEME LIGNE ===================== -->
-<section class="search-section py-3">
-  <div class="container">
-    <div class="row align-items-center">
-      <!-- Barre de recherche (à gauche) -->
-      <div class="col-md-8">
-        <div class="input-group">
-          <span class="input-group-text bg-white">
-            <i class="lni lni-search"></i>
-          </span>
-          <input 
-            type="text" 
-            class="form-control" 
-            placeholder="Rechercher un produit par nom..."
-            [(ngModel)]="searchTerm"
-            (ngModelChange)="filtrerProduits()">
-          <span class="input-group-text bg-white" *ngIf="searchTerm" style="cursor: pointer;" (click)="resetFiltre()">
-            <i class="lni lni-close text-danger"></i>
-          </span>
+
+<!-- LOADING - Affiché pendant le chargement -->
+<div *ngIf="!dataLoaded" class="loading-container">
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Chargement...</span>
+    </div>
+    <h5 class="text-muted">Chargement de vos produits...</h5>
+    <p class="text-muted small">Veuillez patienter</p>
+  </div>
+</div>
+
+<!-- CONTENU PRINCIPAL - Affiché uniquement quand les données sont chargées -->
+<div *ngIf="dataLoaded">
+  <!-- ===================== FILTRE ET BOUTON SUR LA MEME LIGNE ===================== -->
+  <section class="search-section py-3">
+    <div class="container">
+      <div class="row align-items-center">
+        <!-- Barre de recherche (à gauche) -->
+        <div class="col-md-8">
+          <div class="input-group">
+            <span class="input-group-text bg-white">
+              <i class="lni lni-search"></i>
+            </span>
+            <input 
+              type="text" 
+              class="form-control" 
+              placeholder="Rechercher un produit par nom..."
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="filtrerProduits()">
+            <span class="input-group-text bg-white" *ngIf="searchTerm" style="cursor: pointer;" (click)="resetFiltre()">
+              <i class="lni lni-close text-danger"></i>
+            </span>
+          </div>
+        </div>
+        
+        <!-- Bouton Ajouter (à droite) -->
+        <div class="col-md-4 text-end">
+          <button class="btn btn-primary" (click)="produitForm()">
+            <i class="lni lni-plus"></i> Ajouter un produit
+          </button>
         </div>
       </div>
       
-      <!-- Bouton Ajouter (à droite) -->
-      <div class="col-md-4 text-end">
-        <button class="btn btn-primary" (click)="produitForm()">
-          <i class="lni lni-plus"></i> Ajouter un produit
-        </button>
+      <!-- Indicateur de résultats (optionnel) -->
+      <div class="row" *ngIf="searchTerm">
+        <div class="col-12">
+          <small class="text-muted">
+            {{produits.length}} produit(s) trouvé(s)
+          </small>
+        </div>
       </div>
     </div>
-    
-    <!-- Indicateur de résultats (optionnel) -->
-    <div class="row" *ngIf="searchTerm">
-      <div class="col-12">
-        <small class="text-muted">
-          {{produits.length}} produit(s) trouvé(s)
-        </small>
-      </div>
-    </div>
-  </div>
-</section>
-<!-- ===================== MAIN CONTENT ===================== -->
-<section class="section" style="min-height: 60vh;">
-  <div class="container">
-    <div class="row">
+  </section>
+  
+  <!-- ===================== MAIN CONTENT ===================== -->
+  <section class="section" style="min-height: 60vh;">
+    <div class="container">
+      <div class="row" *ngIf="produits.length > 0; else noProducts">
 
-      <!-- Boucle sur les produits -->
-      <div class="col-lg-4 col-md-6 col-12" *ngFor="let produit of produits">
-        <!-- Start Single Product -->
-        <div class="single-product">
-          <div class="product-image">
-            <!-- si produit.image contient le binaire en base64 -->
-            <img *ngIf="produit.image" [src]="'data:image/png;base64,' + produit.image" alt="{{produit.nom}}">
-            <!-- sinon image par défaut -->
-            <img *ngIf="!produit.image" src="assets/images/products/No_Image_Available.jpg" alt="{{produit.nom}}">
-            
-            <div class="button">
-              <a (click)="detailsProduit(produit._id)" class="btn"><i class="lni lni-eye"></i> Details</a>
-            </div>
-          </div>
-
-          <div class="product-info">
-            <span class="category">{{produit.type}}</span>
-            <h4 class="title">
-              <p>{{produit.nom}}</p>
-            </h4>
-            <ul class="review">
-              <li *ngFor="let star of [1,2,3,4,5]">
-                <i class="lni lni-star-filled" 
-                  [style.color]="star <= produit.noteMoyenne ? '#ffc107' : '#e4e5e9'"></i>
-              </li>
-              <li>
-                <span>{{ produit.noteMoyenne?.toFixed(1) }} ({{ produit.nombreReviews }} Review(s))</span>
-              </li>
-            </ul>
-            <div class="price">
-              <span>{{produit.prixActuel | currency:'MGA':'symbol':'1.0-0'}}</span>
+        <!-- Boucle sur les produits -->
+        <div class="col-lg-4 col-md-6 col-12" *ngFor="let produit of produits">
+          <!-- Start Single Product -->
+          <div class="single-product">
+            <div class="product-image">
+              <!-- si produit.image contient le binaire en base64 -->
+              <img *ngIf="produit.image" [src]="'data:image/png;base64,' + produit.image" alt="{{produit.nom}}">
+              <!-- sinon image par défaut -->
+              <img *ngIf="!produit.image" src="assets/images/products/No_Image_Available.jpg" alt="{{produit.nom}}">
+              
+              <div class="button">
+                <a (click)="detailsProduit(produit._id)" class="btn"><i class="lni lni-eye"></i> Details</a>
+              </div>
             </div>
 
-            <div class="delete-button">
-                <button class="btn btn-danger btn-sm" 
-                        [attr.id]="'delete-product-' + produit._id"
-                        (click)="deleteProduct(produit._id)">
-                <i class="lni lni-trash"></i> Supprimer
-                </button>
+            <div class="product-info">
+              <span class="category">{{produit.type}}</span>
+              <h4 class="title">
+                <p>{{produit.nom}}</p>
+              </h4>
+              <ul class="review">
+                <li *ngFor="let star of [1,2,3,4,5]">
+                  <i class="lni lni-star-filled" 
+                    [style.color]="star <= produit.noteMoyenne ? '#ffc107' : '#e4e5e9'"></i>
+                </li>
+                <li>
+                  <span>{{ produit.noteMoyenne?.toFixed(1) }} ({{ produit.nombreReviews }} Review(s))</span>
+                </li>
+              </ul>
+              <div class="price">
+                <span>{{produit.prixActuel | currency:'MGA':'symbol':'1.0-0'}}</span>
+              </div>
+
+              <div class="delete-button">
+                  <button class="btn btn-danger btn-sm" 
+                          [attr.id]="'delete-product-' + produit._id"
+                          (click)="deleteProduct(produit._id)">
+                  <i class="lni lni-trash"></i> Supprimer
+                  </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
+      </div>
+      
+      <!-- Template pour aucun produit -->
+      <ng-template #noProducts>
+        <div class="text-center py-5">
+          <div class="empty-state">
+            <i class="lni lni-empty-file" style="font-size: 4rem; color: #dee2e6;"></i>
+            <h4 class="mt-3 text-muted">Aucun produit trouvé</h4>
+            <p class="text-muted">Vous n'avez pas encore ajouté de produits à votre boutique.</p>
+            <button class="btn btn-primary mt-3" (click)="produitForm()">
+              <i class="lni lni-plus"></i> Ajouter votre premier produit
+            </button>
+          </div>
+        </div>
+      </ng-template>
     </div>
-  </div>
-</section>
+  </section>
+</div>
 
 <!-- ===================== END MAIN CONTENT ===================== -->
 <app-boutique-footer></app-boutique-footer>

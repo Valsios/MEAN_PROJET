@@ -50,6 +50,9 @@ export class BoxListComponent implements OnInit {
   isEditMode = false;
   selectedBoxId: string | null = null;
 
+  // AJOUT : État de chargement
+  dataLoaded: boolean = false;
+
   constructor(
     private boxService: BoxService,
     private mouvementPrixService: MouvementPrixService
@@ -60,6 +63,9 @@ export class BoxListComponent implements OnInit {
   }
 
   loadBoxes() {
+    // Réinitialiser l'état de chargement
+    this.dataLoaded = false;
+    
     const params: any = {};
     if (!this.filters.showInactives) {
       params.etat = 'actif';
@@ -72,9 +78,16 @@ export class BoxListComponent implements OnInit {
         this.boxes = data;
         this.extractUniqueEtages();
         this.applyFilters();
+        // Données chargées avec succès
+        this.dataLoaded = true;
       },
       error: (error) => {
         this.showError('Erreur lors du chargement des box');
+        // Même en erreur, on arrête le loading pour ne pas bloquer l'interface
+        this.dataLoaded = true;
+        // Initialiser avec un tableau vide pour éviter les erreurs
+        this.boxes = [];
+        this.filteredBoxes = [];
       }
     });
   }
@@ -218,7 +231,7 @@ export class BoxListComponent implements OnInit {
 
   afterSave() {
     this.resetForm();
-    this.loadBoxes();
+    this.loadBoxes(); // Recharger avec le loading
     this.submitted = false;
   }
 
@@ -251,7 +264,7 @@ export class BoxListComponent implements OnInit {
       this.boxService.delete(id).subscribe({
         next: () => {
           this.showSuccess('Box supprimée avec succès');
-          this.loadBoxes();
+          this.loadBoxes(); // Recharger avec le loading
         },
         error: (error) => {
           this.showError(this.getErrorMessage(error));
@@ -265,7 +278,7 @@ export class BoxListComponent implements OnInit {
       this.boxService.reactivate(id).subscribe({
         next: () => {
           this.showSuccess('Box réactivée avec succès');
-          this.loadBoxes();
+          this.loadBoxes(); // Recharger avec le loading
         },
         error: (error) => {
           this.showError(this.getErrorMessage(error));
