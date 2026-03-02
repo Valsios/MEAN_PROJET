@@ -4,9 +4,10 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
-    "build": "ng build",
+    "build": "ng build --configuration production",
     "watch": "ng build --watch --configuration development",
-    "test": "ng test"
+    "test": "ng test",
+    "deploy:vercel": "vercel --prod"
   },
   "private": true,
   "dependencies": {
@@ -21,6 +22,7 @@
     "angular-datatables": "17.1.0",
     "chart.js": "^4.5.1",
     "datatables.net": "2.3.7",
+    "datatables.net-dt": "^2.3.7",
     "jquery": "^4.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -30,7 +32,9 @@
     "@angular-devkit/build-angular": "^17.3.17",
     "@angular/cli": "^17.3.17",
     "@angular/compiler-cli": "^17.3.0",
+    "@types/datatables.net": "^1.10.28",
     "@types/jasmine": "~5.1.0",
+    "@types/jquery": "^3.5.16",
     "jasmine-core": "~5.1.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
