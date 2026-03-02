@@ -11,8 +11,8 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login-boutique.component.html'
 })
 export class LoginBoutiqueComponent {
-  email = '';
-  password = '';
+  email = 'boutique1@gmail.com';
+  password = 'boutique1';
   error = '';
 
   constructor(private authService: AuthService, private router: Router) {}

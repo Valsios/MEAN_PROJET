@@ -11,8 +11,8 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login-admin.component.html'
 })
 export class LoginAdminComponent {
-  email = '';
-  password = '';
+  email = 'admin@centre.mg';
+  password = 'admin';
   error = '';
 
   constructor(private authService: AuthService, private router: Router) {}
