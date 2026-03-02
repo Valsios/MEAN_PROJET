@@ -3,10 +3,8 @@
   "outputDirectory": "dist/frontend/browser",
   "devCommand": "ng serve",
   "installCommand": "npm install --legacy-peer-deps",
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+  "rewrites": [
+    { "source": "/(.*)\\..*", "destination": "/$1.$2" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
