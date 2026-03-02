@@ -223,7 +223,7 @@ export class ClientCatalogueProduitComponent {
   openRatingModal() {
     if (!this.profile?._id) {
       alert('Veuillez vous connecter pour noter cette boutique');
-      this.router.navigate(['/login']);
+      this.router.navigate(['/login-clien']);
       return;
     }
 

@@ -55,6 +55,8 @@ router.post('/register-client', async (req, res) => {
       { expiresIn: '1d' }
     );
 
+    
+
     res.status(201).json({
       token,
       user: { 
@@ -64,7 +66,7 @@ router.post('/register-client', async (req, res) => {
         profilId: user.profilId,
         status: user.status
       },
-      client: {
+      profile: {
         id: client._id,
         nom: client.nom,
         prenom: client.prenom,

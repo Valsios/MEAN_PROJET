@@ -37,7 +37,7 @@ export class ClientReportComponent implements OnInit {
   ngOnInit() {
     this.boutiqueId = this.route.snapshot.paramMap.get('id') || '';
     if (!this.boutiqueId) {
-      this.router.navigate(['/client/boutiques']);
+      this.router.navigate(['/client-dashboard']);
       return;
     }
     this.loadBoutique();
@@ -88,7 +88,7 @@ export class ClientReportComponent implements OnInit {
       next: () => {
         this.success = 'Signalement envoyé avec succès !';
         setTimeout(() => {
-          this.router.navigate(['/client/boutiques']);
+          this.router.navigate(['/client-dashboard']);
         }, 2000);
       },
       error: (err) => {
@@ -99,6 +99,6 @@ export class ClientReportComponent implements OnInit {
   }
 
   cancel() {
-    this.router.navigate(['/client/boutiques']);
+    this.router.navigate(['/client-dashboard']);
   }
 }

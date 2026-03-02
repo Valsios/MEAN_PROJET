@@ -34,6 +34,7 @@ export class AuthService {
       tap((response: any) => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('profile', JSON.stringify(response.profile));
       })
     );
   }
@@ -44,6 +45,7 @@ export class AuthService {
       tap((response: any) => {
         localStorage.setItem('token', response.token);
         localStorage.setItem('user', JSON.stringify(response.user));
+        localStorage.setItem('profile', JSON.stringify(response.profile));
       })
     );
   }

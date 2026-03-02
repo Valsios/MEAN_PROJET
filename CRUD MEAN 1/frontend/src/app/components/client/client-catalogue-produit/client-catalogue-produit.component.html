@@ -7,7 +7,7 @@
       <!-- Image de la boutique -->
       <div class="col-md-3 text-center mb-3 mb-md-0">
         <div class="boutique-logo">
-          <img *ngIf="boutique.image" [src]="'data:image/png;base64,' + boutique.image" 
+          <img *ngIf="boutique.image" [src]="boutique.image" 
                alt="{{boutique.nom}}" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">
           <img *ngIf="!boutique.image" src="assets/images/products/No_Image_Available.jpg" 
                alt="Logo par défaut" class="img-fluid rounded-circle" style="width: 150px; height: 150px; object-fit: cover;">

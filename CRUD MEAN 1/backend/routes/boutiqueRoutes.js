@@ -1,11 +1,12 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
+const bcrypt = require("bcryptjs");
 
-const Boutique = require('../models/Boutique');
-const User = require('../models/User');
-const Box = require('../models/Box');
-const MouvementBox = require('../models/MouvementBox');
-const PaiementLoyer = require('../models/PaiementLoyer');
+const Boutique = require("../models/Boutique");
+const User = require("../models/User");
+const Box = require("../models/Box");
+const MouvementBox = require("../models/MouvementBox");
+const PaiementLoyer = require("../models/PaiementLoyer");
 
 // ======================
 // FONCTION DE VÉRIFICATION DE LOYER
@@ -13,12 +14,12 @@ const PaiementLoyer = require('../models/PaiementLoyer');
 async function verifierPaiementLoyerMoisActuel(boutiqueId) {
   try {
     const boutique = await Boutique.findById(boutiqueId);
-    
+
     // Si la boutique n'a pas de box, pas besoin de vérifier le loyer
     if (!boutique || !boutique.boxActuelleId) {
-      return { 
-        estPaye: true, 
-        message: 'Boutique sans box, pas de vérification nécessaire' 
+      return {
+        estPaye: true,
+        message: "Boutique sans box, pas de vérification nécessaire",
       };
     }
 
@@ -31,22 +32,22 @@ async function verifierPaiementLoyerMoisActuel(boutiqueId) {
       boutiqueId: boutiqueId,
       boxId: boutique.boxActuelleId,
       mois: moisActuel,
-      annee: anneeActuelle
+      annee: anneeActuelle,
     });
 
     if (paiementExiste) {
-      return { 
-        estPaye: true, 
-        message: 'Loyer du mois actuel payé' 
+      return {
+        estPaye: true,
+        message: "Loyer du mois actuel payé",
       };
     } else {
-      return { 
-        estPaye: false, 
-        message: 'Le loyer du mois actuel n\'a pas été payé' 
+      return {
+        estPaye: false,
+        message: "Le loyer du mois actuel n'a pas été payé",
       };
     }
   } catch (error) {
-    console.error('Erreur lors de la vérification du loyer:', error);
+    console.error("Erreur lors de la vérification du loyer:", error);
     throw error;
   }
 }
@@ -54,7 +55,7 @@ async function verifierPaiementLoyerMoisActuel(boutiqueId) {
 // ======================
 // ROUTE DE VÉRIFICATION DE LOYER
 // ======================
-router.get('/:id/verifier-paiement-loyer', async (req, res) => {
+router.get("/:id/verifier-paiement-loyer", async (req, res) => {
   try {
     const resultat = await verifierPaiementLoyerMoisActuel(req.params.id);
     res.json(resultat);
@@ -66,11 +67,11 @@ router.get('/:id/verifier-paiement-loyer', async (req, res) => {
 // ======================
 // GET ALL
 // ======================
-router.get('/', async (req, res) => {
+router.get("/", async (req, res) => {
   try {
     const boutiques = await Boutique.find()
-      .populate('boxActuelleId')
-      .populate('categorieId');
+      .populate("boxActuelleId")
+      .populate("categorieId");
     res.json(boutiques);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -78,13 +79,13 @@ router.get('/', async (req, res) => {
 });
 
 // GET une boutique par ID
-router.get('/:id', async (req, res) => {
+router.get("/:id", async (req, res) => {
   try {
     const boutique = await Boutique.findById(req.params.id)
-      .populate('categorieId')
-      .populate('boxActuelleId');
+      .populate("categorieId")
+      .populate("boxActuelleId");
     if (!boutique) {
-      return res.status(404).json({ message: 'Boutique non trouvée' });
+      return res.status(404).json({ message: "Boutique non trouvée" });
     }
     res.json(boutique);
   } catch (error) {
@@ -95,41 +96,45 @@ router.get('/:id', async (req, res) => {
 // ======================
 // CREATE - avec création automatique d'utilisateur
 // ======================
-router.post('/', async (req, res) => {
+router.post("/", async (req, res) => {
   try {
     const { boxActuelleId, password, ...boutiqueData } = req.body;
 
     // Vérifier si l'email existe déjà
     const emailExiste = await Boutique.findOne({ email: boutiqueData.email });
     if (emailExiste) {
-      return res.status(400).json({ message: 'Cet email est déjà utilisé' });
+      return res.status(400).json({ message: "Cet email est déjà utilisé" });
     }
 
     // Créer la boutique
     const boutique = new Boutique(boutiqueData);
     await boutique.save();
 
+    // 2. Hasher le mot de passe
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     // Créer l'utilisateur associé
     const user = new User({
       email: boutique.email,
-      password: password, // À hasher avec bcrypt dans une vraie application
-      role: 'boutique',
+      password: hashedPassword, // À hasher avec bcrypt dans une vraie application
+      role: "boutique",
       profilId: boutique._id,
-      status: true
+      status: true,
     });
     await user.save();
 
     if (boxActuelleId) {
       const box = await Box.findById(boxActuelleId);
 
-      if (!box || box.statut !== 'libre') {
+      if (!box || box.statut !== "libre") {
         // Supprimer la boutique et l'utilisateur si erreur
         await Boutique.findByIdAndDelete(boutique._id);
         await User.findByIdAndDelete(user._id);
-        return res.status(400).json({ message: 'Box non disponible' });
+        return res.status(400).json({ message: "Box non disponible" });
       }
 
-      box.statut = 'occupee';
+      box.statut = "occupee";
       await box.save();
 
       boutique.boxActuelleId = box._id;
@@ -140,7 +145,7 @@ router.post('/', async (req, res) => {
         boxId: box._id,
         boutiqueId: boutique._id,
         dateDebut: new Date(),
-        statut: 'en_cours'
+        statut: "en_cours",
       });
     }
 
@@ -149,10 +154,9 @@ router.post('/', async (req, res) => {
       user: {
         _id: user._id,
         email: user.email,
-        role: user.role
-      }
+        role: user.role,
+      },
     });
-
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -161,7 +165,7 @@ router.post('/', async (req, res) => {
 // ======================
 // UPDATE - SEULEMENT BOUTIQUE, PAS D'UTILISATEUR
 // ======================
-router.put('/:id', async (req, res) => {
+router.put("/:id", async (req, res) => {
   try {
     const boutique = await Boutique.findById(req.params.id);
     const ancienBoxId = boutique.boxActuelleId;
@@ -169,27 +173,27 @@ router.put('/:id', async (req, res) => {
 
     // Vérification du loyer si changement de box
     if (ancienBoxId?.toString() !== nouveauBoxId && nouveauBoxId) {
-      const verification = await verifierPaiementLoyerMoisActuel(req.params.id);      
+      const verification = await verifierPaiementLoyerMoisActuel(req.params.id);
       if (!verification.estPaye) {
-        return res.status(403).json({ 
-          message: 'Impossible de changer de box : le loyer du mois actuel n\'a pas été payé',
-          code: 'LOYER_IMPAYE'
+        return res.status(403).json({
+          message:
+            "Impossible de changer de box : le loyer du mois actuel n'a pas été payé",
+          code: "LOYER_IMPAYE",
         });
       }
     }
 
     // Si changement de box
     if (ancienBoxId?.toString() !== nouveauBoxId) {
-
       // Libérer ancien
       if (ancienBoxId) {
         const ancienBox = await Box.findById(ancienBoxId);
-        ancienBox.statut = 'libre';
+        ancienBox.statut = "libre";
         await ancienBox.save();
 
         await MouvementBox.findOneAndUpdate(
           { boxId: ancienBoxId, dateFin: null },
-          { dateFin: new Date(), statut: 'terminee' }
+          { dateFin: new Date(), statut: "terminee" },
         );
       }
 
@@ -197,28 +201,34 @@ router.put('/:id', async (req, res) => {
       if (nouveauBoxId) {
         const newBox = await Box.findById(nouveauBoxId);
 
-        if (!newBox || newBox.statut !== 'libre') {
-          return res.status(400).json({ message: 'Box non disponible' });
+        if (!newBox || newBox.statut !== "libre") {
+          return res.status(400).json({ message: "Box non disponible" });
         }
 
-        newBox.statut = 'occupee';
+        newBox.statut = "occupee";
         await newBox.save();
 
         await MouvementBox.create({
           boxId: newBox._id,
           boutiqueId: boutique._id,
           dateDebut: new Date(),
-          statut: 'en_cours'
+          statut: "en_cours",
         });
+
+        await User.findOneAndUpdate(
+          { profilId: boutique._id},
+          { status: true}
+        );
       }
     }
+
+    boutique.dateEntryBox = new Date();
 
     // Mise à jour de la boutique (sans le mot de passe)
     Object.assign(boutique, req.body);
     await boutique.save();
 
     res.json(boutique);
-
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -227,68 +237,73 @@ router.put('/:id', async (req, res) => {
 // ======================
 // LIBERER BOX - AVEC VÉRIFICATION DE LOYER
 // ======================
-router.post('/:id/liberer-box', async (req, res) => {
+router.post("/:id/liberer-box", async (req, res) => {
   try {
     const boutique = await Boutique.findById(req.params.id);
 
     if (!boutique.boxActuelleId) {
-      return res.status(400).json({ message: 'Aucun box assigné' });
+      return res.status(400).json({ message: "Aucun box assigné" });
     }
 
     // Vérification du loyer avant de libérer la box
     const verification = await verifierPaiementLoyerMoisActuel(req.params.id);
-    
+
     if (!verification.estPaye) {
-      return res.status(403).json({ 
-        message: 'Impossible de libérer la box : le loyer du mois actuel n\'a pas été payé',
-        code: 'LOYER_IMPAYE'
+      return res.status(403).json({
+        message:
+          "Impossible de libérer la box : le loyer du mois actuel n'a pas été payé",
+        code: "LOYER_IMPAYE",
       });
     }
 
     const box = await Box.findById(boutique.boxActuelleId);
-    box.statut = 'libre';
+    box.statut = "libre";
     await box.save();
 
     await MouvementBox.findOneAndUpdate(
       { boxId: box._id, dateFin: null },
-      { dateFin: new Date(), statut: 'terminee' }
+      { dateFin: new Date(), statut: "terminee" },
     );
 
     boutique.boxActuelleId = null;
     boutique.dateEntryBox = null;
     await boutique.save();
 
-    res.json({ message: 'Box libéré' });
+    await User.findOneAndUpdate(
+          { profilId: boutique._id},
+          { status: false}
+        );
 
+    res.json({ message: "Box libéré" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
 // Obtenir une boutique par ID avec ses mouvements et ses paiement
-router.get('/:id/mouvements', async (req, res) => {
+router.get("/:id/mouvements", async (req, res) => {
   try {
-    const boutique = await Boutique.findById(req.params.id)
-      .populate('boxActuelleId');
+    const boutique = await Boutique.findById(req.params.id).populate(
+      "boxActuelleId",
+    );
 
     if (!boutique) {
-      return res.status(404).json({ message: 'Boutique non trouvée' });
+      return res.status(404).json({ message: "Boutique non trouvée" });
     }
 
     const mouvements = await MouvementBox.find({
-      boutiqueId: boutique._id
-    }).populate('boxId');
+      boutiqueId: boutique._id,
+    }).populate("boxId");
 
     const paiements = await PaiementLoyer.find({
-      boutiqueId: boutique._id
+      boutiqueId: boutique._id,
     }).sort({ annee: -1, mois: -1 });
 
     res.json({
       boutique,
       mouvements,
-      paiements
+      paiements,
     });
-
   } catch (error) {
     res.status(500).json({ message: error.message });
   }

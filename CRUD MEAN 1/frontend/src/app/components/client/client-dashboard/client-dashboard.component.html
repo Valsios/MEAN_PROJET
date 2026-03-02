@@ -59,7 +59,7 @@
           <!-- Image de la boutique -->
           <div class="product-image boutique-image">
             <!-- Image de la boutique (binaire base64) -->
-            <img *ngIf="boutique.image" [src]="'data:image/png;base64,' + boutique.image"
+            <img *ngIf="boutique.image" [src]="boutique.image"
               alt="{{boutique.nomBoutique}}">
             <!-- Image par défaut si pas d'image -->
             <img *ngIf="!boutique.image" src="assets/images/products/No_Image_Available.jpg" alt="Boutique par défaut">
