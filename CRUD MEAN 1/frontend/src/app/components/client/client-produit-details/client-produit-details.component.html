@@ -1,250 +1,261 @@
 <app-client-header></app-client-header>
 
-<!-- Start Item Details -->
-<section class="item-details section">
-    <div class="container">
-        <div class="top-area">
-            <div class="row align-items-center">
-                <!-- Colonne gauche - Image du produit -->
-                <div class="col-lg-6 col-md-12 col-12">
-                    <div class="product-images">
-                        <main id="gallery">
-                            <div class="main-img">
-                                <img *ngIf="produit?.image" 
-                                     [src]="'data:image/png;base64,' + produit.image" 
-                                     id="current" 
-                                     alt="{{produit?.nom}}">
-                                <img *ngIf="!produit?.image" 
-                                     src="assets/images/products/No_Image_Available.jpg" 
-                                     id="current" 
-                                     alt="{{produit?.nom}}">
-                            </div>
-                        </main>
-                    </div>
-                </div>
-                
-                <!-- Colonne droite - Informations produit et formulaire prix -->
-                <div class="col-lg-6 col-md-12 col-12">
-                    <div class="product-info">
-                        <h2 class="title">{{produit?.nom}}</h2>
-                        <p class="category"><i class="lni lni-tag"></i> {{produit?.type}}</p>
-                        
-                        <!-- Prix et formulaire de modification (côte à côte) -->
-                        <div class="price-section mb-4">
-                            <div class="row align-items-end">
-                                <div class="col-md-6">
-                                    <div class="current-price-display">
-                                        <h3 class="price mb-1" [ngClass]="{'has-promo': promotionActive}">
-                                            {{prixFinal | currency:'MGA':'symbol':'1.0-0'}}
-                                            <span *ngIf="promotionActive" class="original-price">
-                                                {{produit?.prixActuel | currency:'MGA':'symbol':'1.0-0'}}
-                                            </span>
-                                        </h3>
-                                        <span *ngIf="promotionActive" class="promo-badge">
-                                            -{{promotionActive.pourcentage}}%
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Description courte -->
-                        <p class="info-text">{{produit?.description}}</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- ========== SECTION REVIEWS ========== -->
-        <!-- Section Reviews et Note Globale -->
-        <div class="row mt-5">
-            <div class="col-12">
-                <div class="reviews-section">
-                    <div class="section-title mb-4">
-                        <h2>Avis clients</h2>
-                    </div>
-
-                    <div class="row">
-                        <!-- Colonne gauche : Note globale et statistiques -->
-                        <div class="col-lg-4">
-                            <div class="global-rating-card text-center p-4 border rounded">
-                                <div class="global-rating-number">
-                                    <span class="display-1 fw-bold">{{ noteGlobale | number:'1.1-1' }}</span>
-                                    <span class="h4 text-muted">/5</span>
-                                </div>
-                                <div class="global-rating-stars mb-2">
-                                    <i class="lni lni-star-filled" style="color: #ffc107;" *ngFor="let star of [].constructor(5); let i = index" 
-                                       [class.text-warning]="i < Math.floor(noteGlobale)"
-                                       [class.lni-star-half]="i === Math.floor(noteGlobale) && noteGlobale % 1 >= 0.5"
-                                       [class.text-muted]="i >= Math.ceil(noteGlobale)"></i>
-                                </div>
-                                <p class="text-muted">{{ totalReviews }} avis</p>
-                                
-                                <!-- Barres de progression des notes -->
-                                <div class="rating-bars mt-3">
-                                    <div *ngFor="let note of [5,4,3,2,1]" class="rating-bar-item d-flex align-items-center mb-2">
-                                        <span class="me-2" style="min-width: 30px;">{{note}}★</span>
-                                        <div class="progress flex-grow-1" style="height: 8px;">
-                                            <div class="progress-bar bg-warning" 
-                                                 [style.width]="(reviewsParNote[note] / totalReviews * 100) + '%'"
-                                                 [attr.aria-valuenow]="reviewsParNote[note]"
-                                                 aria-valuemin="0" 
-                                                 [attr.aria-valuemax]="totalReviews">
-                                            </div>
-                                        </div>
-                                        <span class="ms-2 small">{{reviewsParNote[note]}}</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <!-- Colonne droite : Formulaire de review + message info -->
-                        <div class="col-lg-8">
-                            <!-- FORMULAIRE DE REVIEW (sans vérification connexion) -->
-                            <div class="card mb-4 border">
-                                <div class="card-header bg-white">
-                                    <h5 class="mb-0">
-                                        <i class="lni lni-pencil-alt me-2"></i>
-                                        Donnez votre avis sur ce produit
-                                    </h5>
-                                </div>
-                                <div class="card-body">
-                                    <!-- Système de notation par étoiles -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Votre note <span class="text-danger">*</span></label>
-                                        <div class="rating-input">
-                                            <span *ngFor="let star of [1,2,3,4,5]" 
-                                                  class="rating-star" 
-                                                  (mouseenter)="hoverRating = star"
-                                                  (mouseleave)="hoverRating = 0"
-                                                  (click)="selectedRating = star">
-                                                <i class="lni" 
-                                                   [ngClass]="{
-                                                     'lni-star-filled': star <= (hoverRating || selectedRating),
-                                                     'lni-star': star > (hoverRating || selectedRating)
-                                                   }"
-                                                   [style.color]="star <= (hoverRating || selectedRating) ? '#ffc107' : '#e4e5e9'"
-                                                   style="font-size: 2rem; cursor: pointer; transition: all 0.2s;"></i>
-                                            </span>
-                                        </div>
-                                        <small class="text-muted" *ngIf="selectedRating">
-                                            <i class="lni lni-checkmark-circle text-success"></i>
-                                            Vous avez sélectionné {{ selectedRating }} étoile(s)
-                                        </small>
-                                        <small class="text-muted" *ngIf="!selectedRating">
-                                            <i class="lni lni-pointer"></i>
-                                            Cliquez sur les étoiles pour noter
-                                        </small>
-                                    </div>
-
-                                    <!-- Champ commentaire -->
-                                    <div class="mb-3">
-                                        <label class="form-label fw-bold">Votre commentaire (optionnel)</label>
-                                        <textarea class="form-control" 
-                                                  rows="3" 
-                                                  placeholder="Partagez votre expérience avec ce produit... (qualité, utilisation, etc.)"
-                                                  [(ngModel)]="reviewComment"></textarea>
-                                    </div>
-
-                                    <!-- Bouton soumettre -->
-                                    <div class="d-flex justify-content-between align-items-center">
-                                        <button class="btn btn-primary px-4" 
-                                                (click)="soumettreReview()"
-                                                [disabled]="!selectedRating || isLoadingReview">
-                                            <span *ngIf="isLoadingReview" class="spinner-border spinner-border-sm me-2"></span>
-                                            <i class="lni lni-checkmark-circle" *ngIf="!isLoadingReview"></i>
-                                            {{ isLoadingReview ? 'Publication en cours...' : 'Publier mon avis' }}
-                                        </button>
-                                        <small class="text-muted">
-                                            <i class="lni lni-lock"></i>
-                                            Votre avis sera public
-                                        </small>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- Message informatif -->
-                            <div class="alert alert-light border">
-                                <i class="lni lni-information me-2"></i> 
-                                Les avis sont publiés par les clients ayant acheté le produit.
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Liste des avis -->
-                    <div class="reviews-list mt-4">
-                        <h5 class="mb-3">Tous les avis ({{ totalReviews }})</h5>
-                        
-                        <div *ngIf="isLoadingReviews" class="text-center py-5">
-                            <div class="spinner-border text-primary" role="status">
-                                <span class="visually-hidden">Chargement...</span>
-                            </div>
-                        </div>
-
-                        <div *ngIf="!isLoadingReviews && paginatedReviews.length === 0" class="text-center py-5 text-muted">
-                            <i class="lni lni-comments" style="font-size: 3rem;"></i>
-                            <p class="mt-3">Aucun avis pour le moment. Soyez le premier à donner votre avis !</p>
-                        </div>
-
-                        <div class="review-item card mb-3" *ngFor="let review of paginatedReviews">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start">
-                                    <div>
-                                        <div class="reviewer-info d-flex align-items-center mb-2">
-                                            <div class="reviewer-avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-2" 
-                                                 style="width: 40px; height: 40px;">
-                                                <i class="lni lni-user fs-5"></i>
-                                            </div>
-                                            <div>
-                                                <h6 class="mb-0">{{ review.client?.email || 'Client' }}</h6>
-                                                <small class="text-muted">
-                                                    <i class="lni lni-calendar"></i>
-                                                    {{ review.createdAt | date:'dd/MM/yyyy' }}
-                                                </small>
-                                            </div>
-                                        </div>
-                                        <div class="review-rating mb-2">
-                                            <i class="lni lni-star-filled text-warning" *ngFor="let star of [].constructor(review.note)"></i>
-                                            <i class="lni lni-star-filled text-muted" *ngFor="let star of [].constructor(5 - review.note)"></i>
-                                        </div>
-                                        <p class="review-comment mb-0">{{ review.commentaire || 'Avis sans commentaire' }}</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="pagination-section mt-4" *ngIf="getTotalPages() > 1">
-                            <nav aria-label="Pagination des avis">
-                                <ul class="pagination justify-content-center">
-                                    <li class="page-item" [class.disabled]="currentPage === 1">
-                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">
-                                            <i class="lni lni-chevron-left"></i> Précédent
-                                        </a>
-                                    </li>
-                                    <li class="page-item" *ngFor="let page of [].constructor(getTotalPages()); let i = index" 
-                                        [class.active]="currentPage === i + 1">
-                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(i + 1)">
-                                            {{ i + 1 }}
-                                        </a>
-                                    </li>
-                                    <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
-                                        <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">
-                                            Suivant <i class="lni lni-chevron-right"></i>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <!-- ========== FIN SECTION REVIEWS ========== -->
-        
+<div *ngIf="!dataLoaded" class="loading-container">
+  <div class="text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status" style="width: 3rem; height: 3rem;">
+      <span class="visually-hidden">Chargement...</span>
     </div>
-</section>
-<!-- End Item Details -->
+    <h5 class="text-muted">Chargement du produit...</h5>
+    <p class="text-muted small">Veuillez patienter</p>
+  </div>
+</div>
+<div *ngIf="dataLoaded">
+    <!-- Start Item Details -->
+    <section class="item-details section">
+        <div class="container">
+            <div class="top-area">
+                <div class="row align-items-center">
+                    <!-- Colonne gauche - Image du produit -->
+                    <div class="col-lg-6 col-md-12 col-12">
+                        <div class="product-images">
+                            <main id="gallery">
+                                <div class="main-img">
+                                    <img *ngIf="produit?.image" 
+                                        [src]="'data:image/png;base64,' + produit.image" 
+                                        id="current" 
+                                        alt="{{produit?.nom}}">
+                                    <img *ngIf="!produit?.image" 
+                                        src="assets/images/products/No_Image_Available.jpg" 
+                                        id="current" 
+                                        alt="{{produit?.nom}}">
+                                </div>
+                            </main>
+                        </div>
+                    </div>
+                    
+                    <!-- Colonne droite - Informations produit et formulaire prix -->
+                    <div class="col-lg-6 col-md-12 col-12">
+                        <div class="product-info">
+                            <h2 class="title">{{produit?.nom}}</h2>
+                            <p class="category"><i class="lni lni-tag"></i> {{produit?.type}}</p>
+                            
+                            <!-- Prix et formulaire de modification (côte à côte) -->
+                            <div class="price-section mb-4">
+                                <div class="row align-items-end">
+                                    <div class="col-md-6">
+                                        <div class="current-price-display">
+                                            <h3 class="price mb-1" [ngClass]="{'has-promo': promotionActive}">
+                                                {{prixFinal | currency:'MGA':'symbol':'1.0-0'}}
+                                                <span *ngIf="promotionActive" class="original-price">
+                                                    {{produit?.prixActuel | currency:'MGA':'symbol':'1.0-0'}}
+                                                </span>
+                                            </h3>
+                                            <span *ngIf="promotionActive" class="promo-badge">
+                                                -{{promotionActive.pourcentage}}%
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Description courte -->
+                            <p class="info-text">{{produit?.description}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ========== SECTION REVIEWS ========== -->
+            <!-- Section Reviews et Note Globale -->
+            <div class="row mt-5">
+                <div class="col-12">
+                    <div class="reviews-section">
+                        <div class="section-title mb-4">
+                            <h2>Avis clients</h2>
+                        </div>
+
+                        <div class="row">
+                            <!-- Colonne gauche : Note globale et statistiques -->
+                            <div class="col-lg-4">
+                                <div class="global-rating-card text-center p-4 border rounded">
+                                    <div class="global-rating-number">
+                                        <span class="display-1 fw-bold">{{ noteGlobale | number:'1.1-1' }}</span>
+                                        <span class="h4 text-muted">/5</span>
+                                    </div>
+                                    <div class="global-rating-stars mb-2">
+                                        <i class="lni lni-star-filled" style="color: #ffc107;" *ngFor="let star of [].constructor(5); let i = index" 
+                                        [class.text-warning]="i < Math.floor(noteGlobale)"
+                                        [class.lni-star-half]="i === Math.floor(noteGlobale) && noteGlobale % 1 >= 0.5"
+                                        [class.text-muted]="i >= Math.ceil(noteGlobale)"></i>
+                                    </div>
+                                    <p class="text-muted">{{ totalReviews }} avis</p>
+                                    
+                                    <!-- Barres de progression des notes -->
+                                    <div class="rating-bars mt-3">
+                                        <div *ngFor="let note of [5,4,3,2,1]" class="rating-bar-item d-flex align-items-center mb-2">
+                                            <span class="me-2" style="min-width: 30px;">{{note}}★</span>
+                                            <div class="progress flex-grow-1" style="height: 8px;">
+                                                <div class="progress-bar bg-warning" 
+                                                    [style.width]="(reviewsParNote[note] / totalReviews * 100) + '%'"
+                                                    [attr.aria-valuenow]="reviewsParNote[note]"
+                                                    aria-valuemin="0" 
+                                                    [attr.aria-valuemax]="totalReviews">
+                                                </div>
+                                            </div>
+                                            <span class="ms-2 small">{{reviewsParNote[note]}}</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Colonne droite : Formulaire de review + message info -->
+                            <div class="col-lg-8">
+                                <!-- FORMULAIRE DE REVIEW (sans vérification connexion) -->
+                                <div class="card mb-4 border">
+                                    <div class="card-header bg-white">
+                                        <h5 class="mb-0">
+                                            <i class="lni lni-pencil-alt me-2"></i>
+                                            Donnez votre avis sur ce produit
+                                        </h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <!-- Système de notation par étoiles -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Votre note <span class="text-danger">*</span></label>
+                                            <div class="rating-input">
+                                                <span *ngFor="let star of [1,2,3,4,5]" 
+                                                    class="rating-star" 
+                                                    (mouseenter)="hoverRating = star"
+                                                    (mouseleave)="hoverRating = 0"
+                                                    (click)="selectedRating = star">
+                                                    <i class="lni" 
+                                                    [ngClass]="{
+                                                        'lni-star-filled': star <= (hoverRating || selectedRating),
+                                                        'lni-star': star > (hoverRating || selectedRating)
+                                                    }"
+                                                    [style.color]="star <= (hoverRating || selectedRating) ? '#ffc107' : '#e4e5e9'"
+                                                    style="font-size: 2rem; cursor: pointer; transition: all 0.2s;"></i>
+                                                </span>
+                                            </div>
+                                            <small class="text-muted" *ngIf="selectedRating">
+                                                <i class="lni lni-checkmark-circle text-success"></i>
+                                                Vous avez sélectionné {{ selectedRating }} étoile(s)
+                                            </small>
+                                            <small class="text-muted" *ngIf="!selectedRating">
+                                                <i class="lni lni-pointer"></i>
+                                                Cliquez sur les étoiles pour noter
+                                            </small>
+                                        </div>
+
+                                        <!-- Champ commentaire -->
+                                        <div class="mb-3">
+                                            <label class="form-label fw-bold">Votre commentaire (optionnel)</label>
+                                            <textarea class="form-control" 
+                                                    rows="3" 
+                                                    placeholder="Partagez votre expérience avec ce produit... (qualité, utilisation, etc.)"
+                                                    [(ngModel)]="reviewComment"></textarea>
+                                        </div>
+
+                                        <!-- Bouton soumettre -->
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <button class="btn btn-primary px-4" 
+                                                    (click)="soumettreReview()"
+                                                    [disabled]="!selectedRating || isLoadingReview">
+                                                <span *ngIf="isLoadingReview" class="spinner-border spinner-border-sm me-2"></span>
+                                                <i class="lni lni-checkmark-circle" *ngIf="!isLoadingReview"></i>
+                                                {{ isLoadingReview ? 'Publication en cours...' : 'Publier mon avis' }}
+                                            </button>
+                                            <small class="text-muted">
+                                                <i class="lni lni-lock"></i>
+                                                Votre avis sera public
+                                            </small>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Message informatif -->
+                                <div class="alert alert-light border">
+                                    <i class="lni lni-information me-2"></i> 
+                                    Les avis sont publiés par les clients ayant acheté le produit.
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Liste des avis -->
+                        <div class="reviews-list mt-4">
+                            <h5 class="mb-3">Tous les avis ({{ totalReviews }})</h5>
+                            
+                            <div *ngIf="isLoadingReviews" class="text-center py-5">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Chargement...</span>
+                                </div>
+                            </div>
+
+                            <div *ngIf="!isLoadingReviews && paginatedReviews.length === 0" class="text-center py-5 text-muted">
+                                <i class="lni lni-comments" style="font-size: 3rem;"></i>
+                                <p class="mt-3">Aucun avis pour le moment. Soyez le premier à donner votre avis !</p>
+                            </div>
+
+                            <div class="review-item card mb-3" *ngFor="let review of paginatedReviews">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-start">
+                                        <div>
+                                            <div class="reviewer-info d-flex align-items-center mb-2">
+                                                <div class="reviewer-avatar bg-light rounded-circle d-flex align-items-center justify-content-center me-2" 
+                                                    style="width: 40px; height: 40px;">
+                                                    <i class="lni lni-user fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0">{{ review.client?.email || 'Client' }}</h6>
+                                                    <small class="text-muted">
+                                                        <i class="lni lni-calendar"></i>
+                                                        {{ review.createdAt | date:'dd/MM/yyyy' }}
+                                                    </small>
+                                                </div>
+                                            </div>
+                                            <div class="review-rating mb-2">
+                                                <i class="lni lni-star-filled text-warning" *ngFor="let star of [].constructor(review.note)"></i>
+                                                <i class="lni lni-star-filled text-muted" *ngFor="let star of [].constructor(5 - review.note)"></i>
+                                            </div>
+                                            <p class="review-comment mb-0">{{ review.commentaire || 'Avis sans commentaire' }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Pagination -->
+                            <div class="pagination-section mt-4" *ngIf="getTotalPages() > 1">
+                                <nav aria-label="Pagination des avis">
+                                    <ul class="pagination justify-content-center">
+                                        <li class="page-item" [class.disabled]="currentPage === 1">
+                                            <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage - 1)">
+                                                <i class="lni lni-chevron-left"></i> Précédent
+                                            </a>
+                                        </li>
+                                        <li class="page-item" *ngFor="let page of [].constructor(getTotalPages()); let i = index" 
+                                            [class.active]="currentPage === i + 1">
+                                            <a class="page-link" href="javascript:void(0)" (click)="changePage(i + 1)">
+                                                {{ i + 1 }}
+                                            </a>
+                                        </li>
+                                        <li class="page-item" [class.disabled]="currentPage === getTotalPages()">
+                                            <a class="page-link" href="javascript:void(0)" (click)="changePage(currentPage + 1)">
+                                                Suivant <i class="lni lni-chevron-right"></i>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- ========== FIN SECTION REVIEWS ========== -->
+            
+        </div>
+    </section>
+    <!-- End Item Details -->
+ </div>
 
 
 <!-- Styles additionnels -->

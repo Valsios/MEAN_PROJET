@@ -35,6 +35,7 @@ export class ClientPanierComponent implements OnInit {
   // États de chargement
   isLoading: boolean = false;
   isLoadingAction: boolean = false;
+  dataLoaded: boolean = false; // AJOUT : État de chargement principal
   
   // Messages
   message: { type: string, text: string } | null = null;
@@ -48,7 +49,12 @@ export class ClientPanierComponent implements OnInit {
 
   ngOnInit() {
     this.recupererClientInfo();
-    this.chargerPaniers();
+    // Ne charger les paniers que si le client est connecté
+    if (this.profile?._id) {
+      this.chargerPaniers();
+    } else {
+      this.dataLoaded = true; // Si pas connecté, on arrête le loading
+    }
   }
 
   // Afficher un message (remplace toastr)
@@ -73,13 +79,18 @@ export class ClientPanierComponent implements OnInit {
   chargerPaniers() {
     if (!this.profile._id) {
       this.showMessage('warning', 'Veuillez vous connecter');
+      this.dataLoaded = true; // Même en erreur, on arrête le loading
       return;
     }
 
     this.isLoading = true;
+    this.dataLoaded = false; // ACTIVE LE LOADING PRINCIPAL
     
     this.panierService.getPaniers(this.profile._id)
-      .pipe(finalize(() => this.isLoading = false))
+      .pipe(finalize(() => {
+        this.isLoading = false;
+        // finalize s'exécute dans les deux cas (succès ou erreur)
+      }))
       .subscribe({
         next: (response) => {
           this.paniers = response || [];
@@ -88,10 +99,13 @@ export class ClientPanierComponent implements OnInit {
           if (this.paniers.length === 0) {
             this.showMessage('info', 'Votre panier est vide');
           }
+          
+          this.dataLoaded = true; // DÉSACTIVE LE LOADING PRINCIPAL
         },
         error: (error) => {
           console.error('Erreur chargement paniers:', error);
           this.showMessage('error', 'Erreur lors du chargement de votre panier');
+          this.dataLoaded = true; // MÊME EN ERREUR, ON DÉSACTIVE LE LOADING
         }
       });
   }

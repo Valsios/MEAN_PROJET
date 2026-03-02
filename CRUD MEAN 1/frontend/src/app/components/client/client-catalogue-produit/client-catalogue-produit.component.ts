@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
 import { ClientHeaderComponent } from '../client-header/client-header.component';
 import { ClientFooterComponent } from '../client-footer/client-footer.component';
 import { ClientService } from '../../../services/client/client.service';
-import { finalize } from 'rxjs';
+import { finalize, forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-client-catalogue-produit',
@@ -21,6 +21,9 @@ export class ClientCatalogueProduitComponent {
   searchTerm: string = '';   
   boutiqueId : any;
   boutique : any;     // Terme de recherche
+
+  // État de chargement principal (NOUVEAU)
+  dataLoaded: boolean = false;
 
   // États de chargement
   isLoading: boolean = false;
@@ -64,22 +67,52 @@ export class ClientCatalogueProduitComponent {
     this.loadUserData();
     // Récupérer l'ID au moment de l'instanciation
     this.boutiqueId = this.route.snapshot.paramMap.get('id') || '';
-    this.boutiqueService.getBoutiqueByIdVals(this.boutiqueId).subscribe(
-      {
-        next: (data) => {
-          this.boutique = data[0]; 
-          console.log(this.boutique);
-          // Charger les avis après avoir récupéré la boutique
-          this.chargerBoutiqueReviews();
-        },
-        error: (err) => console.error(err)
-      }
-    );
-    console.log('ID récupéré:', this.boutiqueId);
   }
 
   ngOnInit(): void {
-    this.chargerProduits(this.boutiqueId);
+    this.chargerDonneesInitiales();
+  }
+
+  // NOUVELLE MÉTHODE : Charge toutes les données en parallèle
+  chargerDonneesInitiales(): void {
+    this.dataLoaded = false;
+    
+    // Utiliser forkJoin pour charger les données en parallèle
+    forkJoin({
+      boutique: this.boutiqueService.getBoutiqueByIdVals(this.boutiqueId),
+      produits: this.boutiqueService.getBoutiqueWithProduits(this.boutiqueId),
+      avis: this.boutiqueService.getAvisClient(this.boutiqueId)
+    }).subscribe({
+      next: (results) => {
+        // Traiter les résultats de la boutique
+        this.boutique = results.boutique[0];
+        console.log('Boutique:', this.boutique);
+        
+        // Traiter les produits
+        this.tousLesProduits = results.produits || [];
+        this.produits = results.produits || [];
+        console.log('Produits:', this.produits);
+        
+        // Traiter les avis
+        this.boutiqueReviews = results.avis || [];
+        this.boutiqueTotalReviews = this.boutiqueReviews.length;
+        this.calculerStatsBoutique();
+        this.updateBoutiquePagination();
+        
+        // Données chargées avec succès
+        this.dataLoaded = true;
+      },
+      error: (err) => {
+        console.error('Erreur lors du chargement des données:', err);
+        // Même en erreur, on arrête le loading
+        this.dataLoaded = true;
+        
+        // Initialiser avec des valeurs par défaut
+        this.tousLesProduits = [];
+        this.produits = [];
+        this.boutiqueReviews = [];
+      }
+    });
   }
 
   loadUserData() {
@@ -89,37 +122,19 @@ export class ClientCatalogueProduitComponent {
     this.profile = storedProfile ? JSON.parse(storedProfile) : null;
   }
 
-  chargerProduits(boutiqueId: string): void {
-    this.boutiqueService.getBoutiqueWithProduits(boutiqueId).subscribe({
-      next: (data) => {
-        this.tousLesProduits = data;  // Sauvegarde tous les produits
-        this.produits = data;          // Initialise l'affichage
-        console.log('Boutique avec produits:', this.produits);
-      },
-      error: (err) => console.error(err)
-    });
-  }
+  // MÉTHODE SUPPRIMÉE : chargement individuel des produits (fusionné dans chargerDonneesInitiales)
+  // chargerProduits(boutiqueId: string): void { ... }
 
-  // ========== MÉTHODES POUR LES AVIS BOUTIQUE ==========
+  // MÉTHODE MODIFIÉE : ne plus appeler le service, juste utiliser les données déjà chargées
   chargerBoutiqueReviews() {
     if (!this.boutiqueId) return;
     
     this.isLoadingBoutiqueReviews = true;
     
-    // Utiliser le service pour récupérer les avis sur la boutique
-    this.boutiqueService.getAvisClient(this.boutiqueId).subscribe({
-      next: (reviews) => {
-        this.boutiqueReviews = reviews || [];
-        this.boutiqueTotalReviews = this.boutiqueReviews.length;
-        this.calculerStatsBoutique();
-        this.updateBoutiquePagination();
-        this.isLoadingBoutiqueReviews = false;
-      },
-      error: (error) => {
-        console.error('Erreur chargement avis boutique:', error);
-        this.isLoadingBoutiqueReviews = false;
-      }
-    });
+    // Simuler un petit délai pour l'effet de chargement (optionnel)
+    setTimeout(() => {
+      this.isLoadingBoutiqueReviews = false;
+    }, 300);
   }
 
   calculerStatsBoutique() {

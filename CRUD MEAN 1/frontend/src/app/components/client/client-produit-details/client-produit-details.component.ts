@@ -7,6 +7,7 @@ import { ClientHeaderComponent } from '../client-header/client-header.component'
 import { ClientFooterComponent } from '../client-footer/client-footer.component';
 import { ClientService } from '../../../services/client/client.service';
 import { FormsModule } from '@angular/forms';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'app-client-produit-details',
@@ -54,6 +55,7 @@ export class ClientProduitDetailsComponent {
   
   // Loading states
   isLoading: boolean = false;
+  dataLoaded: boolean = false; // AJOUT : État de chargement principal
 
   Math = Math; // Pour utiliser Math dans le template
 
@@ -91,23 +93,23 @@ export class ClientProduitDetailsComponent {
   }
 
   chargerDonneesCompletes() {
-    // Charger produit
-    this.produitService.getProduitById(this.produitId).subscribe({
-      next: (produit) => {
-        this.produit = produit;        
-        this.calculerPrixFinal();
-      },
-      error: (error) => {
-        console.error('Erreur chargement produit:', error);
-      }
-    });
-
-    // Charger promotion
-    this.produitService.getPromotionActive(this.produitId).subscribe({
-      next: (promo) => {
+    this.dataLoaded = false; // ACTIVE LE LOADING PRINCIPAL
+    
+    // Charger toutes les données en parallèle
+    forkJoin({
+      produit: this.produitService.getProduitById(this.produitId),
+      promotion: this.produitService.getPromotionActive(this.produitId),
+      reviews: this.produitService.getReviews(this.produitId)
+    }).subscribe({
+      next: (results) => {
+        // Traiter le produit
+        this.produit = results.produit;
+        console.log('Produit chargé:', this.produit);
+        
+        // Traiter la promotion
+        const promo = results.promotion;
         console.log('Promotion reçue:', promo);
         
-        // Traiter le pourcentage si c'est un objet
         if (promo && promo.pourcentage) {
           if (typeof promo.pourcentage === 'object') {
             promo.pourcentage = promo.pourcentage.value || 
@@ -115,23 +117,35 @@ export class ClientProduitDetailsComponent {
                                Number(promo.pourcentage);
           }
         }
-        
         this.promotionActive = promo;
+        
+        // Traiter les reviews
+        this.reviews = Array.isArray(results.reviews) ? results.reviews : results.reviews.data || [];
+        this.totalReviews = this.reviews.length;
+        this.calculateGlobalNote();
+        this.updatePaginatedReviews();
+        
+        // Calculer le prix final
         this.calculerPrixFinal();
         
+        // Données chargées avec succès
+        this.dataLoaded = true;
       },
       error: (error) => {
-        console.error('Erreur chargement promotion:', error);
+        console.error('Erreur lors du chargement des données:', error);
+        this.dataLoaded = true; // MÊME EN ERREUR, ON ARRÊTE LE LOADING
       }
     });
-
-    // Charger les reviews
-    this.loadReviews();
   }
+
+  // MÉTHODES SUPPRIMÉES (fusionnées dans chargerDonneesCompletes)
+  // loadReviews() supprimée
+  // Les appels individuels sont supprimés
 
   // ========== MÉTHODES POUR LES REVIEWS ==========
   
-  loadReviews() {
+  // NOUVELLE MÉTHODE : Rafraîchir les reviews après ajout
+  rafraichirReviews() {
     this.isLoadingReviews = true;
     
     this.produitService.getReviews(this.produitId).subscribe({
@@ -188,8 +202,6 @@ export class ClientProduitDetailsComponent {
   // ========== MÉTHODES POUR LE FORMULAIRE DE REVIEW ==========
   
   soumettreReview() {
-    
-
     this.isLoadingReview = true;
 
     const reviewData = {
@@ -211,18 +223,15 @@ export class ClientProduitDetailsComponent {
         this.hoverRating = 0;
         this.reviewComment = '';
         
-        // Recharger les reviews
-        this.loadReviews();
+        // Rafraîchir les reviews
+        this.rafraichirReviews();
       },
       error: (error) => {
         this.isLoadingReview = false;
         console.error('Erreur ajout review:', error);
-        
       }
     });
   }
-
-  
 
   // ========== AUTRES MÉTHODES ==========
   

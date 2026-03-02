@@ -29,10 +29,11 @@ export class ClientCommandeComponent implements OnInit {
   
   // États
   isLoading: boolean = false;
+  dataLoaded: boolean = false; // AJOUT : État de chargement principal
   
   // Client connecté
- profile : any;
- user : any;
+  profile : any;
+  user : any;
 
   // Statistiques
   stats = {
@@ -40,7 +41,6 @@ export class ClientCommandeComponent implements OnInit {
     enAttente: 0,
     validees: 0,
     annule:0
-   
   };
 
   Math = Math; // Pour utilisation dans le template
@@ -67,10 +67,12 @@ export class ClientCommandeComponent implements OnInit {
   chargerCommandes() {
     if (!this.profile) {
       console.error('Client non connecté');
+      this.dataLoaded = true; // Même en erreur, on arrête le loading
       return;
     }
 
     this.isLoading = true;
+    this.dataLoaded = false; // ACTIVE LE LOADING PRINCIPAL
     
     this.clientService.getCommandes(this.profile._id).subscribe({
       next: (response) => {
@@ -78,10 +80,12 @@ export class ClientCommandeComponent implements OnInit {
         this.appliquerFiltre();
         this.calculerStats();
         this.isLoading = false;
+        this.dataLoaded = true; // DÉSACTIVE LE LOADING PRINCIPAL
       },
       error: (error) => {
         console.error('Erreur chargement commandes:', error);
         this.isLoading = false;
+        this.dataLoaded = true; // MÊME EN ERREUR, ON DÉSACTIVE
       }
     });
   }
