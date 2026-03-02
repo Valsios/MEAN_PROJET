@@ -4,7 +4,7 @@
   "devCommand": "ng serve",
   "installCommand": "npm install --legacy-peer-deps",
   "routes": [
-    { "src": "/.*\\.(js|css|png|jpg|jpeg|svg|ico|woff|woff2|ttf|eot)", "dest": "/$0", "headers": { "Content-Type": "application/javascript" } },
+    { "src": "/.*\\.(js|css|png|jpg|jpeg|svg|ico|woff|woff2|ttf|eot)", "dest": "/$0" },
     { "src": "/(.*)", "dest": "/index.html" }
   ]
 }
