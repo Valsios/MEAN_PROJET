@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { BoutiqueHeaderComponent } from '../header/boutique-header/boutique-header.component';
@@ -12,11 +12,18 @@ import { AuthService } from '../../../auth/auth.service';
   standalone: true,
   imports: [CommonModule, FormsModule, BoutiqueHeaderComponent, BoutiqueFooterComponent],
   templateUrl: './boutique-produits.component.html',
+  styleUrls: ['./boutique-produits.component.css'] // Ajoutez ce fichier pour les styles
 })
-export class BoutiqueProduitsComponent {
+export class BoutiqueProduitsComponent implements OnInit {
   produits: any[] = [];           // Tous les produits (affichés dans le HTML)
   tousLesProduits: any[] = [];    // Copie de sauvegarde pour réinitialiser
   searchTerm: string = '';        // Terme de recherche
+  
+  // AJOUT : État de chargement
+  dataLoaded: boolean = false;
+  
+  // AJOUT : État d'erreur
+  error: string | null = null;
 
   constructor(
     private boutiqueService: BoutiqueService,
@@ -30,17 +37,34 @@ export class BoutiqueProduitsComponent {
     
     if (profile?._id) {
       this.chargerProduits(profile._id);
+    } else {
+      this.error = 'Profil boutique non trouvé';
+      this.dataLoaded = true; // Arrêter le loading même en erreur
     }
   }
 
   chargerProduits(boutiqueId: string): void {
+    // Réinitialiser les états
+    this.dataLoaded = false;
+    this.error = null;
+    
     this.boutiqueService.getBoutiqueWithProduits(boutiqueId).subscribe({
       next: (data) => {
         this.tousLesProduits = data;  // Sauvegarde tous les produits
         this.produits = data;          // Initialise l'affichage
         console.log('Boutique avec produits:', this.produits);
+        // Données chargées avec succès
+        this.dataLoaded = true;
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        console.error('Erreur lors du chargement des produits:', err);
+        this.error = 'Erreur lors du chargement des produits';
+        // Même en erreur, on arrête le loading pour ne pas bloquer l'interface
+        this.dataLoaded = true;
+        // Initialiser avec des tableaux vides
+        this.tousLesProduits = [];
+        this.produits = [];
+      }
     });
   }
 
@@ -76,6 +100,9 @@ export class BoutiqueProduitsComponent {
           // Mettre à jour les deux listes
           this.tousLesProduits = this.tousLesProduits.filter(p => p._id !== productId);
           this.produits = this.produits.filter(p => p._id !== productId);
+          
+          // Afficher un message de succès (optionnel)
+          // Vous pourriez utiliser un service de toast ici
         },
         error: (error) => {
           console.error('Erreur lors de la suppression', error);

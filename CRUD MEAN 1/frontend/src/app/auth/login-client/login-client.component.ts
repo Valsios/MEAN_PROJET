@@ -11,9 +11,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login-client.component.html'
 })
 export class LoginClientComponent {
-  email = '';
-  password = '';
+  email = 'client1@gmail.com';
+  password = 'client1';
   error = '';
+    loading: boolean = false;  // Ajout de la propriété loading
+
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -31,4 +33,12 @@ export class LoginClientComponent {
   goToRegister() {
     this.router.navigate(['/register']);
   }
+
+  goToAdminLogin() {
+  this.router.navigate(['/login-admin']);
+}
+
+goToBoutiqueLogin() {
+  this.router.navigate(['/login-boutique']);
+}
 }

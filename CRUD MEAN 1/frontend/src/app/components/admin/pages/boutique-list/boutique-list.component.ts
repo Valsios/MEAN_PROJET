@@ -58,6 +58,13 @@ export class BoutiqueListComponent implements OnInit {
     image: null
   };
 
+   // Ajoutez cette propriété
+  dataLoaded: boolean = false;
+  
+  // Compteur pour suivre le nombre de requêtes terminées
+  private loadedRequests: number = 0;
+  private totalRequests: number = 3; // boutiques + boxes + categories
+
   constructor(
     private boutiqueService: BoutiqueService,
     private boxService: BoxService,
@@ -70,34 +77,56 @@ export class BoutiqueListComponent implements OnInit {
   }
 
   loadData() {
+    // Réinitialiser l'état de chargement
+    this.dataLoaded = false;
+    this.loadedRequests = 0;
+
+    // Charger les boutiques
     this.boutiqueService.getAll().subscribe({
       next: (data) => {
         this.boutiques = data;
-        this.applyFilters();
+        this.checkAllDataLoaded();
       },
       error: (error) => {
         this.showError('Erreur lors du chargement des boutiques');
+        this.checkAllDataLoaded(); // Compter même en erreur pour ne pas bloquer
       }
     });
 
+    // Charger les boxes libres
     this.boxService.getBoxesLibres().subscribe({
       next: (data) => {
         this.boxesLibres = data;
+        this.checkAllDataLoaded();
       },
       error: (error) => {
         this.showError('Erreur lors du chargement des boxes libres');
+        this.checkAllDataLoaded();
       }
     });
 
+    // Charger les catégories
     this.categorieService.getAll().subscribe({
       next: (data) => {
         this.categories = data;
+        this.checkAllDataLoaded();
       },
       error: (error) => {
         this.showError('Erreur lors du chargement des catégories');
+        this.checkAllDataLoaded();
       }
     });
   }
+
+  private checkAllDataLoaded() {
+    this.loadedRequests++;
+    if (this.loadedRequests === this.totalRequests) {
+      // Toutes les requêtes sont terminées (succès ou échec)
+      this.dataLoaded = true;
+      this.applyFilters(); // Appliquer les filtres une fois les données chargées
+    }
+  }
+
 
   applyFilters() {
     let filtered = [...this.boutiques];

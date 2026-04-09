@@ -23,6 +23,9 @@ export class BoutiquePaiementComponent implements OnInit {
   boutiqueId!: string;
   error: string = '';
 
+  // AJOUT : État de chargement
+  dataLoaded: boolean = false;
+
   // Propriétés pour afficher des informations supplémentaires
   boxActuelleId: string | null = null;
   messageInfo: string = '';
@@ -41,13 +44,16 @@ export class BoutiquePaiementComponent implements OnInit {
     this.boutiqueId = this.route.snapshot.paramMap.get('id')!;
     if (!this.boutiqueId) {
       this.error = 'ID de boutique non valide';
+      this.dataLoaded = true; // Arrêter le loading même en erreur
       return;
     }
     this.loadInfo();
   }
 
   loadInfo() {
+    // Réinitialiser les états
     this.error = '';
+    this.dataLoaded = false;
     
     this.paiementService.getInfo(this.boutiqueId).subscribe({
       next: (res) => {
@@ -60,10 +66,15 @@ export class BoutiquePaiementComponent implements OnInit {
         // Générer un message explicatif
         this.genererMessageInfo();
         this.genererMois();
+        
+        // Données chargées avec succès
+        this.dataLoaded = true;
       },
       error: (err) => {
         this.error = err.error?.message || 'Erreur lors du chargement des informations';
         console.error('Erreur:', err);
+        // Même en erreur, on arrête le loading pour ne pas bloquer l'interface
+        this.dataLoaded = true;
       }
     });
   }
@@ -122,7 +133,7 @@ export class BoutiquePaiementComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         alert('✓ Paiement effectué avec succès !');
-        this.loadInfo();
+        this.loadInfo(); // Recharger avec le loading
         this.nombreMois = 1;
       },
       error: (err) => {

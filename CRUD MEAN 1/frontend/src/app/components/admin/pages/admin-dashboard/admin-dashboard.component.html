@@ -53,9 +53,7 @@
                 <span class="kpi-label">Total boutiques</span>
                 <h2 class="kpi-value">{{ stats.totalBoutiques || 0 }}</h2>
               </div>
-              <div class="kpi-icon bg-primary bg-opacity-10">
-                <i class="bi bi-shop text-primary"></i>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -69,9 +67,7 @@
                 <span class="kpi-label">Box occupées/libres</span>
                 <h2 class="kpi-value">{{ getTotalBoxes().occupees }} / {{ getTotalBoxes().libres }}</h2>
               </div>
-              <div class="kpi-icon bg-success bg-opacity-10">
-                <i class="bi bi-box text-success"></i>
-              </div>
+              
             </div>
             <div class="progress mt-2" style="height: 6px;">
               <div class="progress-bar bg-success" 
@@ -90,9 +86,7 @@
                 <span class="kpi-label">Revenus {{ moisFrancais[moisFiltre-1] }} {{ anneeFiltre }}</span>
                 <h2 class="kpi-value">{{ (stats.revenusMois || 0) | number }} Ar</h2>
               </div>
-              <div class="kpi-icon bg-warning bg-opacity-10">
-                <i class="bi bi-cash-stack text-warning"></i>
-              </div>
+            
             </div>
           </div>
         </div>
@@ -106,9 +100,7 @@
                 <span class="kpi-label">Reports en attente</span>
                 <h2 class="kpi-value">{{ stats.reportsEnAttente || 0 }}</h2>
               </div>
-              <div class="kpi-icon bg-danger bg-opacity-10">
-                <i class="bi bi-exclamation-triangle text-danger"></i>
-              </div>
+              
             </div>
           </div>
         </div>
@@ -154,37 +146,10 @@
     <!-- 1. VUE D'ENSEMBLE -->
     <div *ngIf="activeTab === 'ensemble'">
       <div class="row g-4">
-        <!-- Graphique paiements -->
-        <div class="col-lg-6">
-          <div class="card shadow-sm border-0">
-            <div class="card-header bg-light">
-              <h5 class="mb-0">
-                <i class="bi bi-bar-chart-line me-2 text-primary"></i>
-                Évolution des paiements
-              </h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container" style="height: 250px;">
-                <!-- Barres simples -->
-                <div class="d-flex align-items-end justify-content-around h-100">
-                  <div *ngFor="let p of stats.paiementsParMois" class="text-center">
-                    <div class="bar bg-primary" 
-                         [style.height]="(p.montant / getMaxPaiement() * 200) + 'px'"
-                         [style.width]="'40px'">
-                    </div>
-                    <small class="mt-2 d-block">{{ p.mois }}</small>
-                  </div>
-                  <div *ngIf="!stats.paiementsParMois?.length" class="text-muted">
-                    Aucune donnée
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         <!-- Taux recouvrement -->
-        <div class="col-lg-3">
+        <div class="col-lg-6">
           <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-light">
               <h5 class="mb-0">
@@ -203,7 +168,7 @@
         </div>
 
         <!-- Occupation rapide -->
-        <div class="col-lg-3">
+        <div class="col-lg-6">
           <div class="card shadow-sm border-0 h-100">
             <div class="card-header bg-light">
               <h5 class="mb-0">
@@ -296,34 +261,7 @@
     <!-- 2. FINANCIER -->
     <div *ngIf="activeTab === 'financier'">
       <div class="row g-4">
-        <!-- Graphique paiements -->
-        <div class="col-lg-8">
-          <div class="card shadow-sm border-0">
-            <div class="card-header bg-light">
-              <h5 class="mb-0">
-                <i class="bi bi-bar-chart-line me-2 text-primary"></i>
-                Évolution des paiements (6 derniers mois)
-              </h5>
-            </div>
-            <div class="card-body">
-              <div class="chart-container" style="height: 300px;">
-                <div class="d-flex align-items-end justify-content-around h-100">
-                  <div *ngFor="let p of stats.paiementsParMois" class="text-center">
-                    <div class="bar bg-primary" 
-                         [style.height]="(p.montant / getMaxPaiement() * 250) + 'px'"
-                         [style.width]="'60px'">
-                    </div>
-                    <div class="mt-2 fw-bold">{{ p.montant | number }} Ar</div>
-                    <small class="text-muted">{{ p.mois }}</small>
-                  </div>
-                  <div *ngIf="!stats.paiementsParMois?.length" class="text-muted">
-                    Aucune donnée
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        
 
         <!-- Taux recouvrement -->
         <div class="col-lg-4">
@@ -411,49 +349,6 @@
               </div>
               <div *ngIf="!stats.occupationParEtage?.length" class="text-center text-muted py-3">
                 Aucune donnée d'occupation
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Historique mouvements -->
-        <div class="col-12">
-          <div class="card shadow-sm border-0">
-            <div class="card-header bg-light">
-              <h5 class="mb-0">
-                <i class="bi bi-arrow-left-right me-2 text-warning"></i>
-                Historique des mouvements
-              </h5>
-            </div>
-            <div class="card-body">
-              <div class="table-responsive">
-                <table class="table">
-                  <thead>
-                    <tr>
-                      <th>Période</th>
-                      <th>Entrées</th>
-                      <th>Sorties</th>
-                      <th>Solde</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr *ngFor="let m of getMouvementsParMois()">
-                      <td>{{ m.mois }}</td>
-                      <td><span class="badge bg-success">{{ m.entrees }}</span></td>
-                      <td><span class="badge bg-danger">{{ m.sorties }}</span></td>
-                      <td>
-                        <span class="badge" [ngClass]="m.solde >= 0 ? 'bg-info' : 'bg-warning'">
-                          {{ m.solde }}
-                        </span>
-                      </td>
-                    </tr>
-                    <tr *ngIf="getMouvementsParMois().length === 0">
-                      <td colspan="4" class="text-center text-muted py-3">
-                        Aucun mouvement enregistré
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
               </div>
             </div>
           </div>

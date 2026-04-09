@@ -34,6 +34,9 @@ export class CategorieListComponent implements OnInit {
   isEditMode = false;
   selectedId: string | null = null;
 
+  // AJOUT : État de chargement
+  dataLoaded: boolean = false;
+
   form: any = {
     nom: '',
     description: ''
@@ -46,13 +49,23 @@ export class CategorieListComponent implements OnInit {
   }
 
   loadCategories() {
+    // Réinitialiser l'état de chargement
+    this.dataLoaded = false;
+    
     this.categorieService.getAll().subscribe({
       next: (data) => {
         this.categories = data;
         this.applyFilters();
+        // Données chargées avec succès
+        this.dataLoaded = true;
       },
       error: (error) => {
         this.showError('Erreur lors du chargement des catégories');
+        // Même en erreur, on arrête le loading pour ne pas bloquer l'interface
+        this.dataLoaded = true;
+        // Initialiser avec un tableau vide pour éviter les erreurs
+        this.categories = [];
+        this.applyFilters();
       }
     });
   }
@@ -186,7 +199,7 @@ export class CategorieListComponent implements OnInit {
 
   afterSave() {
     this.resetForm();
-    this.loadCategories();
+    this.loadCategories(); // Recharger avec le loading
     this.submitted = false;
   }
 
@@ -211,7 +224,7 @@ export class CategorieListComponent implements OnInit {
       this.categorieService.delete(cat._id).subscribe({
         next: () => {
           this.showSuccess('Catégorie supprimée avec succès');
-          this.loadCategories();
+          this.loadCategories(); // Recharger avec le loading
         },
         error: (error) => {
           this.showError(this.getErrorMessage(error));

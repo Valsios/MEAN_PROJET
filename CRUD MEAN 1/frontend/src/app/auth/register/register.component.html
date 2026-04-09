@@ -1,11 +1,21 @@
 <div class="account-login section">
   <div class="container">
+
+
+
     <div class="row">
       <div class="col-lg-6 offset-lg-3 col-md-10 offset-md-1 col-12">
 
         <!-- FORMULAIRE INSCRIPTION -->
         <form class="card login-form" (ngSubmit)="onRegister()" #registerForm="ngForm">
           <div class="card-body">
+
+            <!-- Logo -->
+            <div class="text-center mb-4">
+              <a href="/">
+                <img src="assets/images/logo/logo.svg" alt="Logo Centre Commercial" style="max-height: 60px;">
+              </a>
+            </div>
 
             <div class="title text-center">
               <h3>Inscription Client</h3>
@@ -83,6 +93,20 @@
                   Se connecter
                 </a>
               </p>
+            </div>
+
+            <!-- LIENS DE REDIRECTION VERS AUTRES PAGES DE LOGIN -->
+            <div class="text-center mt-4">
+              <div class="mb-2">
+                <a href="javascript:void(0)" (click)="goToAdminLogin()" class="text-primary">
+                  <i class="lni lni-shield"></i> Se connecter en tant qu'Admin
+                </a>
+              </div>
+              <div>
+                <a href="javascript:void(0)" (click)="goToBoutiqueLogin()" class="text-primary">
+                  <i class="lni lni-store"></i> Se connecter en tant que Boutique
+                </a>
+              </div>
             </div>
 
           </div>

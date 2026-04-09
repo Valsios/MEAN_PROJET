@@ -11,9 +11,11 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login-admin.component.html'
 })
 export class LoginAdminComponent {
-  email = '';
-  password = '';
+  email = 'admin@centre.mg';
+  password = 'admin';
   error = '';
+  loading: boolean = false;  // Ajout de la propriété loading
+
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -23,4 +25,12 @@ export class LoginAdminComponent {
       error: err => this.error = err.message || 'Erreur login admin'
     });
   }
+
+  goToClientLogin() {
+  this.router.navigate(['/login-client']);
+}
+
+goToBoutiqueLogin() {
+  this.router.navigate(['/login-boutique']);
+}
 }

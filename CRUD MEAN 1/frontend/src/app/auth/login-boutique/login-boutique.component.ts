@@ -11,11 +11,14 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './login-boutique.component.html'
 })
 export class LoginBoutiqueComponent {
-  email = '';
-  password = '';
+  email = 'boutique1@gmail.com';
+  password = 'boutique1';
   error = '';
+  loading: boolean = false;  // Ajout de la propriété loading
 
-  constructor(private authService: AuthService, private router: Router) {}
+
+
+  constructor(private authService: AuthService, private router: Router) { }
 
   onLoginBoutique() {
     this.authService.loginBoutique({ email: this.email, password: this.password }).subscribe({
@@ -25,6 +28,14 @@ export class LoginBoutiqueComponent {
   }
 
   switchToClient() {
+    this.router.navigate(['/login-client']);
+  }
+
+  goToAdminLogin() {
+    this.router.navigate(['/login-admin']);
+  }
+
+  goToClientLogin() {
     this.router.navigate(['/login-client']);
   }
 }
